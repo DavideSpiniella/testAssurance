@@ -19,7 +19,7 @@
             "variables": [
                 {
                     "method": "GET",
-                    "name": "has_errors",
+                    "name": "weeeeeeeeeeeeeeee",
                     "params": {
                         "variable": "$(tardis.errors.has_errors)",
                         "single_value": true
