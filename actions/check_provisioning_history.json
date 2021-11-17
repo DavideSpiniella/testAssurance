@@ -13,7 +13,7 @@
                 "condition": "$(states.status_last_mesh_agent) != 'SUCCESS' OR $(states.status_last_ftue_enable) != 'SUCCESS' OR $(states.status_last_provision_device) != 'SUCCESS' OR ($(states.last_success_deprovision_device) is not None AND $(states.last_success_deprovision_device) > $(states.last_success_provision_device))"
             },
             {
-                "color": "red",
+                "color": "green",
                 "description": "Lo swap dello Sky Hub non è stato correttamente completato",
                 "condition": "$(states.status_last_gateway_swap) is not None and $(states.status_last_gateway_swap) != 'SUCCESS' and $(states.last_gateway_swap) is not None and $(states.last_gateway_swap) > $(states.last_success_provision_device)"
             }
