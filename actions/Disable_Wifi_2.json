@@ -13,7 +13,7 @@
                 "condition": "($(disable_2.has_errors) == True or $(check.status !=200)) and $(check.SSID_2g) != $(check.SSID_5g)"
             },
             {
-                "color": "kkokkk",
+                "color": "red",
                 "description": "Errore disabilitazione rete 2.4 GHz",
                 "condition": "$(check.radio_status_2g) == True and $(disable_2.has_errors) == True and $(check.SSID_2g) != $(check.SSID_5g)"
             },
