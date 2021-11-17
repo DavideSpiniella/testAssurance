@@ -8,7 +8,7 @@
                 "condition": "$(states.status_last_mesh_agent) == 'SUCCESS' AND $(states.status_last_ftue_enable) == 'SUCCESS' AND $(states.status_last_provision_device) == 'SUCCESS' AND ($(states.status_last_gateway_swap) is None OR $(states.status_last_gateway_swap) == 'SUCCESS' or ($(states.status_last_gateway_swap) != 'SUCCESS' and $(states.last_gateway_swap) is not None and $(states.last_gateway_swap) < $(states.last_success_provision_device))) AND ($(states.last_success_gateway_swap) is None OR $(states.last_success_mesh_agent) > $(states.last_success_gateway_swap) OR $(states.last_success_ftue_enable) > $(states.last_success_gateway_swap) OR $(states.last_success_provision_device) > $(states.last_success_gateway_swap)) AND ($(states.last_success_deprovision_device) is None OR ($(states.last_success_deprovision_device) is not None AND $(states.last_success_deprovision_device) < $(states.last_success_provision_device)))"
             },
             {
-                "color": "red",
+                "color": "green",
                 "description": "Sky Hub NON correttamente configurato",
                 "condition": "$(states.status_last_mesh_agent) != 'SUCCESS' OR $(states.status_last_ftue_enable) != 'SUCCESS' OR $(states.status_last_provision_device) != 'SUCCESS' OR ($(states.last_success_deprovision_device) is not None AND $(states.last_success_deprovision_device) > $(states.last_success_provision_device))"
             },
