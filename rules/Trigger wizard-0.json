@@ -1,0 +1,41 @@
+{
+    "rule_id": "kineton_trigger_Wiz0",
+    "section": "TEST KINETON",
+    "rule_name": "Trigger wizard-0",
+    "category": "In-Home",
+    "priority_level": 100,
+    "rule": {
+        "variables": [
+            
+        ],
+        "sources": [
+            {
+                "principal": {
+                    "name": "wpil_status",
+                    "options": {
+                        "err_raise": false,
+                        "URL": "/diagnostics/account/{BB_ID}/status"
+                    },
+                    "type": "WPIL"
+                }
+            }
+        ],
+        "RAGs": {
+            "red": [
+                {
+                    "description": "",
+                    "condition": "1 == 0",
+                    "wizards": []
+                }
+            ],
+            "amber": [],
+            "green": [
+                {
+                    "description": "",
+                    "condition": "1 == 1",
+                    "wizards": []
+                }
+            ]
+        }
+    }
+}

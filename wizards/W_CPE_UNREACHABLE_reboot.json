@@ -1,0 +1,19 @@
+{
+    "options": [
+        {
+            "name": "SI",
+            "type": "button",
+            "value": 1
+        },
+        {
+            "name": "NO",
+            "type": "button",
+            "value": 0
+        }
+    ],
+    "description": "Lo Sky Hub non comunica correttamente e potrebbe impedire l'esecuzione corretta della Diagnostica.\nE necessario un restart dello Sky Hub.\n\nIl cliente vuole procedere con il restart?",
+    "hints": [],
+    "actions": [],
+    "wizard_id": "W_CPE_UNREACHABLE",
+    "title": "COSA DIRE AL CLIENTE"
+}

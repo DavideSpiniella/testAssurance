@@ -1,0 +1,11 @@
+{
+ "param_id": "wanCommands",
+ "params_value": {
+  "open_fiber": {
+   "command": "Device.X_RDK-Central_COM_WanAgent.Interface.2.Wan.Refresh"
+  },
+  "fastweb": {
+   "command": "Device.X_RDK-Central_COM_WanAgent.Interface.1.Wan.Refresh"
+  }
+ }
+}

@@ -1,0 +1,462 @@
+{
+ "action_id": "kineton_analisi_avanzate",
+ "frontend_info": {
+  "action_description": "Azione Automatica",
+  "action_title": "Grafici di Analisi Avanzate",
+  "frontend_modal_type": "confirm_msg_box"
+ },
+ "available_for_operator": true,
+ "result": {
+  "conditions": [
+   {
+    "color": "green",
+    "description": "Azione eseguita con successo",
+    "condition": "1 == 1"
+   }
+  ]
+ },
+ "action_steps": [
+  {
+   "variables": [
+    {
+     "method": "GET_LAST",
+     "name": "last_pkg_uptime_ts",
+     "params": {
+      "filter": "$(telemetry_uptime)",
+      "variable": "$(telemetry_ts)",
+      "timestamp": "$(telemetry_ts)"
+     }
+    },
+    {
+     "method": "GET_LAST",
+     "name": "last_pkg_uptime_value",
+     "params": {
+      "variable": "$(telemetry_uptime)",
+      "timestamp": "$(telemetry_ts)"
+     }
+    },
+    {
+     "method": "SET",
+     "name": "last_reboot_ts",
+     "params": {
+      "variable": "$(last_pkg_uptime_ts) - ( $(last_pkg_uptime_value) * 1000 )"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "cpu_level_last_reboot",
+     "params": {
+      "filter": "$(event_code) == 'SYS_ERROR_CPU100'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "kernel_panic_last_reboot",
+     "params": {
+      "filter": " $(event_code) == 'SYS_ERROR_KernelPanic_reboot'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "ERROR_Cmd_reboot",
+     "params": {
+      "filter": " $(event_code) == 'SYS_ERROR_Cmd_reboot'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "SYS_ERROR_WEBPA_reboot",
+     "params": {
+      "filter": " $(event_code) == 'SYS_ERROR_WEBPA_reboot'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "SYS_ERROR_PinReset_reboot",
+     "params": {
+      "filter": " $(event_code) == 'SYS_ERROR_PinReset_reboot'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "SYS_ERROR_PowerCycle_reboot",
+     "params": {
+      "filter": " $(event_code) == 'SYS_ERROR_PowerCycle_reboot'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "SYS_ERROR_GUI_reboot",
+     "params": {
+      "filter": " $(event_code) == 'SYS_ERROR_GUI_reboot'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "WIFI_ERROR_WifiReboot",
+     "params": {
+      "filter": " $(event_code) == 'WIFI_ERROR_WifiReboot'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "file_system_last_reboot",
+     "params": {
+      "filter": "$(event_code) == 'SYS_ERROR_TMPFS_ABOVE85'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "SYS_ERROR_OutOfMemory_reboot",
+     "params": {
+      "filter": " $(event_code) == 'SYS_ERROR_OutOfMemory_reboot'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "SYS_ERROR_PeerDown_reboot",
+     "params": {
+      "filter": " $(event_code) == 'SYS_ERROR_PeerDown_reboot'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "SYS_ERROR_PSMCrash_reboot",
+     "params": {
+      "filter": " $(event_code) == 'SYS_ERROR_PSMCrash_reboot'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "SYS_ERROR_RGWatchDog_reboot",
+     "params": {
+      "filter": "$(event_code) == 'SYS_ERROR_RGWatchDog_reboot'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "SYS_ERROR_snmp_reboot",
+     "params": {
+      "filter": "$(event_code) == 'SYS_ERROR_snmp_reboot'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "SYS_ERROR_Thermal_reboot",
+     "params": {
+      "filter": "$(event_code) == 'SYS_ERROR_Thermal_reboot'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "WIFI_ERROR_WifiReboot",
+     "params": {
+      "filter": "$(event_code) == 'WIFI_ERROR_WifiReboot'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "reboot_reason_split",
+     "params": {
+      "filter": "$(event_code) == 'reboot_reason_split'",
+      "variable": "$(event_count)"
+     }
+    },
+    {
+     "name": "device_2g",
+     "method": "COUNT",
+     "params": {
+      "filter": "$(mac_2g)"
+     },
+     "global_variable": false
+    },
+    {
+     "name": "device_5g",
+     "method": "COUNT",
+     "params": {
+      "filter": "$(mac_5g)"
+     },
+     "global_variable": false
+    },
+    {
+     "name": "device_ethernet",
+     "method": "COUNT",
+     "params": {
+      "filter": "$(ethernet_client)"
+     },
+     "global_variable": false
+    },
+    {
+     "name": "total_devices",
+     "method": "SET",
+     "params": {
+      "variable": "$(device_2g) + $(device_5g) + $(device_ethernet)"
+     },
+     "global_variable": false
+    },
+    {
+     "name": "count_device_total",
+     "method": "SET",
+     "params": {
+      "variable": "$(daily_telemetry.+.device_2g) + $(daily_telemetry.+.device_5g) + $(daily_telemetry.+.device_ethernet)"
+     },
+     "group": "daily_telemetry"
+    },
+    {
+     "name": "daily_time",
+     "method": "GET",
+     "params": {
+      "variable": "$(telemetry_ts)"
+     },
+     "global_variable": false
+    },
+    {
+     "name": "days",
+     "method": "GET",
+     "params": {
+      "variable": "$(daily_telemetry.+.timestamp_end)"
+     },
+     "group": "daily_telemetry"
+    }
+   ],
+   "aliases": [
+    {
+     "name": "telemetry_ts",
+     "value": "tlm.message.timestamp"
+    },
+    {
+     "name": "telemetry_uptime",
+     "value": "tlm.message.rawAttributes.UPTIME_split"
+    },
+    {
+     "name": "event_code",
+     "value": "tlm.message.rdkBEvents.eventCode"
+    },
+    {
+     "name": "event_count",
+     "value": "tlm.message.rdkBEvents.eventCount"
+    },
+    {
+     "name": "CPU_usage",
+     "value": "tlm.message.attributes.usedCpuAtomSplit"
+    },
+    {
+     "name": "memory_usage",
+     "value": "tlm.message.attributes.usedMemAtomSplit"
+    },
+    {
+     "name": "mac_2g",
+     "value": "tlm.message.rawAttributes.2GclientMac_split"
+    },
+    {
+     "name": "mac_5g",
+     "value": "tlm.message.rawAttributes.5GclientMac_split"
+    },
+    {
+     "name": "ethernet_client",
+     "value": "tlm.message.rawAttributes.Total_Ethernet_Clients_split"
+    }
+   ],
+   "sources": [
+    {
+     "principal": {
+      "name": "tlm",
+      "options": {
+       "minimum_datapoints": 10,
+       "fields_to_retrieve": [
+        "message.timestamp",
+        "message.rawAttributes.UPTIME_split",
+        "message.rdkBEvents.eventCode",
+        "message.rdkBEvents.eventCount",
+        "message.attributes.usedCpuAtomSplit",
+        "message.attributes.usedMemAtomSplit",
+        "message.rawAttributes.2GclientMac_split",
+        "message.rawAttributes.5GclientMac_split",
+        "message.rawAttributes.Total_Ethernet_Clients_split"
+       ],
+       "last_n_days": 7,
+       "query": {}
+      },
+      "type": "TELEMETRY"
+     }
+    }
+   ],
+   "action_step_id": "cpu_test",
+   "context": {
+    "chart_list": [
+     {
+      "chart_name": "Utilizzo CPU",
+      "chart_type": "line_chart"
+     },
+     {
+      "chart_name": "Utilizzo Memoria RAM",
+      "chart_type": "line_chart"
+     },
+     {
+      "chart_name": "Numero di Device Connessi",
+      "chart_type": "histogram_chart"
+     },
+     {
+      "chart_name": "Reboot_Reason",
+      "chart_type": "pie_chart"
+     }
+    ],
+    "trendline": [
+     {
+      "chart_name": "Utilizzo CPU",
+      "thresholds": [
+       {
+        "name": "Soglia Critica",
+        "value": 50
+       }
+      ],
+      "chart_type": "line_chart",
+      "series": {
+       "name": "CPU usage chart",
+       "x": {
+        "name": "timestamp",
+        "variable": "$(telemetry_ts)"
+       },
+       "y_unit": "%",
+       "y": {
+        "name": "CPU usage",
+        "variable": "$(CPU_usage)"
+       }
+      },
+      "authorization_level": 1
+     },
+     {
+      "chart_name": "Utilizzo Memoria RAM",
+      "chart_type": "line_chart",
+      "series": {
+       "name": "memory usage chart",
+       "x": {
+        "name": "timestamp",
+        "variable": "$(telemetry_ts)"
+       },
+       "y_unit": "Mb",
+       "y": {
+        "name": "memory usage",
+        "variable": "$(memory_usage)"
+       }
+      },
+      "authorization_level": 1
+     },
+     {
+      "chart_name": "Numero di Device Connessi",
+      "unit": "Device",
+      "y_label": "numero di devices",
+      "chart_type": "histogram_chart",
+      "groups": {
+       "variable": "$(daily_telemetry.+.total_devices)",
+       "label": "$(daily_telemetry.+.timestamp_start)"
+      },
+      "title": "Numero di Device Connessi",
+      "authorization_level": 1
+     },
+     {
+      "chart_name": "Reboot_Reason",
+      "slices": [
+       {
+        "variable": "$(cpu_level_last_reboot)",
+        "label": "CPU LEVEL 100"
+       },
+       {
+        "variable": "$(kernel_panic_last_reboot)",
+        "label": "KERNEL PANIC"
+       },
+       {
+        "variable": "$(ERROR_Cmd_reboot)",
+        "label": "ERROR CMD"
+       },
+       {
+        "variable": "$(SYS_ERROR_WEBPA_reboot)",
+        "label": "WEBPA REBOOT"
+       },
+       {
+        "variable": "$(SYS_ERROR_PinReset_reboot)",
+        "label": "PIN RESET REBOOT"
+       },
+       {
+        "variable": "$(SYS_ERROR_PowerCycle_reboot)",
+        "label": "POWER CYCLE REBOOT"
+       },
+       {
+        "variable": "$(SYS_ERROR_GUI_reboot)",
+        "label": "ERROR GUI REBOOT"
+       },
+       {
+        "variable": "$(WIFI_ERROR_WifiReboot)",
+        "label": "WIFI ERROR REBOOT"
+       },
+       {
+        "variable": "$(file_system_last_reboot)",
+        "label": "FILE SYSTEM REBOOT"
+       },
+       {
+        "variable": "$(SYS_ERROR_OutOfMemory_reboot)",
+        "label": "OUT OF MEMORY REBOOT"
+       },
+       {
+        "variable": "$(SYS_ERROR_PeerDown_reboot)",
+        "label": "PEET DOWN REBOOT"
+       },
+       {
+        "variable": "$(SYS_ERROR_PSMCrash_reboot)",
+        "label": "PSM CRASH REBOOT"
+       },
+       {
+        "variable": "$(SYS_ERROR_RGWatchDog_reboot)",
+        "label": "RGWatchDog REBOOT"
+       },
+       {
+        "variable": "$(SYS_ERROR_snmp_reboot)",
+        "label": "SNMP REBOOT"
+       },
+       {
+        "variable": "$(SYS_ERROR_Thermal_reboot)",
+        "label": "THERMAL REBOOT"
+       },
+       {
+        "variable": "$(WIFI_ERROR_WifiReboot)",
+        "label": "WIFI REBOOT"
+       },
+       {
+        "variable": "$(reboot_reason_split)",
+        "label": "SPLIT REBOOT"
+       }
+      ],
+      "chart_type": "pie_chart",
+      "title": "Reboot Reason",
+      "authorization_level": 1
+     }
+    ]
+   },
+   "groups": [
+    {
+     "name": "daily_telemetry",
+     "variable": "$(telemetry_ts)",
+     "period": "daily"
+    }
+   ],
+   "timeout": 250
+  }
+ ],
+ "authorization_level": 1
+}

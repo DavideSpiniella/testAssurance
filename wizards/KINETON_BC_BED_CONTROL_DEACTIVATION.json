@@ -1,0 +1,29 @@
+{
+ "wizard_id": "W_BC_BED_CONTROL_DEACTIVATION",
+ "hints": [
+  {
+   "description": "Per verificare se il cliente abbia disattivato la funzione **Bed Time Mode** eseguire il controllo tramite il tasto **Verifica Bed Time Mode**\n\n Inserire Profile ID: $(profile_id)"
+  }
+ ],
+ "options": [
+  {
+   "name": "Verificato",
+   "condition": "$(verification_bed_mode.color) == 'green'",
+   "type": "button",
+   "value": 1
+  },
+  {
+   "name": "Non verificato",
+   "condition": "$(verification_bed_mode.color) != 'green'",
+   "type": "button",
+   "value": 0
+  }
+ ],
+ "description": "Per procedere con la disattivazione è necessario che il cliente segua la [procedura](https://contact.skykm.pigro.ai/0.3/link/Broadband-Gestione-App-xFi-Impossibile-impostare-la-modalita-bed-time) di disattivazione della funzionalità **Bed Time Mode**",
+ "actions": [
+  {
+   "action_id": "verification_bed_mode"
+  }
+ ],
+ "title": "AZIONI CON CLIENTE"
+}

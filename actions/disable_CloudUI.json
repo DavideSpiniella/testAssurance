@@ -1,0 +1,60 @@
+{
+    "action_id": "disable_CloudUI",
+    "result": {
+        "conditions": [
+            {
+                "color": "red",
+                "description": "Errore: accesso avanzato alla GUI non abilitato",
+                "condition": "$(enable_GUI.has_errors) == True"
+            },
+            {
+                "color": "green",
+                "description": "Accesso avanzato alla GUI abilitato",
+                "condition": "$(enable_GUI.has_errors) == False"
+            }
+        ]
+    },
+    "action_steps": [
+        {
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "has_errors",
+                    "params": {
+                        "variable": "$(tardis.errors.has_errors)",
+                        "single_value": true
+                    }
+                }
+            ],
+			  "sources": [
+                {
+                "principal": {    
+                    "name": "tardis",
+                    "options": {
+                        "action": "tardis",
+                        "operations": [
+                            {
+                                "type": "SET",
+                                "value": "false",
+                                "dataType": "Boolean",
+                                "parameter": "Device.DeviceInfo.X_RDKCENTRAL-COM_CloudUIEnable"
+                            }
+                        ]
+                    },
+                    "type": "TARDIS"
+				}
+                }
+            ],
+            "verification_condition": "$(has_errors) == False",
+            "max_retry": 1,
+            "action_step_id": "enable_GUI"
+        }
+    ],
+    "authorization_level": 1,
+	"available_for_operator": false,
+    "frontend_info": {
+        "action_description": "Azione Automatica",
+        "action_title": "Abilita accesso avanzato alla GUI del modem",
+        "frontend_modal_type": "confirm_msg_box"
+    }
+}

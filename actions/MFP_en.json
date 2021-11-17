@@ -1,0 +1,127 @@
+{
+    "action_id": "MFP_enable",
+    "result": {
+        "conditions": [
+            {
+                "color": "red",
+                "description": "CPE spenta o non allineata",
+                "condition": "$(enable_MFP.has_errors) == True"
+            },
+            {
+                "color": "red",
+                "description": "errore abilitazione MFP",
+                "condition": "$(check_MFP.MFP_2) == 'Disabled' or $(check_MFP.MFP_5) == 'Disabled' or $(check_MFP.has_errors) == True"
+            },
+            {
+                "color": "green",
+                "description": "MFP abilitato",
+                "condition": "$(check_MFP.MFP_2) == 'Optional' and $(check_MFP.MFP_5) == 'Optional' and $(enable_MFP.has_errors) == False"
+            }
+        ]
+    },
+    "action_steps": [
+        {
+            "sleep_time":"200",
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "has_errors",
+                    "params": {
+                        "variable": "$(tardis.errors.has_errors)",
+                        "single_value": true
+                    }
+                }
+            ],
+			  "sources": [
+                {
+                   "principal": {
+                    "name": "tardis",
+                    "options": {
+                        "action": "tardis",
+                        "err_raise": false,
+                        "operations": [
+                            {
+                                "type": "SET",
+                                "value": "Optional",
+                                "dataType": "string",
+                                "parameter": "Device.WiFi.AccessPoint.10001.Security.MFPConfig"
+                             },
+                             {
+                                "type": "SET",
+                                "value": "Optional",
+                                "dataType": "string",
+                                "parameter": "Device.WiFi.AccessPoint.10101.Security.MFPConfig"
+                            }
+                        ]
+                    },
+                    "type": "TARDIS"
+                    
+					}
+				}
+            ],
+            "verification_condition": "$(has_errors) == False",
+            "max_retry": 0,
+            "action_step_id": "enable_MFP"
+        },
+		{
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "has_errors",
+                    "params": {
+                        "variable": "$(tardis.errors.has_errors)",
+                        "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "MFP_2",
+                    "params": {
+                        "variable": "$(tardis.results.Device.WiFi.AccessPoint.10001.Security.MFPConfig)",
+                        "single_value": true 
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "MFP_5",
+                    "params": {
+                        "variable": "$(tardis.results.Device.WiFi.AccessPoint.10101.Security.MFPConfig)",
+                        "single_value": true 
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "tardis",
+                        "options": {
+                            "action": "tardis_mfp",
+                            "err_raise": false,
+                            "operations": [
+                                {
+                                    "type": "GET",
+                                    "parameter": "Device.WiFi.AccessPoint.10001.Security.MFPConfig"
+                                },
+                                {
+                                    "type": "GET",
+                                    "parameter": "Device.WiFi.AccessPoint.10101.Security.MFPConfig"
+                                }
+                            ]
+                        },
+                        "type": "TARDIS"
+                    }
+                }
+            ],
+            "verification_condition": "$(has_errors) == False",
+            "max_retry": 0,
+            "action_step_id": "check_MFP"
+        }	
+    ],
+    "authorization_level": 1,
+	"available_for_operator": true,
+    "frontend_info": {
+        "action_description": "Azione Automatica",
+        "action_title": "Abilita MFP",
+        "frontend_modal_type": "confirm_msg_box"
+    }
+}

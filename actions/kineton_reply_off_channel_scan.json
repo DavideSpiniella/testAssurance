@@ -1,0 +1,375 @@
+{
+ "action_id": "kineton_reply_off_channel_scan",
+ "frontend_info": {
+  "action_description": "Azione Automatica",
+  "action_title": "PROVA KINETON ERRORI",
+  "frontend_modal_type": "confirm_msg_box"
+ },
+ "available_for_operator": true,
+ "result": {
+  "conditions": [
+   {
+    "color": "red",
+    "description": "È stato rilevato che la rete mesh dello Sky Q interferisce con il canale (36) del Wi-Fi dello Sky Hub, procedere per risolvere",
+    "condition": "$(retrieve_off_channel.SKY_PRODUCT_INTERFERENCE) > 0"
+   },
+   {
+    "color": "green",
+    "description": "Non risultano interferenze sul canale (36) del Wi-Fi dello Sky Hub",
+    "condition": "$(retrieve_off_channel.SKY_PRODUCT_INTERFERENCE) == 0 and $(retrieve_off_channel.OTHER_INTERFERENCES) == 0"
+   },
+   {
+    "color": "red",
+    "description": "È stato rilevato che ci sono dispositivi che interferiscono con il canale (36) del Wi-Fi dello Sky Hub",
+    "condition": "$(retrieve_off_channel.OTHER_INTERFERENCES) > 0 and $(retrieve_off_channel.SKY_PRODUCT_INTERFERENCE) == 0"
+   },
+   {
+    "description": "",
+    "condition": "1 == 1",
+    "variables": [
+     {
+      "name": "Listener",
+      "value": "$(connect_global.listener_error_decode)"
+     },
+     {
+        "name": "Operation",
+        "value": "$(connect_global.operation_error_decode)"
+       },
+       {
+        "name": "Automation",
+        "value": "$(connect_global.automation_error_decode)"
+       }
+    ],
+    "color": "red"
+   }
+  ]
+ },
+ "action_steps": [
+  {
+   "variables": [
+    {
+     "method": "GET",
+     "name": "has_errors",
+     "params": {
+      "variable": "$(tardis.errors.has_errors)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "GET",
+     "name": "error_code",
+     "params": {
+      "variable": "$(tardis.errors.error_code)",
+      "single_value": true
+     }
+    }
+   ],
+   "sources": [
+    {
+     "principal": {
+      "name": "tardis",
+      "options": {
+       "action": "send_off_channel",
+       "operations": [
+        {
+         "type": "SET",
+         "value": "true",
+         "dataType": "Boolean",
+         "parameter": "Device.WiFi.NeighboringWiFiDiagnostic.En"
+        }
+       ]
+      },
+      "type": "TARDIS"
+     }
+    }
+   ],
+   "max_retry": 2,
+   "action_step_id": "send_off_channel_enable"
+  },
+  {
+   "variables": [
+    {
+     "method": "EVAL_REGEX",
+     "name": "listener_error_code",
+     "params": {
+      "variable": "$(send_off_channel_enable.error_code)",
+      "single_value": true,
+      "regex": "(\\d\\d\\d)\\d+"
+     }
+    },
+    {
+     "method": "EVAL_REGEX",
+     "name": "operation_error_code",
+     "params": {
+      "variable": "$(send_off_channel_enable.error_code)",
+      "single_value": true,
+      "regex": "\\d{3}(\\d\\d\\d)\\d{3}"
+     }
+    },
+    {
+     "method": "EVAL_REGEX",
+     "name": "automation_error_code",
+     "params": {
+      "variable": "$(send_off_channel_enable.error_code)",
+      "single_value": true,
+      "regex": "(\\d\\d\\d)$"
+     }
+    },
+    {
+        "method": "CAST",
+        "name": "listener_CAST_int",
+        "params": {
+          "cast_type": "int",
+          "single_value": true,
+          "variable": "$(listener_error_code)"
+        }
+    },
+    {
+        "method": "CAST",
+        "name": "operation_CAST_int",
+        "params": {
+          "cast_type": "int",
+          "single_value": true,
+          "variable": "$(operation_error_code)"
+        }
+    },
+    {
+        "method": "CAST",
+        "name": "automation_CAST_int",
+        "params": {
+          "cast_type": "int",
+          "single_value": true,
+          "variable": "$(automation_error_code)"
+        }
+    },
+    {
+        "method": "GET",
+        "name": "listener_error_decode",
+        "params": {
+         "variable": "$(listener_error_description)",
+         "single_value": true
+        }
+       },
+       {
+        "method": "GET",
+        "name": "operation_error_decode",
+        "params": {
+         "variable": "$(operation_error_description)",
+         "single_value": true
+        }
+       },
+       {
+        "method": "GET",
+        "name": "automation_error_decode",
+        "params": {
+         "variable": "$(automation_error_description)",
+         "single_value": true
+        }
+       }
+   ],
+   "aliases": [
+    {
+     "name": "listener_error_description",
+     "value": "codice_errore.codes.listener.[# == $(listener_CAST_int)].descrizione"
+    },
+    {
+        "name": "operation_error_description",
+        "value": "codice_errore.codes.operation.[# == $(operation_CAST_int)].descrizione"
+    },
+    {
+        "name": "automation_error_description",
+        "value": "codice_errore.codes.automation.[# == $(automation_CAST_int)].descrizione"
+    }
+   ],
+   "sources": [
+    {
+     "principal": {
+      "name": "codice_errore",
+      "options": {
+       "param_id": "kineton_code_error"
+      },
+      "type": "GLOBAL_PARAMS"
+     }
+    }
+   ],
+   "action_step_id": "connect_global"
+  },
+  {
+   "variables": [
+    {
+     "method": "GET",
+     "name": "has_errors",
+     "params": {
+      "variable": "$(tardis.errors.has_errors)",
+      "single_value": true
+     }
+    }
+   ],
+   "sources": [
+    {
+     "principal": {
+      "name": "tardis",
+      "options": {
+       "action": "send_off_channel",
+       "operations": [
+        {
+         "type": "SET",
+         "value": "Requested",
+         "dataType": "String",
+         "parameter": "Device.WiFi.NeighboringWiFiDiagnostic.DiagnosticsState"
+        }
+       ]
+      },
+      "type": "TARDIS"
+     }
+    }
+   ],
+   "max_retry": 2,
+   "action_step_id": "send_off_channel_diagnostic_state"
+  },
+  {
+   "context": {
+    "customer_info": [
+     {
+      "name": "Reti su Canale 36",
+      "variable": "$(SSID_ON_36)"
+     }
+    ],
+    "trendline": [
+     {
+      "chart_name": "Grafico di Interferenza",
+      "ssid_5": "$(MYSSID5)",
+      "chart_type": "interference_chart",
+      "channel_24": "$(channel_24)",
+      "series": {
+       "channel": {
+        "name": "Canali",
+        "variable": "$(Channel)"
+       },
+       "name": "Grafico di Interferenza",
+       "y_unit": "db",
+       "label": {
+        "name": "Nome Rete",
+        "variable": "$(SSID)"
+       },
+       "signal_strength": {
+        "name": "Forza Segnale",
+        "variable": "$(SignalStrength)"
+       }
+      },
+      "ssid_24": "$(MYSSID24)",
+      "channel_5": "$(channel_5)",
+      "authorization_level": 1
+     }
+    ]
+   },
+   "variables": [
+    {
+     "method": "GET",
+     "name": "has_errors",
+     "params": {
+      "variable": "$(tardis.errors.has_errors)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "GET",
+     "name": "MYSSID24",
+     "params": {
+      "variable": "$(wpil.data.group_private_wifi_configuration.data.ssid_name_2g)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "GET",
+     "name": "channel_24",
+     "params": {
+      "variable": "$(wpil.data.group_radio_2g_configuration.data.channel)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "GET",
+     "name": "channel_5",
+     "params": {
+      "variable": "$(wpil.data.group_radio_5g_configuration.data.channel)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "GET",
+     "name": "MYSSID5",
+     "params": {
+      "variable": "$(wpil.data.group_private_wifi_configuration.data.ssid_name_5g)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "SKY_PRODUCT_INTERFERENCE",
+     "params": {
+      "filter": "$(Channel) == 36 and $(SignalStrength) > -68 and $(SSID) != $(MYSSID24) and $(SSID) != $(MYSSID5) and 'SKY' in $(SSID) and $(SSID) != ''"
+     }
+    },
+    {
+     "method": "COUNT",
+     "name": "OTHER_INTERFERENCES",
+     "params": {
+      "filter": "$(Channel) == 36 and $(SignalStrength) > -68 and $(SSID) != $(MYSSID24) and $(SSID) != $(MYSSID5) and 'SKY' not in $(SSID) and $(SSID) != ''"
+     }
+    },
+    {
+     "method": "GET_DISTINCT",
+     "name": "SSID_ON_36",
+     "params": {
+      "filter": "$(Channel) == 36 and $(SignalStrength) > -68 and $(SSID) != $(MYSSID24) and $(SSID) != $(MYSSID5) and 'SKY' not in $(SSID)",
+      "variable": "$(SSID)"
+     }
+    }
+   ],
+   "aliases": [
+    {
+     "name": "SSID",
+     "value": "tardis.results.Device.WiFi.NeighboringWiFiDiagnostic.Result.+.SSID"
+    },
+    {
+     "name": "Channel",
+     "value": "tardis.results.Device.WiFi.NeighboringWiFiDiagnostic.Result.+.Channel"
+    },
+    {
+     "name": "SignalStrength",
+     "value": "tardis.results.Device.WiFi.NeighboringWiFiDiagnostic.Result.+.SignalStrength"
+    }
+   ],
+   "sources": [
+    {
+     "principal": {
+      "name": "tardis",
+      "options": {
+       "action": "retrieve_off_channel",
+       "operations": [
+        {
+         "type": "GET",
+         "parameter": "Device.WiFi.NeighboringWiFiDiagnostic.Result."
+        }
+       ]
+      },
+      "type": "TARDIS"
+     }
+    },
+    {
+     "principal": {
+      "name": "wpil",
+      "options": {
+       "URL": "/diagnostics/account/{BB_ID}/configuration"
+      },
+      "type": "WPIL"
+     }
+    }
+   ],
+   "timeout": 300,
+   "action_step_id": "retrieve_off_channel"
+  }
+ ],
+ "authorization_level": 1
+}

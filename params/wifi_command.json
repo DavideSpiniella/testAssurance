@@ -1,0 +1,29 @@
+{
+ "param_id": "wifi_command",
+ "params_value": {
+  "2en": {
+   "command": "Device.WiFi.Radio.10000.Enable",
+   "value": "1",
+   "expected2":true,
+   "expected5":"2"
+  },
+ "2dis": {
+   "command": "Device.WiFi.Radio.10000.Enable",
+   "value": "0",
+   "expected2":false,
+   "expected5":"2"
+  },
+  "5en": {
+   "command": "Device.WiFi.Radio.10100.Enable",
+   "value": "1",
+   "expected2":"2",
+   "expected5":true
+  },
+ "5dis": {
+   "command": "Device.WiFi.Radio.10100.Enable",
+   "value": "0",
+   "expected2":"2",
+   "expected5":false
+  }
+ }
+}

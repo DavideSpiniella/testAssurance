@@ -1,0 +1,25 @@
+{
+    "options": [
+        {
+            "name": "Avanti",
+            "condition": "$(kineton_cpe_online.reboot_feedback.state) == 'fully-manageable' AND $(kineton_cpe_online.settaggio_parametri.has_errors) == False",
+            "type": "button",
+            "value": 1
+        },
+        {
+            "name": "Avanti",
+            "condition": "$(kineton_cpe_online.reboot_feedback.state) != 'fully-manageable' OR $(kineton_cpe_online.settaggio_parametri.has_errors) == True",
+            "type": "button",
+            "value": 0
+        }
+    ],
+    "description": "Per effettuare il restart manualmente procedere come indicato di seguito in linea con il cliente:\r\n1. Con l'HUB acceso, scollega e ricollega il cavo di alimentazione\r\n2. Il processo di RESTART \u00e8 in corso e dovremo attendere la riaccensione dell'HUB.  \r\nAl termine delle operazioni sopra indicate verificare se il restart \u00e8 terminato tramite il tasto 'Verifica Sky Hub'",
+    "hints": [],
+    "actions": [
+        {
+            "action_id": "kineton_cpe_online"
+        }
+    ],
+    "wizard_id": "KINETON_W_VC_CPE_MANUAL_REBOOT",
+    "title": "AZIONI con CLIENTE"
+}

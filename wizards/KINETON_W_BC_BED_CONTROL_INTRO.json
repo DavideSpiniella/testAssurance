@@ -1,0 +1,19 @@
+{
+ "wizard_id": "W_BC_BED_CONTROL_INTRO",
+ "hints": [],
+ "options": [
+  {
+   "name": "SI",
+   "type": "button",
+   "value": 1
+  },
+  {
+   "name": "NO",
+   "type": "button",
+   "value": 0
+  }
+ ],
+ "description": "È stato rilevato che il cliente ha abilitato la funzione **BED TIME MODE**. \n\n Il cliente accetta di disabilitare la funzionalità abilitata? \n\n Lista dei profili con funzione Bed Time mode attivata: $(device_list)",
+ "actions": [],
+ "title": "COSA DIRE AL CLIENTE"
+}

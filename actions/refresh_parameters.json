@@ -1,0 +1,138 @@
+{
+    "action_id": "refresh_parameters",
+    "result": {
+        "conditions": [
+            {
+                "color": "red",
+                "description": "Il settaggio dei parametri NON  \u00e8 avvenuto correttamente",
+                "condition": "$(settaggio_parametri.has_errors) == True"
+            },
+            {
+                "color": "green",
+                "description": "Il settaggio dei parametri \u00e8 avvenuto correttamente",
+                "condition": "$(settaggio_parametri.has_errors) == False"
+            }
+        ]
+    },
+    "action_steps": [
+        {
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "wholesaler",
+                    "params": {
+                        "variable": "$(customer.c_access.Wholesaler)",
+                        "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "v_command",
+                    "params": {
+                        "variable": "$(command)",
+                        "single_value": true
+                    }
+                }
+            ],
+            "aliases":
+            [
+                {
+                "name": "command",
+                "value": "params.[# == $(wholesaler)].command"
+                }
+            ],
+			  "sources": [
+                {
+                    "principal": {
+                        "name": "params",
+                        "options": {
+                            "param_id": "wanCommands"
+                        },
+                        "type": "GLOBAL_PARAMS"
+                    }
+                },
+                {
+                    "principal": {
+                        "name": "customer",
+                        "options": {
+
+                        },
+                        "type": "ORDER_INVENTORY"
+                    }
+                }  
+            ],
+            "action_step_id": "wholesaler"
+        },
+        {
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "has_errors",
+                    "params": {
+                        "variable": "$(tardis.errors.has_errors)",
+                        "single_value": true
+                    }
+                }
+            ],
+			  "sources": [
+                {
+                "principal": {    
+                    "name": "tardis",
+                    "options": {
+                        "action": "tardis",
+                        "operations": [
+                            {
+                                "type": "SET",
+                                "value": "true",
+                                "dataType": "Boolean",
+                                "parameter": "Device.X_RDKCENTRAL-COM_Report.NetworkDevicesTraffic.Enabled"
+                            },
+                            {
+                                "type": "SET",
+                                "value": "true",
+                                "dataType": "Boolean",
+                                "parameter": "Device.X_RDKCENTRAL-COM_Report.NetworkDevicesStatus.Enabled"
+                            },
+                            {
+                                "type": "SET",
+                                "value": "true",
+                                "dataType": "Boolean",
+                                "parameter": "Device.X_RDKCENTRAL-COM_Report.InterfaceDevicesWifi.Enabled"
+                            },
+                            {
+                                "type": "SET",
+                                "value": "true",
+                                "dataType": "Boolean",
+                                "parameter": "Device.X_RDKCENTRAL-COM_Report.RadioInterfaceStatistics.Enabled"
+                            },
+                            {
+                                "type": "SET",
+                                "value": "true",
+                                "dataType": "Boolean",
+                                "parameter": "$(wholesaler.v_command)"
+                            },
+                            {
+                                "type": "SET",
+                                "value": "true",
+                                "dataType": "Boolean",
+                                "parameter": "Device.Time.Enable"
+                            }
+                        ]
+                    },
+                    "type": "TARDIS"
+				}
+                }  
+            ],
+            "verification_condition": "$(has_errors) == False",
+            "max_retry": 1,
+            "timeout": 90,
+            "action_step_id": "settaggio_parametri"
+        }
+    ],
+    "authorization_level": 1,
+    "frontend_info": {
+        "action_description": "Esegui Azione Automatica",
+        "action_title": "Ripristino dei parametri dello Sky Hub",
+        "frontend_modal_type": "confirm_msg_box"
+    }
+}

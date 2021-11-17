@@ -1,0 +1,130 @@
+{
+    "action_id": "kineton_call_state",
+    "result": {
+        "conditions": [
+            {
+                "color": "red",
+                "description": "C'è stato un errore, riprovare",
+                "condition": "$(call_params.has_errors) == True"
+            },
+            {
+                "color": "red",
+                "description": "Sul telefono non risultano chiamate in corso",
+                "condition": "$(call_params.call_state) == 'Idle' AND $(call_params.voice_status) == 'Up' AND $(call_params.has_errors) == False AND $(call_params.Opzione_Voce) == 'Y'"
+            },
+            {
+                "color": "red",
+                "description": "Sembra esserci qualche problema nella sezione Voice della tua linea",
+                "condition": "$(call_params.voice_status) != 'Up' AND $(call_params.has_errors) == False AND $(call_params.Opzione_Voce) == 'Y'"
+            },
+            {
+                "color": "red",
+                "description": "Servizio voce non presente",
+                "condition": "$(call_params.Opzione_Voce) == 'N' AND $(call_params.has_errors) == False"
+            },
+            {
+                "color": "green",
+                "description": "Il telefono sta effettuando una chiamata",
+                "condition": "$(call_params.call_state) == 'Calling' AND $(call_params.voice_status) == 'Up' AND $(call_params.has_errors) == False AND $(call_params.Opzione_Voce) == 'Y'"
+            },
+            {
+                "color": "green",
+                "description": "Il telefono sta ricevendo una chiamata",
+                "condition": "$(call_params.call_state) == 'Ringing' AND $(call_params.voice_status) == 'Up' AND $(call_params.has_errors) == False AND $(call_params.Opzione_Voce) == 'Y'"
+            },
+            {
+                "color": "green",
+                "description": "Chiamata in fase di connessione",
+                "condition": "$(call_params.call_state) == 'Connecting' AND $(call_params.voice_status) == 'Up' AND $(call_params.has_errors) == False AND $(call_params.Opzione_Voce) == 'Y'"
+            },
+            {
+                "color": "green",
+                "description": "Chiamata in corso",
+                "condition": "$(call_params.call_state) == 'InCall' AND $(call_params.voice_status) == 'Up' AND $(call_params.has_errors) == False AND $(call_params.Opzione_Voce) == 'Y'"
+            },
+            {
+                "color": "amber",
+                "description": "Chiamata in attesa",
+                "condition": "$(call_params.call_state) == 'Hold' AND $(call_params.voice_status) == 'Up' AND $(call_params.has_errors) == False AND $(call_params.Opzione_Voce) == 'Y'"
+            },
+            {
+                "color": "amber",
+                "description": "Chiamata in fase di chiusura",
+                "condition": "$(call_params.call_state) == 'Disconnecting' AND $(call_params.voice_status) == 'Up' AND $(call_params.has_errors) == False AND $(call_params.Opzione_Voce) == 'Y'"
+            }
+        ]
+    },
+    "action_steps": [
+	{
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "has_errors",
+                    "params": {
+                    "variable": "$(tardis.errors.has_errors)",
+                    "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "call_state",
+                    "params": {
+                        "variable": "$(tardis.results.Device.Services.VoiceService.1.VoiceProfile.1.Line.1.CallState)",
+                        "single_value": true 
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "voice_status",
+                    "params": {
+                        "variable": "$(tardis.results.Device.Services.VoiceService.1.VoiceProfile.1.Line.1.Status)",
+                        "single_value": true 
+                    }
+                },
+                {   
+                    "method": "GET",
+                    "name": "Opzione_Voce",
+                    "params":{
+                        "variable": "$(customer.voice_enabled)",
+                        "single_value": true 
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+							"name": "tardis",
+							"options": {
+									"action": "tardis",
+									"operations": [
+                                {
+                                "type": "GET",
+                                "parameter": "Device.Services.VoiceService.1.VoiceProfile.1.Line.1."
+                                }
+                                ]
+						},
+                        "type": "TARDIS"
+                    }
+                },
+                {
+                    "principal": {
+                     "name": "customer",
+                     "options": {},
+                     "type": "ORDER_INVENTORY"
+                    }
+                   }
+            ],
+            "verification_condition": "$(has_errors) == False",
+            "max_retry": 1,
+            "timeout": 100,
+            "action_step_id": "call_params"
+        }
+    ],
+    "authorization_level": 1,
+	"available_for_operator": true,
+    "frontend_info": {
+        "action_description": "Verifica lo stato della chiamata",
+        "action_title": "Verifica stato chiamata",
+        "frontend_modal_type": "confirm_msg_box"
+    }
+}

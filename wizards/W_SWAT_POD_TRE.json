@@ -1,0 +1,14 @@
+{
+    "hints": [],
+    "wizard_id": "W_SWAT_POD_TRE",
+    "options": [
+        {
+            "name": "FINE",
+            "type": "button",
+            "value": "WR0002"
+        }
+    ],
+    "description": "L'utente possiede pi\u00F9 di due POD.\r\nAssegnare il Case allo Swat team per ulteriori analisi",
+    "actions": [],
+    "title": "Esito: Swat Team"
+}

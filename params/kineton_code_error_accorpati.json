@@ -1,0 +1,199 @@
+{
+    "param_id": "kineton_code_error",
+    "params_value": {
+     "codes": {
+      "listener": {
+       "0": {
+        "descrizione": "nessun errore"
+       },
+       "201": {
+        "descrizione": "Browser Error"
+       },
+       "202": {
+        "descrizione": "Browser Error"
+       },
+       "203": {
+        "descrizione": "Browser Error"
+       },
+       "204": {
+        "descrizione": "Browser Error"
+       },
+       "205": {
+        "descrizione": "Browser Error"
+       },
+       "206": {
+        "descrizione": "Browser Error"
+       },
+       "207": {
+        "descrizione": "Browser Error"
+       },
+       "208": {
+        "descrizione": "Data Error"
+       },
+       "209": {
+        "descrizione": "Data Error"
+       },
+       "210": {
+        "descrizione": "Data Error"
+       },
+       "211": {
+        "descrizione": "Data Error"
+       },
+       "212": {
+        "descrizione": "Data Error"
+       },
+       "213": {
+        "descrizione": "Data Error"
+       }
+      },
+      "operation": {
+       "0": {
+        "descrizione": "nessun errore"
+       },
+       "101": {
+        "descrizione": "Data Error"
+       },
+       "102": {
+        "descrizione": "Mesh Error"
+       },
+       "103": {
+        "descrizione": "Mesh Error"
+       },
+       "104": {
+        "descrizione": "Data Error"
+       },
+       "105": {
+        "descrizione": "Data Error"
+       },
+       "106": {
+        "descrizione": "Data Error"
+       },
+       "109": {
+        "descrizione": "Data Error"
+       },
+       "110": {
+        "descrizione": "Data Error"
+       },
+       "111": {
+        "descrizione": "Data Base Error"
+       },
+       "112": {
+        "descrizione": "Data Base Error"
+       },
+       "113": {
+        "descrizione": "Data Base Error"
+       },
+       "114": {
+        "descrizione": "Data Error"
+       },
+       "116": {
+        "descrizione": "Data Error"
+       },
+       "117": {
+        "descrizione": "Data Error"
+       }
+      },
+      "automation": {
+       "0": {
+        "descrizione": "nessun errore"
+       },
+       "1": {
+        "descrizione": "Data Error"
+       },
+       "2": {
+        "descrizione": "Data Error"
+       },
+       "3": {
+        "descrizione": "Data Error"
+       },
+       "4": {
+        "descrizione": "Data Error"
+       },
+       "5": {
+        "descrizione": "Data Error"
+       },
+       "6": {
+        "descrizione": "Mac Error"
+       },
+       "7": {
+        "descrizione": "Mac Error"
+       },
+       "8": {
+        "descrizione": "Browser Error"
+       },
+       "9": {
+        "descrizione": "Browser Error"
+       },
+       "10": {
+        "descrizione": "Login Error"
+       },
+       "11": {
+        "descrizione": "Login Error"
+       },
+       "12": {
+        "descrizione": "Login Error"
+       },
+       "13": {
+        "descrizione": "Login Error"
+       },
+       "14": {
+        "descrizione": "Login Error"
+       },
+       "15": {
+        "descrizione": "Login Error"
+       },
+       "16": {
+        "descrizione": "Data Error"
+       },
+       "17": {
+        "descrizione": "Runtime Error"
+       },
+       "18": {
+        "descrizione": "Mac Error"
+       },
+       "19": {
+        "descrizione": "Mac Error"
+       },
+       "20": {
+        "descrizione": "Browser Error"
+       },
+       "21": {
+        "descrizione": "Browser Error"
+       },
+       "22": {
+        "descrizione": "Alert"
+       },
+       "23": {
+        "descrizione": "Data Error"
+       },
+       "24": {
+        "descrizione": "Runtime Error"
+       },
+       "25": {
+        "descrizione": "Mac Error"
+       },
+       "26": {
+        "descrizione": "Runtime Error"
+       },
+       "27": {
+        "descrizione": "Data Error"
+       },
+       "28": {
+        "descrizione": "Data Error"
+       },
+       "29": {
+        "descrizione": "404 Error"
+       },
+       "30": {
+        "descrizione": "520 Error"
+       },
+       "31": {
+        "descrizione": "Generic Error"
+       },
+       "32": {
+        "descrizione": "Data Error"
+       }
+      }
+     }
+    }
+   }

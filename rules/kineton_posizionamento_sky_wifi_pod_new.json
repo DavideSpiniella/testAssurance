@@ -1,0 +1,799 @@
+{
+    "rule_id": "kineton_posizionamento_sky_wifi_pod",
+    "section": "TEST KINETON",
+    "category": "In-Home",
+    "rule_name": "Kineton Posizionamento Sky Wifi Pod",
+    "priority_level": 50,
+    "rule": {
+       "context": {},
+       "groups": [
+           {
+               "name": "daily_telemetry",
+               "variable": "$(telemetry_ts)",
+               "period": "daily"
+           }
+       ],
+     "variables": [
+      {
+       "method": "COUNT",
+       "name": "number_of_pods",
+       "params": {
+        "filter": "$(pod_id)"
+       }
+      },
+      {
+       "method": "GET_DISTINCT",
+       "name": "pod_IDs",
+       "params": {
+        "variable": "$(pod_id)"
+       }
+      },
+      {
+       "method": "MAX",
+       "name": "max_interference",
+       "params": {
+        "variable": "$(pod_interference)"
+       }
+      },
+      {
+       "name": "pod_nickname",
+       "iterator": "$(pod_IDs)",
+       "method": "GET",
+       "params": {
+        "filter": "$(device_id) == $(iterator)",
+        "variable": "$(nickname)",
+        "single_value": true
+       }
+      },
+      {
+       "name": "pod_rssi",
+       "iterator": "$(pod_IDs)",
+       "method": "GET",
+       "params": {
+        "filter": "$(pod_id) == $(iterator)",
+        "variable": "$(pod_rssi)",
+        "single_value": true
+       }
+      },
+      {
+       "name": "pod_snr",
+       "iterator": "$(pod_IDs)",
+       "method": "GET",
+       "params": {
+        "filter": "$(pod_id) == $(iterator)",
+        "variable": "$(pod_snr)",
+        "single_value": true
+       }
+      },
+      {
+       "method": "SUM",
+       "name": "cloudconnfailcount",
+       "params": {
+        "filter": "$(event_code) == 'WIFI_ERROR_CloudConnFail'",
+        "variable": "$(event_count)"
+       },
+       "global_variable": false
+      },
+      {
+       "name": "daily_cloudconnfailcount",
+       "method": "SET",
+       "params": {
+           "variable": "$(daily_telemetry.+.cloudconnfailcount) > 0"
+       },
+       "group": "daily_telemetry"
+       },
+       {
+           "name": "days_cloudconnfailcount_trigger",
+           "method": "SET",
+           "params": {
+               "variable": "$(daily_cloudconnfailcount).count(True) > 3"
+           },
+           "group": "daily_telemetry"
+       },
+      {
+       "method": "SUM",
+       "name": "wifi5gpoddeauth4count",
+       "params": {
+        "filter": "$(event_code) == 'WIFI_INFO_5GPodDEAUTH4'",
+        "variable": "$(event_count)"
+       },
+       "global_variable": false
+      },
+      {
+       "name": "daily_wifi5gpoddeauth4count",
+       "method": "SET",
+       "params": {
+           "variable": "$(daily_telemetry.+.wifi5gpoddeauth4count) > 0"
+       },
+       "group": "daily_telemetry"
+       },
+       {
+       "name": "days_wifi5gpoddeauth4count_trigger",
+       "method": "SET",
+       "params": {
+           "variable": "$(daily_wifi5gpoddeauth4count).count(True) > 3"
+       },
+       "group": "daily_telemetry"
+       },
+       {
+           "method": "SUM",
+           "name": "wifi2gpoddeauth4count",
+           "params": {
+               "filter": "$(event_code) == 'WIFI_INFO_2GPodDEAUTH4'",
+               "variable": "$(event_count)"
+           },
+           "global_variable": false
+       },
+       {
+           "name": "daily_wifi2gpoddeauth4count",
+           "method": "SET",
+           "params": {
+               "variable": "$(daily_telemetry.+.wifi2gpoddeauth4count) > 0"
+           },
+           "group": "daily_telemetry"
+       },
+       {
+           "name": "days_wifi2gpoddeauth4count_trigger",
+           "method": "SET",
+           "params": {
+               "variable": "$(daily_wifi2gpoddeauth4count).count(True) > 3"
+           },
+           "group": "daily_telemetry"
+       },
+       {
+           "method": "SUM",
+           "name": "poddowncount",
+           "params": {
+               "filter": "$(event_code) == 'WIFI_ERROR_PodDown'",
+               "variable": "$(event_count)"
+           },
+           "global_variable": false
+       },
+       {
+           "name": "daily_poddowncount",
+           "method": "SET",
+           "params": {
+               "variable": "$(daily_telemetry.+.poddowncount) > 0"
+           },
+           "group": "daily_telemetry"
+       },
+       {
+           "name": "days_poddowncount_trigger",
+           "method": "SET",
+           "params": {
+               "variable": "$(daily_poddowncount).count(True) > 3"
+           },
+           "group": "daily_telemetry"
+       },
+       {
+           "method": "SUM",
+           "name": "podlinkchangecount",
+           "params": {
+               "filter": "$(event_code) == 'WIFI_INFO_PodLinkChange'",
+               "variable": "$(event_count)"
+           },
+           "global_variable": false
+       },
+       {
+           "name": "daily_podlinkchangecount",
+           "method": "SET",
+           "params": {
+               "variable": "$(daily_telemetry.+.poddowncount) > 0"
+           },
+           "group": "daily_telemetry"
+       },
+       {
+           "name": "days_podlinkchangecount_trigger",
+           "method": "SET",
+           "params": {
+               "variable": "$(daily_podlinkchangecount).count(True) > 3"
+           },
+           "group": "daily_telemetry"
+       }
+     ],
+     "aliases": [
+       {
+           "name": "telemetry_ts",
+           "value": "tlm.timestamp"
+       },
+      {
+       "name": "pod_rssi",
+       "value": "wpil.qoe_pods.states.rssi"
+      },
+      {
+       "name": "pod_snr",
+       "value": "wpil.qoe_pods.states.snr"
+      },
+      {
+       "name": "pod_id",
+       "value": "wpil.qoe_pods.states.id"
+      },
+      {
+       "name": "pod_interference",
+       "value": "wpil.qoe_pods.states.interference"
+      },
+      {
+       "name": "device_id",
+       "value": "wpil.data.device_id"
+      },
+      {
+       "name": "nickname",
+       "value": "wpil.data.nickname"
+      },
+      {
+       "name": "event_code",
+       "value": "tlm.message.rdkBEvents.eventCode"
+      },
+      {
+       "name": "event_count",
+       "value": "tlm.message.rdkBEvents.eventCount"
+      }
+     ],
+     "sources": [
+      {
+       "principal": {
+        "name": "tlm",
+        "options": {
+         "last_n_days": 7,
+         "minimum_datapoints": 10,
+         "fields_to_retrieve": [
+           "timestamp",
+          "message.rdkBEvents.eventCode",
+          "message.rdkBEvents.eventCount"
+         ]
+        },
+        "type": "TELEMETRY"
+       }
+      },
+      {
+       "principal": {
+        "name": "wpil",
+        "options": {
+         "URL": "/diagnostics/account/{BB_ID}/connected-devices/cpe"
+        },
+        "type": "WPIL"
+       }
+      }
+     ],
+     "RAGs": {
+      "red": [
+       {
+        "context": {
+         "customer_info": [
+          {
+           "name": "POD ($(iterator)) malposizionato Interferenza",
+           "variable": "$(max_interference)"
+          }
+         ]
+        },
+        "description": "Sky Wifi Pod malposizionato/i",
+        "condition": "$(pod_IDs) AND $(number_of_pods) > 0 AND $(number_of_pods) < 3 AND $(iterator.pod_snr) >= 25 AND $(max_interference) > 40 AND (($(days_cloudconnfailcount_trigger) is not None AND $(days_cloudconnfailcount_trigger)) OR ($(days_wifi5gpoddeauth4count_trigger) is not None AND $(days_wifi5gpoddeauth4count_trigger)) OR ($(days_wifi2gpoddeauth4count_trigger) is not None AND $(days_wifi2gpoddeauth4count_trigger)) OR ($(days_poddowncount_trigger) is not None AND $(days_poddowncount_trigger)) OR ($(days_podlinkchangecount_trigger) is not None AND $(days_podlinkchangecount_trigger)))",
+        "iterator": "$(pod_IDs)",
+        "first_bad_iterator_value": true,
+        "wizards": [
+         {
+          "condition": "",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_INTRO_INTERFERENCE"
+         },
+         {
+          "condition": "REPLY_W_PP_INTRO_INTERFERENCE == 1",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_REPLACEMENT_DONE_INTERFERENCE"
+         },
+         {
+          "condition": "REPLY_W_PP_REPLACEMENT_DONE_INTERFERENCE == 1 AND NOT LAST_ITERATION",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_NEXT_POD"
+         },
+         {
+          "condition": "REPLY_W_PP_REPLACEMENT_DONE_INTERFERENCE == 1 AND LAST_ITERATION",
+          "id": "W_PP_REBOOT_INTRO"
+         },
+         {
+          "condition": "W_PP_REBOOT_INTRO == 1 AND LAST_ITERATION",
+          "id": "W_PP_REBOOT_SIMPLE"
+         },
+         {
+          "condition": "W_PP_REBOOT_SIMPLE == 0 AND LAST_ITERATION",
+          "id": "W_PP_CPE_MANUAL_REBOOT"
+         },
+         {
+          "condition": "W_PP_REBOOT_SIMPLE == 1 or W_PP_CPE_MANUAL_REBOOT == 1 OR W_PP_REBOOT_INTRO == 0",
+          "id": "W_PP_CHECK_REPLACEMENT"
+         },
+         {
+          "condition": "REPLY_W_PP_INTRO_INTERFERENCE == 0 or REPLY_W_PP_REPLACEMENT_DONE_INTERFERENCE == 0",
+          "id": "W_PP_CUSTOMER_REFUSE"
+         },
+         {
+          "condition": "W_PP_CPE_MANUAL_REBOOT == 0",
+          "id": "W_PP_SWAT"
+         },
+         {
+          "condition": "W_PP_CHECK_REPLACEMENT == 1",
+          "id": "W_PP_RESOLVED_NOLOOP"
+         }
+        ]
+       },
+       {
+           "description": "Sky Wifi Pod malposizionato/i",
+           "condition": "$(pod_IDs) AND $(number_of_pods) >= 3 AND $(iterator.pod_snr) >= 25 AND $(max_interference) > 40 AND (($(days_cloudconnfailcount_trigger) is not None AND $(days_cloudconnfailcount_trigger)) OR ($(days_wifi5gpoddeauth4count_trigger) is not None AND $(days_wifi5gpoddeauth4count_trigger)) OR ($(days_wifi2gpoddeauth4count_trigger) is not None AND $(days_wifi2gpoddeauth4count_trigger)) OR ($(days_poddowncount_trigger) is not None AND $(days_poddowncount_trigger)) OR ($(days_podlinkchangecount_trigger) is not None AND $(days_podlinkchangecount_trigger)))",
+           "iterator": "$(pod_IDs)",
+           "first_bad_iterator_value": true,
+           "wizards": [
+            {
+             "condition": "",
+             "id": "W_SWAT_POD_TRE"
+            }
+           ]
+          },
+       {
+        "context": {
+         "customer_info": [
+          {
+           "name": "POD ($(iterator)) troppo lontano (nickanme)",
+           "variable": "$(iterator.pod_nickname)"
+          },
+          {
+           "name": "POD ($(iterator)) troppo lontano SNR (dB)",
+           "variable": "$(iterator.pod_snr)"
+          }
+         ]
+        },
+        "description": "Sky Wifi Pod troppo lontano/i dallo Sky Hub",
+        "condition": "$(pod_IDs) AND $(number_of_pods) > 0 AND $(number_of_pods) < 3 AND $(iterator.pod_snr) <= 15 AND (($(days_cloudconnfailcount_trigger) is not None AND $(days_cloudconnfailcount_trigger)) OR ($(days_wifi5gpoddeauth4count_trigger) is not None AND $(days_wifi5gpoddeauth4count_trigger)) OR ($(days_wifi2gpoddeauth4count_trigger) is not None AND $(days_wifi2gpoddeauth4count_trigger)) OR ($(days_poddowncount_trigger) is not None AND $(days_poddowncount_trigger)) OR ($(days_podlinkchangecount_trigger) is not None AND $(days_podlinkchangecount_trigger)))",
+        "iterator": "$(pod_IDs)",
+        "first_bad_iterator_value": true,
+        "wizards": [
+         {
+          "condition": "",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_INTRO_FAR"
+         },
+         {
+          "condition": "REPLY_W_PP_INTRO_FAR == 1",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_REPLACEMENT_DONE_FAR"
+         },
+         {
+          "condition": "REPLY_W_PP_REPLACEMENT_DONE_FAR == 1 AND NOT LAST_ITERATION",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_NEXT_POD"
+         },
+         {
+          "condition": "REPLY_W_PP_REPLACEMENT_DONE_FAR == 1 AND LAST_ITERATION",
+          "id": "W_PP_REBOOT_INTRO"
+         },
+         {
+          "condition": "W_PP_REBOOT_INTRO == 1 AND LAST_ITERATION",
+          "id": "W_PP_REBOOT_SIMPLE"
+         },
+         {
+          "condition": "W_PP_REBOOT_SIMPLE == 0 AND LAST_ITERATION",
+          "id": "W_PP_CPE_MANUAL_REBOOT"
+         },
+         {
+          "condition": "W_PP_REBOOT_SIMPLE == 1 or W_PP_CPE_MANUAL_REBOOT == 1 OR W_PP_REBOOT_INTRO == 0",
+          "id": "W_PP_CHECK_REPLACEMENT"
+         },
+         {
+          "condition": "REPLY_W_PP_INTRO_FAR == 0 or REPLY_W_PP_REPLACEMENT_DONE_FAR == 0",
+          "id": "W_PP_CUSTOMER_REFUSE"
+         },
+         {
+          "condition": "W_PP_CPE_MANUAL_REBOOT == 0",
+          "id": "W_PP_SWAT"
+         },
+         {
+          "condition": "W_PP_CHECK_REPLACEMENT == 1",
+          "id": "W_PP_RESOLVED_NOLOOP"
+         }
+        ]
+       },
+       {
+           "description": "Sky Wifi Pod troppo lontano/i dallo Sky Hub",
+           "condition": "$(pod_IDs) AND $(number_of_pods) >= 3 AND $(iterator.pod_snr) <= 15 AND (($(days_cloudconnfailcount_trigger) is not None AND $(days_cloudconnfailcount_trigger)) OR ($(days_wifi5gpoddeauth4count_trigger) is not None AND $(days_wifi5gpoddeauth4count_trigger)) OR ($(days_wifi2gpoddeauth4count_trigger) is not None AND $(days_wifi2gpoddeauth4count_trigger)) OR ($(days_poddowncount_trigger) is not None AND $(days_poddowncount_trigger)) OR ($(days_podlinkchangecount_trigger) is not None AND $(days_podlinkchangecount_trigger)))",
+           "iterator": "$(pod_IDs)",
+           "first_bad_iterator_value": true,
+           "wizards": [
+            {
+             "condition": "",
+             "id": "W_SWAT_POD_TRE"
+            }
+           ]
+          },
+       {
+        "context": {
+         "customer_info": [
+          {
+           "name": "POD ($(iterator)) troppo vicino nickname",
+           "variable": "$(iterator.pod_nickname)"
+          },
+          {
+           "name": "POD ($(iterator)) troppo vicino RSSI (dBm)",
+           "variable": "$(iterator.pod_rssi)"
+          }
+         ]
+        },
+        "description": "Sky Wifi Pod troppo vicino/i allo Sky Hub",
+        "condition": "$(pod_IDs) AND $(number_of_pods) > 0 AND $(number_of_pods) < 3 AND $(iterator.pod_rssi) >= -40 AND (($(days_cloudconnfailcount_trigger) is not None AND $(days_cloudconnfailcount_trigger)) OR ($(days_wifi5gpoddeauth4count_trigger) is not None AND $(days_wifi5gpoddeauth4count_trigger)) OR ($(days_wifi2gpoddeauth4count_trigger) is not None AND $(days_wifi2gpoddeauth4count_trigger)) OR ($(days_poddowncount_trigger) is not None AND $(days_poddowncount_trigger)) OR ($(days_podlinkchangecount_trigger) is not None AND $(days_podlinkchangecount_trigger)))\n",
+        "iterator": "$(pod_IDs)",
+        "first_bad_iterator_value": true,
+        "wizards": [
+         {
+          "condition": "",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_INTRO_NEAR"
+         },
+         {
+          "condition": "REPLY_W_PP_INTRO_NEAR == 1",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_REPLACEMENT_DONE_NEAR"
+         },
+         {
+          "condition": "REPLY_W_PP_REPLACEMENT_DONE_NEAR == 1 AND NOT LAST_ITERATION",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_NEXT_POD"
+         },
+         {
+          "condition": "REPLY_W_PP_REPLACEMENT_DONE_NEAR == 1 AND LAST_ITERATION",
+          "id": "W_PP_REBOOT_INTRO"
+         },
+         {
+          "condition": "W_PP_REBOOT_INTRO == 1 AND LAST_ITERATION",
+          "id": "W_PP_REBOOT_SIMPLE"
+         },
+         {
+          "condition": "W_PP_REBOOT_SIMPLE == 0 AND LAST_ITERATION",
+          "id": "W_PP_CPE_MANUAL_REBOOT"
+         },
+         {
+          "condition": "W_PP_REBOOT_SIMPLE == 1 or W_PP_CPE_MANUAL_REBOOT == 1 OR W_PP_REBOOT_INTRO == 0",
+          "id": "W_PP_CHECK_REPLACEMENT"
+         },
+         {
+          "condition": "REPLY_W_PP_INTRO_NEAR == 0 or REPLY_W_PP_REPLACEMENT_DONE_NEAR == 0",
+          "id": "W_PP_CUSTOMER_REFUSE"
+         },
+         {
+          "condition": "W_PP_CPE_MANUAL_REBOOT == 0",
+          "id": "W_PP_SWAT"
+         },
+         {
+          "condition": "W_PP_CHECK_REPLACEMENT == 1",
+          "id": "W_PP_RESOLVED_NOLOOP"
+         }
+        ]
+       },
+       {
+           "description": "Sky Wifi Pod troppo vicino/i allo Sky Hub",
+           "condition": "$(pod_IDs) AND $(number_of_pods) >= 3 AND $(iterator.pod_rssi) >= -40 AND (($(days_cloudconnfailcount_trigger) is not None AND $(days_cloudconnfailcount_trigger)) OR ($(days_wifi5gpoddeauth4count_trigger) is not None AND $(days_wifi5gpoddeauth4count_trigger)) OR ($(days_wifi2gpoddeauth4count_trigger) is not None AND $(days_wifi2gpoddeauth4count_trigger)) OR ($(days_poddowncount_trigger) is not None AND $(days_poddowncount_trigger)) OR ($(days_podlinkchangecount_trigger) is not None AND $(days_podlinkchangecount_trigger)))",
+           "iterator": "$(pod_IDs)",
+           "first_bad_iterator_value": true,
+           "wizards": [
+            {
+             "condition": "",
+             "id": "W_SWAT_POD_TRE"
+            }
+           ]
+          }
+      ],
+      "amber": [
+       {
+        "context": {
+         "customer_info": [
+          {
+           "name": "POD ($(iterator)) troppo lontano (nickanme)",
+           "variable": "$(iterator.pod_nickname)"
+          },
+          {
+           "name": "POD ($(iterator)) troppo lontano SNR (dB)",
+           "variable": "$(iterator.pod_snr)"
+          }
+         ]
+        },
+        "description": "Sky Wifi Pod troppo lontano/i dallo Sky Hub",
+        "condition": "$(pod_IDs) AND $(number_of_pods) > 0 AND $(number_of_pods) < 3 AND 15 < $(iterator.pod_snr) < 25 AND (($(days_cloudconnfailcount_trigger) is not None AND $(days_cloudconnfailcount_trigger)) OR ($(days_wifi5gpoddeauth4count_trigger) is not None AND $(days_wifi5gpoddeauth4count_trigger)) OR ($(days_wifi2gpoddeauth4count_trigger) is not None AND $(days_wifi2gpoddeauth4count_trigger)) OR ($(days_poddowncount_trigger) is not None AND $(days_poddowncount_trigger)) OR ($(days_podlinkchangecount_trigger) is not None AND $(days_podlinkchangecount_trigger)))",
+        "iterator": "$(pod_IDs)",
+        "first_bad_iterator_value": true,
+        "wizards": [
+         {
+          "condition": "",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_INTRO_FAR"
+         },
+         {
+          "condition": "REPLY_W_PP_INTRO_FAR == 1",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_REPLACEMENT_DONE_FAR"
+         },
+         {
+          "condition": "REPLY_W_PP_REPLACEMENT_DONE_FAR == 1 AND NOT LAST_ITERATION",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_NEXT_POD"
+         },
+         {
+          "condition": "REPLY_W_PP_REPLACEMENT_DONE_FAR == 1 AND LAST_ITERATION",
+          "id": "W_PP_REBOOT_INTRO"
+         },
+         {
+          "condition": "W_PP_REBOOT_INTRO == 1 AND LAST_ITERATION",
+          "id": "W_PP_REBOOT_SIMPLE"
+         },
+         {
+          "condition": "W_PP_REBOOT_SIMPLE == 0 AND LAST_ITERATION",
+          "id": "W_PP_CPE_MANUAL_REBOOT"
+         },
+         {
+          "condition": "W_PP_REBOOT_SIMPLE == 1 or W_PP_CPE_MANUAL_REBOOT == 1 OR W_PP_REBOOT_INTRO == 0",
+          "id": "W_PP_CHECK_REPLACEMENT"
+         },
+         {
+          "condition": "REPLY_W_PP_INTRO_FAR == 0 or REPLY_W_PP_REPLACEMENT_DONE_FAR == 0",
+          "id": "W_PP_CUSTOMER_REFUSE"
+         },
+         {
+          "condition": "W_PP_CPE_MANUAL_REBOOT == 0",
+          "id": "W_PP_SWAT"
+         },
+         {
+          "condition": "W_PP_CHECK_REPLACEMENT == 1",
+          "id": "W_PP_RESOLVED_NOLOOP"
+         }
+        ]
+       },
+       {
+           "description": "Sky Wifi Pod troppo lontano/i dallo Sky Hub",
+           "condition": "$(pod_IDs) AND $(number_of_pods) >=3 AND 15 < $(iterator.pod_snr) < 25 AND (($(days_cloudconnfailcount_trigger) is not None AND $(days_cloudconnfailcount_trigger)) OR ($(days_wifi5gpoddeauth4count_trigger) is not None AND $(days_wifi5gpoddeauth4count_trigger)) OR ($(days_wifi2gpoddeauth4count_trigger) is not None AND $(days_wifi2gpoddeauth4count_trigger)) OR ($(days_poddowncount_trigger) is not None AND $(days_poddowncount_trigger)) OR ($(days_podlinkchangecount_trigger) is not None AND $(days_podlinkchangecount_trigger)))",
+           "iterator": "$(pod_IDs)",
+           "first_bad_iterator_value": true,
+           "wizards": [
+            {
+             "condition": "",
+             "id": "W_SWAT_POD_TRE"
+            }
+           ]
+          },
+       {
+        "context": {
+         "customer_info": [
+          {
+           "name": "POD ($(iterator)) malposizionato Interferenza",
+           "variable": "$(max_interference)"
+          }
+         ]
+        },
+        "description": "Sky Wifi Pod malposizionato/i",
+        "condition": "$(pod_IDs) AND $(number_of_pods) > 0 AND $(number_of_pods) < 3 AND $(iterator.pod_snr) >= 25 AND 25 < $(max_interference) <= 40 AND (($(days_cloudconnfailcount_trigger) is not None AND $(days_cloudconnfailcount_trigger)) OR ($(days_wifi5gpoddeauth4count_trigger) is not None AND $(days_wifi5gpoddeauth4count_trigger)) OR ($(days_wifi2gpoddeauth4count_trigger) is not None AND $(days_wifi2gpoddeauth4count_trigger)) OR ($(days_poddowncount_trigger) is not None AND $(days_poddowncount_trigger)) OR ($(days_podlinkchangecount_trigger) is not None AND $(days_podlinkchangecount_trigger)))",
+        "iterator": "$(pod_IDs)",
+        "first_bad_iterator_value": true,
+        "wizards": [
+         {
+          "condition": "",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_INTRO_INTERFERENCE"
+         },
+         {
+          "condition": "REPLY_W_PP_INTRO_INTERFERENCE == 1",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_REPLACEMENT_DONE_INTERFERENCE"
+         },
+         {
+          "condition": "REPLY_W_PP_REPLACEMENT_DONE_INTERFERENCE == 1 AND NOT LAST_ITERATION",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_NEXT_POD"
+         },
+         {
+          "condition": "REPLY_W_PP_REPLACEMENT_DONE_INTERFERENCE == 1 AND LAST_ITERATION",
+          "id": "W_PP_REBOOT_INTRO"
+         },
+         {
+          "condition": "W_PP_REBOOT_INTRO == 1 AND LAST_ITERATION",
+          "id": "W_PP_REBOOT_SIMPLE"
+         },
+         {
+          "condition": "W_PP_REBOOT_SIMPLE == 0 AND LAST_ITERATION",
+          "id": "W_PP_CPE_MANUAL_REBOOT"
+         },
+         {
+          "condition": "W_PP_REBOOT_SIMPLE == 1 or W_PP_CPE_MANUAL_REBOOT == 1 OR W_PP_REBOOT_INTRO == 0",
+          "id": "W_PP_CHECK_REPLACEMENT"
+         },
+         {
+          "condition": "REPLY_W_PP_INTRO_INTERFERENCE == 0 or REPLY_W_PP_REPLACEMENT_DONE_INTERFERENCE == 0",
+          "id": "W_PP_CUSTOMER_REFUSE"
+         },
+         {
+          "condition": "W_PP_CPE_MANUAL_REBOOT == 0",
+          "id": "W_PP_SWAT"
+         },
+         {
+          "condition": "W_PP_CHECK_REPLACEMENT == 1",
+          "id": "W_PP_RESOLVED_NOLOOP"
+         }
+        ]
+       },
+       {
+           
+           "description": "Sky Wifi Pod malposizionato/i",
+           "condition": "$(pod_IDs) AND $(number_of_pods) >=3 AND $(iterator.pod_snr) >= 25 AND 25 < $(max_interference) <= 40 AND (($(days_cloudconnfailcount_trigger) is not None AND $(days_cloudconnfailcount_trigger)) OR ($(days_wifi5gpoddeauth4count_trigger) is not None AND $(days_wifi5gpoddeauth4count_trigger)) OR ($(days_wifi2gpoddeauth4count_trigger) is not None AND $(days_wifi2gpoddeauth4count_trigger)) OR ($(days_poddowncount_trigger) is not None AND $(days_poddowncount_trigger)) OR ($(days_podlinkchangecount_trigger) is not None AND $(days_podlinkchangecount_trigger)))",
+           "iterator": "$(pod_IDs)",
+           "first_bad_iterator_value": true,
+           "wizards": [
+            {
+             "condition": "",
+             "id": "W_SWAT_POD_TRE"
+            }
+           ]
+          },
+       {
+        "context": {
+         "customer_info": [
+          {
+           "name": "POD ($(iterator)) troppo vicino nickname",
+           "variable": "$(iterator.pod_nickname)"
+          },
+          {
+           "name": "POD ($(iterator)) troppo vicino RSSI (dBm)",
+           "variable": "$(iterator.pod_rssi)"
+          }
+         ]
+        },
+        "description": "Sky Wifi Pod troppo vicino/i allo Sky Hub",
+        "condition": "$(pod_IDs) AND $(number_of_pods) > 0 AND $(number_of_pods) < 3 AND -50 <= $(iterator.pod_rssi) < -40 AND (($(days_cloudconnfailcount_trigger) is not None AND $(days_cloudconnfailcount_trigger)) OR ($(days_wifi5gpoddeauth4count_trigger) is not None AND $(days_wifi5gpoddeauth4count_trigger)) OR ($(days_wifi2gpoddeauth4count_trigger) is not None AND $(days_wifi2gpoddeauth4count_trigger)) OR ($(days_poddowncount_trigger) is not None AND $(days_poddowncount_trigger)) OR ($(days_podlinkchangecount_trigger) is not None AND $(days_podlinkchangecount_trigger)))",
+        "iterator": "$(pod_IDs)",
+        "first_bad_iterator_value": true,
+        "wizards": [
+         {
+          "condition": "",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_INTRO_NEAR"
+         },
+         {
+          "condition": "REPLY_W_PP_INTRO_NEAR == 1",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_REPLACEMENT_DONE_NEAR"
+         },
+         {
+          "condition": "REPLY_W_PP_REPLACEMENT_DONE_NEAR == 1 AND NOT LAST_ITERATION",
+          "variables": {
+           "sky_pod_nickname": "iterator.pod_nickname"
+          },
+          "id": "REPLY_W_PP_NEXT_POD"
+         },
+         {
+          "condition": "REPLY_W_PP_REPLACEMENT_DONE_NEAR == 1 AND LAST_ITERATION",
+          "id": "W_PP_REBOOT_INTRO"
+         },
+         {
+          "condition": "W_PP_REBOOT_INTRO == 1 AND LAST_ITERATION",
+          "id": "W_PP_REBOOT_SIMPLE"
+         },
+         {
+          "condition": "W_PP_REBOOT_SIMPLE == 0 AND LAST_ITERATION",
+          "id": "W_PP_CPE_MANUAL_REBOOT"
+         },
+         {
+          "condition": "W_PP_REBOOT_SIMPLE == 1 or W_PP_CPE_MANUAL_REBOOT == 1 OR W_PP_REBOOT_INTRO == 0",
+          "id": "W_PP_CHECK_REPLACEMENT"
+         },
+         {
+          "condition": "REPLY_W_PP_INTRO_NEAR == 0 or REPLY_W_PP_REPLACEMENT_DONE_NEAR == 0",
+          "id": "W_PP_CUSTOMER_REFUSE"
+         },
+         {
+          "condition": "W_PP_CPE_MANUAL_REBOOT == 0",
+          "id": "W_PP_SWAT"
+         },
+         {
+          "condition": "W_PP_CHECK_REPLACEMENT == 1",
+          "id": "W_PP_RESOLVED_NOLOOP"
+         }
+        ]
+       },
+       {
+           "description": "Sky Wifi Pod troppo vicino/i allo Sky Hub",
+           "condition": "$(pod_IDs) AND $(number_of_pods) >= 3 AND -50 <= $(iterator.pod_rssi) < -40 AND (($(days_cloudconnfailcount_trigger) is not None AND $(days_cloudconnfailcount_trigger)) OR ($(days_wifi5gpoddeauth4count_trigger) is not None AND $(days_wifi5gpoddeauth4count_trigger)) OR ($(days_wifi2gpoddeauth4count_trigger) is not None AND $(days_wifi2gpoddeauth4count_trigger)) OR ($(days_poddowncount_trigger) is not None AND $(days_poddowncount_trigger)) OR ($(days_podlinkchangecount_trigger) is not None AND $(days_podlinkchangecount_trigger)))",
+           "iterator": "$(pod_IDs)",
+           "first_bad_iterator_value": true,
+           "wizards": [
+            {
+             "condition": "",
+             "id": "W_SWAT_POD_TRE"
+            }
+           ]
+          }
+      ],
+      "green": [
+       {
+           "description": "Nessun Problema Riscontrato",
+           "condition": "$(pod_IDs) AND $(number_of_pods) > 0 AND $(iterator.pod_snr) >= 25 AND $(iterator.pod_rssi) < -50 ",
+           "iterator": "$(pod_IDs)",
+           "first_bad_iterator_value": true
+   
+       },
+       {
+           "description": "Nessun Problema Riscontrato",
+           "condition": "$(pod_IDs) AND $(number_of_pods) > 0 AND $(iterator.pod_snr) >= 25 AND $(max_interference) > 40 AND (($(days_cloudconnfailcount_trigger) is None OR $(days_cloudconnfailcount_trigger) == False) AND ($(days_wifi5gpoddeauth4count_trigger) is None OR $(days_wifi5gpoddeauth4count_trigger) == False) AND ($(days_wifi2gpoddeauth4count_trigger) is None OR $(days_wifi2gpoddeauth4count_trigger) == False) AND ($(days_poddowncount_trigger) is None OR $(days_poddowncount_trigger) == False) AND ($(days_podlinkchangecount_trigger) is None OR $(days_podlinkchangecount_trigger) == False))",
+           "iterator": "$(pod_IDs)",
+           "first_bad_iterator_value": true
+   
+       },
+       {
+           "description": "Nessun Problema Riscontrato",
+           "condition": "$(pod_IDs) AND $(number_of_pods) > 0 AND $(iterator.pod_snr) <= 15 AND (($(days_cloudconnfailcount_trigger) is None OR $(days_cloudconnfailcount_trigger) == False) AND ($(days_wifi5gpoddeauth4count_trigger) is None OR $(days_wifi5gpoddeauth4count_trigger) == False) AND ($(days_wifi2gpoddeauth4count_trigger) is None OR $(days_wifi2gpoddeauth4count_trigger) == False) AND ($(days_poddowncount_trigger) is None OR $(days_poddowncount_trigger) == False) AND ($(days_podlinkchangecount_trigger) is None OR $(days_podlinkchangecount_trigger) == False))",
+           "iterator": "$(pod_IDs)",
+           "first_bad_iterator_value": true
+   
+       },
+       {
+           "description": "Nessun Problema Riscontrato",
+           "condition": "$(pod_IDs) AND $(number_of_pods) > 0 AND $(iterator.pod_rssi) >= -40 AND (($(days_cloudconnfailcount_trigger) is None OR $(days_cloudconnfailcount_trigger) == False) AND ($(days_wifi5gpoddeauth4count_trigger) is None OR $(days_wifi5gpoddeauth4count_trigger) == False) AND ($(days_wifi2gpoddeauth4count_trigger) is None OR $(days_wifi2gpoddeauth4count_trigger) == False) AND ($(days_poddowncount_trigger) is None OR $(days_poddowncount_trigger) == False) AND ($(days_podlinkchangecount_trigger) is None OR $(days_podlinkchangecount_trigger) == False))",
+           "iterator": "$(pod_IDs)",
+           "first_bad_iterator_value": true
+   
+       },
+       {
+           "description": "Nessun Problema Riscontrato",
+           "condition": "$(pod_IDs) AND $(number_of_pods) > 0 AND 15 < $(iterator.pod_snr) < 25 AND (($(days_cloudconnfailcount_trigger) is None OR $(days_cloudconnfailcount_trigger) == False) AND ($(days_wifi5gpoddeauth4count_trigger) is None OR $(days_wifi5gpoddeauth4count_trigger) == False) AND ($(days_wifi2gpoddeauth4count_trigger) is None OR $(days_wifi2gpoddeauth4count_trigger) == False) AND ($(days_poddowncount_trigger) is None OR $(days_poddowncount_trigger) == False) AND ($(days_podlinkchangecount_trigger) is None OR $(days_podlinkchangecount_trigger) == False))",
+           "iterator": "$(pod_IDs)",
+           "first_bad_iterator_value": true
+   
+       },
+       {
+           "description": "Nessun Problema Riscontrato",
+           "condition": "$(pod_IDs) AND $(number_of_pods) > 0 AND $(iterator.pod_snr) >= 25 AND 25 < $(max_interference) <= 40 AND (($(days_cloudconnfailcount_trigger) is None OR $(days_cloudconnfailcount_trigger) == False) AND ($(days_wifi5gpoddeauth4count_trigger) is None OR $(days_wifi5gpoddeauth4count_trigger) == False) AND ($(days_wifi2gpoddeauth4count_trigger) is None OR $(days_wifi2gpoddeauth4count_trigger) == False) AND ($(days_poddowncount_trigger) is None OR $(days_poddowncount_trigger) == False) AND ($(days_podlinkchangecount_trigger) is None OR $(days_podlinkchangecount_trigger) == False))",
+           "iterator": "$(pod_IDs)",
+           "first_bad_iterator_value": true
+   
+       },
+       {
+           "description": "Nessun Problema Riscontrato",
+           "condition": "$(pod_IDs) AND $(number_of_pods) > 0 AND -50 <= $(iterator.pod_rssi) < -40 AND (($(days_cloudconnfailcount_trigger) is None OR $(days_cloudconnfailcount_trigger) == False) AND ($(days_wifi5gpoddeauth4count_trigger) is None OR $(days_wifi5gpoddeauth4count_trigger) == False) AND ($(days_wifi2gpoddeauth4count_trigger) is None OR $(days_wifi2gpoddeauth4count_trigger) == False) AND ($(days_poddowncount_trigger) is None OR $(days_poddowncount_trigger) == False) AND ($(days_podlinkchangecount_trigger) is None OR $(days_podlinkchangecount_trigger) == False))",
+           "iterator": "$(pod_IDs)",
+           "first_bad_iterator_value": true
+   
+       },
+       {
+           "description": "Nessun POD Rilevato",
+           "condition": "$(number_of_pods) == 0"
+       }
+      ]
+     }
+    }
+   }

@@ -1,0 +1,139 @@
+{
+  "wizard_id": "PF_configuration",
+  "section": "Funzionalità",
+  "hint": "",
+  "wizard_0": true,
+  "category": "In-Home",
+  "steps": [
+   {
+    "options": [
+     {
+      "name": "SI",
+      "type": "button",
+      "value": 1
+     },
+     {
+      "name": "NO",
+      "type": "button",
+      "value": 0
+     }
+    ],
+    "description": "Per abilitare il Port Forwarding è necessario abilitare l'accesso avanzato alla GUI del modem.\n\nIl cliente acconsente?",
+    "wizard_id": "WIZARD_PF_INTRO",
+    "condition": "",
+    "title": "COSA DIRE AL CLIENTE",
+    "actions": []
+   },
+   {
+    "wizard_id": "WIZARD_FINE_1",
+    "condition": "WIZARD_PF_INTRO == 0",
+    "hints": [],
+    "options": [
+     {
+      "name": "FINE",
+      "type": "button",
+      "value": "WR1001"
+     }
+    ],
+    "description": "Il cliente non acconsente all'abilitazione della funzionalità avanzata",
+    "title": "ESITO: il cliente si rifiuta",
+    "actions": []
+   },
+   {
+    "options": [
+     {
+      "name": "Avanti",
+      "condition": "$(disable_CloudUI.enable_GUI.has_errors) == True",
+      "type": "button",
+      "value": 0
+     },
+     {
+      "name": "Avanti",
+      "condition": "$(disable_CloudUI.enable_GUI.has_errors) == False",
+      "type": "button",
+      "value": 1
+     }
+    ],
+    "description": "Per abilitare l'accesso avanzato alla GUI del modem utilizzare il tasto 'Abilita accesso avanzato alla GUI del modem'",
+    "wizard_id": "WIZARD_PF_GUI_ENABLE",
+    "condition": "WIZARD_PF_INTRO == 1",
+    "title": "AZIONI con CLIENTE",
+    "actions": [
+     {
+      "action_id": "disable_CloudUI"
+     }
+    ]
+   },
+   {
+    "wizard_id": "WIZARD_FINE_2",
+    "condition": "WIZARD_PF_GUI_ENABLE == 0",
+    "hints": [],
+    "options": [
+     {
+      "name": "FINE",
+      "type": "button",
+      "value": "WR1001"
+     }
+    ],
+    "description": "C'è stato un errore. Riprovare un'altra volta",
+    "title": "COSA DIRE AL CLIENTE",
+    "actions": []
+   },
+   {
+    "wizard_id": "WIZARD_PF_PROCEDURA",
+    "condition": "WIZARD_PF_GUI_ENABLE == 1",
+    "hints": [
+     {
+      "description": "Ulteriori informazioni sono disponibili cliccando sul seguente [link](https://contact.skykm.pigro.ai/0.3/link/Broadband-Wizard-Manuale-Dati-Navigazione-KO-connessione-assente-1589546089-1591346132-1602056912-1604651468-1604658962)"
+     }
+    ],
+    "options": [
+     {
+      "name": "Avanti",
+      "type": "button",
+      "value": 1
+     }
+    ],
+    "description": "Per abilitare il Port Forwarding seguire il procedimento indicato qui sotto:\n\n1. Inserire nella barra di navigazione del browser l'indirizzo IP del proprio router (di default è 192.168.0.1)\n\n2. Inserire le credenziali di accesso (se non sono state modificate, esse si trovano sul retro del router)\n\n3. Cliccare su 'Avanzate' e scegliere 'Port Forwarding'\n\n4. Cliccare su 'Attiva'\n\n5. Cliccare su '+ Aggiungi Servizio'\n\n6. Compilare tutti i campi e infine cliccare su 'Salva'\n\nUna volta completato il procedimento cliccare su 'Avanti'.",
+    "title": "COSA DIRE AL CLIENTE",
+    "actions": []
+   },
+   {
+    "options": [
+     {
+      "name": "Avanti",
+      "condition": "$(enable_CloudUI.disable_GUI.has_errors) == False OR $(enable_CloudUI.disable_GUI.has_errors) == True",
+      "type": "button",
+      "value": 1
+     }
+    ],
+    "description": "Per disabilitare di nuovo l'accesso avanzato alla GUI del modem utilizzare il testo 'Disabilita accesso avanzato alla GUI del modem'",
+    "wizard_id": "WIZARD_PF_GUI_DISABLE",
+    "condition": "WIZARD_PF_PROCEDURA == 1",
+    "title": "AZIONI con CLIENTE",
+    "actions": [
+     {
+      "action_id": "enable_CloudUI"
+     }
+    ]
+   },
+   {
+    "wizard_id": "WIZARD_FINE_3",
+    "condition": "WIZARD_PF_GUI_DISABLE == 1",
+    "hints": [],
+    "options": [
+     {
+      "name": "FINE",
+      "type": "button",
+      "value": "WR1001"
+     }
+    ],
+    "description": "Completato con successo",
+    "title": "COSA DIRE AL CLIENTE",
+    "actions": []
+   }
+  ],
+  "priority_level": 1,
+  "description": "Clicca qui per supportare il cliente alla configurazione del Port Forwarding nel caso in cui l'utente non riesca da APP a causa di problemi con l'IP Statico.",
+  "name": "Abilitazione del Port Forwarding"
+ }

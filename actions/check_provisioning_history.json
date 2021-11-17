@@ -1,0 +1,153 @@
+{
+    "action_id": "check_provisioning_history",
+    "result": {
+        "conditions": [
+            {
+                "color": "green",
+                "description": "Sky Hub correttamente configurato",
+                "condition": "$(states.status_last_mesh_agent) == 'SUCCESS' AND $(states.status_last_ftue_enable) == 'SUCCESS' AND $(states.status_last_provision_device) == 'SUCCESS' AND ($(states.status_last_gateway_swap) is None OR $(states.status_last_gateway_swap) == 'SUCCESS' or ($(states.status_last_gateway_swap) != 'SUCCESS' and $(states.last_gateway_swap) is not None and $(states.last_gateway_swap) < $(states.last_success_provision_device))) AND ($(states.last_success_gateway_swap) is None OR $(states.last_success_mesh_agent) > $(states.last_success_gateway_swap) OR $(states.last_success_ftue_enable) > $(states.last_success_gateway_swap) OR $(states.last_success_provision_device) > $(states.last_success_gateway_swap)) AND ($(states.last_success_deprovision_device) is None OR ($(states.last_success_deprovision_device) is not None AND $(states.last_success_deprovision_device) < $(states.last_success_provision_device)))"
+            },
+            {
+                "color": "red",
+                "description": "Sky Hub NON correttamente configurato",
+                "condition": "$(states.status_last_mesh_agent) != 'SUCCESS' OR $(states.status_last_ftue_enable) != 'SUCCESS' OR $(states.status_last_provision_device) != 'SUCCESS' OR ($(states.last_success_deprovision_device) is not None AND $(states.last_success_deprovision_device) > $(states.last_success_provision_device))"
+            },
+            {
+                "color": "red",
+                "description": "Lo swap dello Sky Hub non è stato correttamente completato",
+                "condition": "$(states.status_last_gateway_swap) is not None and $(states.status_last_gateway_swap) != 'SUCCESS' and $(states.last_gateway_swap) is not None and $(states.last_gateway_swap) > $(states.last_success_provision_device)"
+            }
+        ]
+    },
+    "action_steps": [
+        {
+            "variables": [
+                {
+                    "method": "GET_LAST",
+                    "name": "status_last_mesh_agent",
+                    "params": {
+                        "filter": "$(h_type) == 'ENABLE_MESH_AGENT'",
+                        "variable": "$(h_status)",
+                        "timestamp": "$(h_timestamp)"
+                    }
+                },
+                {
+                    "method": "GET_LAST",
+                    "name": "status_last_provision_device",
+                    "params": {
+                        "filter": "$(h_type) == 'PROVISION_DEVICE'",
+                        "variable": "$(h_status)",
+                        "timestamp": "$(h_timestamp)"
+                    }
+                },
+                {
+                    "method": "GET_LAST",
+                    "name": "status_last_ftue_enable",
+                    "params": {
+                        "filter": "$(h_type) == 'XFI_FTUE_ENABLED'",
+                        "variable": "$(h_status)",
+                        "timestamp": "$(h_timestamp)"
+                    }
+                },
+                {
+                    "method": "GET_LAST",
+                    "name": "status_last_gateway_swap",
+                    "params": {
+                        "filter": "$(h_type) == 'GATEWAY_SWAP'",
+                        "variable": "$(h_status)",
+                        "timestamp": "$(h_timestamp)"
+                    }
+                },
+                {
+                    "method": "GET_LAST",
+                    "name": "last_success_mesh_agent",
+                    "params": {
+                        "filter": "$(h_type) == 'ENABLE_MESH_AGENT' and $(h_status) == 'SUCCESS'",
+                        "variable": "$(h_timestamp)",
+                        "timestamp": "$(h_timestamp)"
+                    }
+                },
+                {
+                    "method": "GET_LAST",
+                    "name": "last_success_provision_device",
+                    "params": {
+                        "filter": "$(h_type) == 'PROVISION_DEVICE' and $(h_status) == 'SUCCESS'",
+                        "variable": "$(h_timestamp)",
+                        "timestamp": "$(h_timestamp)"
+                    }
+                },
+                {
+                    "method": "GET_LAST",
+                    "name": "last_success_deprovision_device",
+                    "params": {
+                        "filter": "$(h_type) == 'DEPROVISION_DEVICE' and $(h_status) == 'SUCCESS'",
+                        "variable": "$(h_timestamp)",
+                        "timestamp": "$(h_timestamp)"
+                    }
+                },
+                {
+                    "method": "GET_LAST",
+                    "name": "last_success_ftue_enable",
+                    "params": {
+                        "filter": "$(h_type) == 'XFI_FTUE_ENABLED' and $(h_status) == 'SUCCESS'",
+                        "variable": "$(h_timestamp)",
+                        "timestamp": "$(h_timestamp)"
+                    }
+                },
+                {
+                    "method": "GET_LAST",
+                    "name": "last_success_gateway_swap",
+                    "params": {
+                        "filter": "$(h_type) == 'GATEWAY_SWAP' and $(h_status) == 'SUCCESS'",
+                        "variable": "$(h_timestamp)",
+                        "timestamp": "$(h_timestamp)"
+                    }
+                },
+                {
+                    "method": "GET_LAST",
+                    "name": "last_gateway_swap",
+                    "params": {
+                        "filter": "$(h_type) == 'GATEWAY_SWAP'",
+                        "variable": "$(h_timestamp)",
+                        "timestamp": "$(h_timestamp)"
+                    }
+                }
+            ],
+            "aliases": [
+                {
+                    "name": "h_type",
+                    "value": "wpil_history.notificationGroups.notifications.type"
+                },
+                {
+                    "name": "h_status",
+                    "value": "wpil_history.notificationGroups.notifications.status"
+                },
+                {
+                    "name": "h_timestamp",
+                    "value": "wpil_history.notificationGroups.notifications.timestamp"
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "wpil_history",
+                        "options": {
+                            "method": "GET",
+                            "URL": "/diagnostics/account/{BB_ID}/history"
+                        },
+                        "type": "WPIL"
+                    }
+                }
+            ],
+            "verification_condition": "$(status_last_mesh_agent) is not None AND $(status_last_ftue_enable) is not None AND $(status_last_provision_device) is not None AND $(last_success_mesh_agent) is not None AND $(last_success_ftue_enable) is not None AND $(last_success_provision_device) is not None AND ($(last_success_deprovision_device) is None OR ($(last_success_deprovision_device) is not None AND $(last_success_deprovision_device) < $(last_success_provision_device)))",
+            "max_retry": 4,
+            "action_step_id": "states"
+        }
+    ],
+    "authorization_level": 1,
+    "frontend_info": {
+        "action_description": "Esegui Azione Automatica",
+        "action_title": "Controllo configurazioni Sky Hub",
+        "frontend_modal_type": "confirm_msg_box"
+    }
+}

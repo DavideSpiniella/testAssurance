@@ -1,0 +1,92 @@
+{
+    "action_id": "factory_reset_totale",
+    "result": {
+        "conditions": [
+            {
+                "color": "red",
+                "description": "Factory reset NON completato correttamente",
+                "condition": "$(factory_reset_feedback.state) != 'fully-manageable'"
+            },
+            {
+                "color": "green",
+                "description": "Factory reset completato correttamente",
+                "condition": "$(factory_reset_feedback.state) == 'fully-manageable'"
+            }
+        ]
+    },
+    "action_steps": [
+        {
+            "n_retry": 0,
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "has_errors",
+                    "params": {
+                        "variable": "$(tardis.errors.has_errors)",
+                        "single_value": true
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "tardis",
+                        "options": {
+                            "action": "send_factory_reset",
+                            "err_raise": false,
+                            "operations": [
+                                {
+                                    "type": "SET",
+                                    "value": "Wifi,Docsis,Firewall,Router",
+                                    "dataType": "string",
+                                    "parameter": "Device.X_CISCO_COM_DeviceControl.FactoryReset"
+                                }
+                            ]
+                        },
+                        "type": "TARDIS"
+                    }
+                }
+            ],
+            "max_retry": 1,
+            "timeout": 100,
+            "verification_condition": "$(has_errors) == False",
+            "action_step_id": "send_factory_reset"
+        },
+        {
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "state",
+                    "params": {
+                        "variable": "$(wpil.data.status)",
+                        "single_value": true
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "wpil",
+                        "options": {
+                            "method": "GET",
+                            "err_raise": false,
+                            "URL": "/diagnostics/account/{BB_ID}/status"
+                        },
+                        "type": "MOCK"
+                    }
+                }
+            ],
+            "verification_condition": "$(state) == 'fully-manageable'",
+            "max_retry": 60,
+            "timeout": 500,
+            "action_step_id": "factory_reset_feedback"
+        }
+    ],
+    "authorization_level": 1,
+    "available_for_operator": true,
+    "frontend_info": {
+        "action_description": "Esegui Azione Automatica",
+        "action_title": "Ripristina Impostazioni di Fabbrica",
+        "frontend_modal_type": "confirm_msg_box"
+    }
+}

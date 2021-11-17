@@ -1,0 +1,251 @@
+{
+    "rule_name": "Kineton Posizionamento Sky Wifi Pod",
+    "category": "In-Home",
+    "rule_id": "kineton_posizionamento_sky_wifi_pod",
+    "priority_level": 50,
+    "section": "Sky Wifi Hub & Pod",
+    "rule": {
+        "variables": [
+            {
+                "method": "COUNT",
+                "name": "number_of_pods",
+                "params": {
+                    "filter": "$(pod_id)"
+                }
+            },
+            {
+                "method": "GET_DISTINCT",
+                "name": "pod_IDs",
+                "params": {
+                    "variable": "$(pod_id)"
+                }
+            },
+            {
+                "method": "MAX",
+                "name": "max_interference",
+                "params": {
+                    "variable": "$(pod_interference)"
+                }
+            },
+            {
+                "name": "pod_nickname",
+                "iterator": "$(pod_IDs)",
+                "method": "GET",
+                "params": {
+                    "filter": "$(device_id) == $(iterator)",
+                    "variable": "$(nickname)",
+                    "single_value": true
+                }
+            },
+            {
+                "name": "pod_rssi",
+                "iterator": "$(pod_IDs)",
+                "method": "GET",
+                "params": {
+                    "filter": "$(pod_id) == $(iterator)",
+                    "variable": "$(pod_rssi)",
+                    "single_value": true
+                }
+            },
+            {
+                "name": "pod_snr",
+                "iterator": "$(pod_IDs)",
+                "method": "GET",
+                "params": {
+                    "filter": "$(pod_id) == $(iterator)",
+                    "variable": "$(pod_snr)",
+                    "single_value": true
+                }
+            },
+            {
+                "method": "SUM",
+                "name": "cloudconnfailcount",
+                "params": {
+                    "filter": "$(event_code) == 'WIFI_ERROR_CloudConnFail'",
+                    "variable": "$(event_count)"
+                }
+            },
+            {
+                "method": "SUM",
+                "name": "wifi5gpoddeauth4count",
+                "params": {
+                    "filter": "$(event_code) == 'WIFI_INFO_5GPodDEAUTH4'",
+                    "variable": "$(event_count)"
+                }
+            },
+            {
+                "method": "SUM",
+                "name": "wifi2gpoddeauth4count",
+                "params": {
+                    "filter": "$(event_code) == 'WIFI_INFO_2GPodDEAUTH4'",
+                    "variable": "$(event_count)"
+                }
+            },
+            {
+                "method": "SUM",
+                "name": "poddowncount",
+                "params": {
+                    "filter": "$(event_code) == 'WIFI_ERROR_PodDown'",
+                    "variable": "$(event_count)"
+                }
+            },
+            {
+                "method": "SUM",
+                "name": "podlinkchangecount",
+                "params": {
+                    "filter": "$(event_code) == 'WIFI_INFO_PodLinkChange'",
+                    "variable": "$(event_count)"
+                }
+            }
+        ],
+        "aliases": [
+            {
+                "name": "pod_rssi",
+                "value": "wpil.qoe_pods.states.rssi"
+            },
+            {
+                "name": "pod_snr",
+                "value": "wpil.qoe_pods.states.snr"
+            },
+            {
+                "name": "pod_id",
+                "value": "wpil.qoe_pods.states.id"
+            },
+            {
+                "name": "pod_interference",
+                "value": "wpil.qoe_pods.states.interference"
+            },
+            {
+                "name": "device_id",
+                "value": "wpil.data.device_id"
+            },
+            {
+                "name": "nickname",
+                "value": "wpil.data.nickname"
+            },
+            {
+                "name": "event_code",
+                "value": "tlm.message.rdkBEvents.eventCode"
+            },
+            {
+                "name": "event_count",
+                "value": "tlm.message.rdkBEvents.eventCount"
+            }
+        ],
+        "sources": [
+            {
+                "principal": {
+                    "name": "tlm",
+                    "options": {
+                        "last_n_days": 7,
+                        "minimum_datapoints": 10,
+                        "fields_to_retrieve": [
+                            "message.rdkBEvents.eventCode",
+                            "message.rdkBEvents.eventCount"
+                        ]
+                    },
+                    "type": "TELEMETRY"
+                }
+            },
+            {
+                "principal": {
+                    "name": "wpil",
+                    "options": {
+                        "URL": "/diagnostics/account/{BB_ID}/connected-devices/cpe"
+                    },
+                    "type": "WPIL"
+                }
+            }
+        ],
+        "RAGs": {
+            "red": [
+                {
+                    "context": {
+                        "customer_info": [
+                            {
+                                "name": "POD ($(iterator)) malposizionato Interferenza",
+                                "variable": "$(max_interference)"
+                            }
+                        ]
+                    },
+                    "description": "Sky Wifi Pod malposizionato/i",
+                    "condition": "$(pod_IDs) OR $(number_of_pods) > 0 OR ( $(iterator.pod_snr) < 25 OR $(iterator.pod_rssi) > -50 ) OR 25 < $(max_interference) <= 40 OR (($(cloudconnfailcount) is not None and $(cloudconnfailcount)>7) or ($(wifi5gpoddeauth4count) is not None and $(wifi5gpoddeauth4count)>7) or ($(wifi2gpoddeauth4count) is not None and $(wifi2gpoddeauth4count)>7) or ($(poddowncount) is not None and $(poddowncount)>7) or ($(podlinkchangecount) is not None and $(podlinkchangecount)>14))",
+                    "iterator": "$(pod_IDs)",
+                    "wizards": [
+                        {
+                            "condition": "",
+                            "variables": {
+                                "pod_IDs": "pod_IDs"
+                            },
+                            "id": "KINETON_W_PP_INTRO"
+                        },
+                        {
+                            "condition": "KINETON_W_PP_INTRO == 1",
+                            "variables": {
+                                "sky_pod_nickname": "iterator.pod_nickname"
+                            },
+                            "id": "KINETON_W_PP_REPLACEMENT_DONE"
+                        },
+                        {
+                            "condition": "KINETON_W_PP_REPLACEMENT_DONE == 1 AND NOT LAST_ITERATION",
+                            "variables": {
+                                "sky_pod_nickname": "iterator.pod_nickname"
+                            },
+                            "id": "REPLY_W_PP_NEXT_POD"
+                        },
+                        {
+                            "condition": "(KINETON_W_PP_REPLACEMENT_DONE == 1 OR KINETON_W_PP_POD_OFFLINE == 1) AND LAST_ITERATION ",
+                            "variables": {
+                                "number_of_pods": "number_of_pods"
+                            },
+                            "id": "KINETON_W_PP_CHECK_POD_ONLINE"
+                        },
+                        {
+                            "condition": "KINETON_W_PP_CHECK_POD_ONLINE == 0 AND LAST_ITERATION",
+                            "id": "KINETON_W_PP_POD_OFFLINE"
+                        },
+                        {
+                            "condition": "KINETON_W_PP_CHECK_POD_ONLINE == 1 AND LAST_ITERATION",
+                            "id": "W_PP_REBOOT_INTRO"
+                        },
+                        {
+                            "condition": "W_PP_REBOOT_INTRO == 1 AND LAST_ITERATION",
+                            "id": "W_PP_REBOOT_SIMPLE"
+                        },
+                        {
+                            "condition": "W_PP_REBOOT_SIMPLE == 0 AND LAST_ITERATION",
+                            "id": "W_PP_CPE_MANUAL_REBOOT"
+                        },
+                        {
+                            "condition": "W_PP_REBOOT_SIMPLE == 1 or W_PP_CPE_MANUAL_REBOOT == 1 OR W_PP_REBOOT_INTRO == 0",
+                            "id": "W_PP_CHECK_REPLACEMENT"
+                        },
+                        {
+                            "condition": "KINETON_W_PP_INTRO == 0 or KINETON_W_PP_REPLACEMENT_DONE == 0 or KINETON_W_PP_POD_OFFLINE == 0",
+                            "id": "W_PP_CUSTOMER_REFUSE"
+                        },
+                        {
+                            "condition": "W_PP_CPE_MANUAL_REBOOT == 0",
+                            "id": "W_PP_SWAT"
+                        },
+                        {
+                            "condition": "W_PP_CHECK_REPLACEMENT == 1",
+                            "id": "W_PP_RESOLVED"
+                        }
+                    ]
+                }
+            ],
+            "green": [
+                {
+                    "description": "Nessun Problema Riscontrato",
+                    "iterator": "$(pod_IDs)",
+                    "condition": "$(pod_IDs) AND $(number_of_pods) > 0 AND $(iterator.pod_snr) >= 25 AND $(iterator.pod_rssi) < -50 AND (($(cloudconnfailcount) is None or $(cloudconnfailcount)<7) and ($(wifi5gpoddeauth4count) is None or $(wifi5gpoddeauth4count)<7) and ($(wifi2gpoddeauth4count) is None or $(wifi2gpoddeauth4count)<7) and ($(poddowncount) is None or $(poddowncount)<7) and ($(podlinkchangecount) is None or $(podlinkchangecount)<14))"
+                },
+                {
+                    "description": "Nessun POD Rilevato",
+                    "condition": "$(number_of_pods) == 0"
+                }
+            ]
+        }
+    }
+}

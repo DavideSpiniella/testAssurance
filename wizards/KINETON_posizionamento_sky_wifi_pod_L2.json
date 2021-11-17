@@ -1,0 +1,205 @@
+{
+    "wizard_id": "KINETON_posizionamento_sky_wifi_pod_L2",
+    "section": "Wi-Fi",
+    "hint": "",
+    "wizard_0": true,
+    "category": "In-Home",
+    "steps": [
+     {
+      "wizard_id": "WIZARD_CHECK_PRESENCE_POD",
+      "condition": "",
+      "hints": [],
+      "options": [
+       {
+        "name": "Avanti",
+        "condition": "$(kineton_check_if_pods.pod_data.number_of_pods) == 0",
+        "type": "button",
+        "value": 0
+       },
+       {
+        "name": "Avanti",
+        "condition": "$(kineton_check_if_pods.pod_data.number_of_pods) > 0 AND (($(kineton_check_if_pods.pod_data.days_cloudconnfailcount_trigger) is None OR $(kineton_check_if_pods.pod_data.days_cloudconnfailcount_trigger) == False) AND ($(kineton_check_if_pods.pod_data.days_wifi5gpoddeauth4count_trigger) is None OR $(kineton_check_if_pods.pod_data.days_wifi5gpoddeauth4count_trigger) == False) AND ($(kineton_check_if_pods.pod_data.days_wifi2gpoddeauth4count_trigger) is None OR $(kineton_check_if_pods.pod_data.days_wifi2gpoddeauth4count_trigger) == False) AND ($(kineton_check_if_pods.pod_data.days_poddowncount_trigger) is None OR $(kineton_check_if_pods.pod_data.days_poddowncount_trigger) == False) AND ($(kineton_check_if_pods.pod_data.days_podlinkchangecount_trigger) is None OR $(kineton_check_if_pods.pod_data.days_podlinkchangecount_trigger) == False))",
+        "type": "button",
+        "value": 0
+       },
+       {
+        "name": "Avanti",
+        "condition": "$(kineton_check_if_pods.pod_data.number_of_pods) > 0 AND (($(kineton_check_if_pods.pod_data.days_cloudconnfailcount_trigger) is not None AND $(kineton_check_if_pods.pod_data.days_cloudconnfailcount_trigger)) OR ($(kineton_check_if_pods.pod_data.days_wifi5gpoddeauth4count_trigger) is not None AND $(kineton_check_if_pods.pod_data.days_wifi5gpoddeauth4count_trigger)) OR ($(kineton_check_if_pods.pod_data.days_wifi2gpoddeauth4count_trigger) is not None AND $(kineton_check_if_pods.pod_data.days_wifi2gpoddeauth4count_trigger)) OR ($(kineton_check_if_pods.pod_data.days_poddowncount_trigger) is not None AND $(kineton_check_if_pods.pod_data.days_poddowncount_trigger)) OR ($(kineton_check_if_pods.pod_data.days_podlinkchangecount_trigger) is not None AND $(kineton_check_if_pods.pod_data.days_podlinkchangecount_trigger)))",
+        "type": "button",
+        "value": 1
+       }
+      ],
+      "description": "Eseguire l'azione per verificare se ci sono POD",
+      "title": "COSA DIRE AL CLIENTE",
+      "actions": [
+       {
+        "action_id": "kineton_check_if_pods"
+       }
+      ]
+     },
+     {
+      "wizard_id": "WIZARD_INTRO",
+      "condition": "WIZARD_CHECK_PRESENCE_POD == 1",
+      "hints": [],
+      "options": [
+       {
+        "name": "Avanti",
+        "condition": "$(kineton_pod_replacement_check_wpil.color) == 'red'",
+        "type": "button",
+        "value": 1
+       },
+       {
+        "name": "Avanti",
+        "condition": "$(kineton_pod_replacement_check_wpil.color) == 'amber'",
+        "type": "button",
+        "value": 1
+       },
+       {
+        "name": "Avanti",
+        "condition": "$(kineton_pod_replacement_check_wpil.color) == 'green'",
+        "type": "button",
+        "value": 0
+       }
+      ],
+      "description": "Eseguire l'azione per verificare se ci sono POD malposizionati",
+      "title": "COSA DIRE AL CLIENTE",
+      "actions": [
+       {
+        "action_id": "kineton_pod_replacement_check_wpil"
+       }
+      ]
+     },
+     {
+      "wizard_id": "WIZARD_TAB_POD",
+      "condition": "WIZARD_INTRO == 1",
+      "chart_list": [
+       {
+        "chart_name": "Tabella PODs",
+        "chart_type": "table_chart"
+       }
+      ],
+      "hints": [],
+      "options": [
+       {
+        "name": "SI",
+        "type": "button",
+        "value": 1
+       },
+       {
+        "name": "NO",
+        "type": "button",
+        "value": 0
+       }
+      ],
+      "description": "Il cliente vuole procedere con il riposizionamento",
+      "title": "COSA DIRE AL CLIENTE",
+      "actions": []
+     },
+     {
+      "wizard_id": "WIZARD_CLIENTE_RIFIUTA",
+      "condition": "WIZARD_TAB_POD == 0",
+      "hints": [],
+      "options": [
+       {
+        "name": "FINE",
+        "type": "button",
+        "value": "WR1001"
+       }
+      ],
+      "description": "Non posizionando gli Sky Pod la rete wireless non sarà propagata correttamente",
+      "title": "Esito: Il cliente si rifiuta",
+      "actions": []
+     },
+     {
+      "wizard_id": "WIZARD_GUIDA",
+      "condition": "WIZARD_TAB_POD == 1",
+      "hints": [],
+      "options": [
+       {
+        "name": "Avanti",
+        "type": "button",
+        "value": 1
+       }
+      ],
+      "description": "Guida dettagliata disponibile su KM \r\n[Come posiziono gli Sky Wifi POD in casa](https://contact.skykm.pigro.ai/0.3/link/Nuovo-Sky-BB-1590514933-1590515253)\r\n\r\n\r\nDopo che la procedura di riposizionamento e riavvio sono state completate utilizzare il tasto avanti per proseguire.",
+      "title": "AZIONI con CLIENTE",
+      "actions": []
+     },
+     {
+      "wizard_id": "WIZARD_RIVERIFICA",
+      "condition": "WIZARD_GUIDA == 1",
+      "chart_list": [
+       {
+        "chart_name": "Tabella PODs",
+        "chart_type": "table_chart"
+       }
+      ],
+      "hints": [
+       {
+        "description": "l'azione può essere ripetuta fino ad ottenere la configurazione voluta"
+       }
+      ],
+      "options": [
+       {
+        "name": "Avanti",
+        "condition": "$(kineton_pod_replacement_check_wpil.color) == 'red'",
+        "type": "button",
+        "value": 0
+       },
+       {
+        "name": "Avanti",
+        "condition": "$(kineton_pod_replacement_check_wpil.color) == 'amber'",
+        "type": "button",
+        "value": 0
+       },
+       {
+        "name": "Avanti",
+        "condition": "$(kineton_pod_replacement_check_wpil.color) == 'green'",
+        "type": "button",
+        "value": 1
+       }
+      ],
+      "description": "Il POD è stato associato correttamente alla tua linea",
+      "title": "Azione di Riverifica",
+      "actions": [
+       {
+        "action_id": "kineton_pod_replacement_check_wpil"
+       }
+      ]
+     },
+     {
+      "wizard_id": "WIZARD_NON_RISOLTO",
+      "condition": "WIZARD_RIVERIFICA == 0",
+      "hints": [],
+      "options": [
+       {
+        "name": "FINE",
+        "type": "button",
+        "value": "WR1001"
+       }
+      ],
+      "description": "Ci sono ancora problemi con il posizionamento di alcuni POD",
+      "title": "Esito: Non risolto",
+      "actions": []
+     },
+     {
+      "wizard_id": "WIZARD_RISOLTO",
+      "condition": "WIZARD_RIVERIFICA == 1 OR WIZARD_INTRO == 0 OR WIZARD_CHECK_PRESENCE_POD == 0",
+      "hints": [],
+      "options": [
+       {
+        "name": "FINE",
+        "type": "button",
+        "value": "WR1001"
+       }
+      ],
+      "description": "I POD risultano posizionati correttamente",
+      "title": "Esito: Risolto",
+      "actions": []
+     }
+    ],
+    "priority_level": 1,
+    "description": "Clicca qui per verificare il posizionamento dello Sky Wifi Pod.",
+    "name": "Kineton Posizionamento Sky Wifi Pod",
+    "authorization_level": 1
+   }

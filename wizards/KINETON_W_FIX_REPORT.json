@@ -1,0 +1,25 @@
+{
+    "options": [
+        {
+            "name": "Avanti",
+            "type": "button",
+            "condition": "$(refresh_report.settaggio_parametri.has_errors) == False",
+            "value": 1
+        },
+        {
+            "name": "Avanti",
+            "type": "button",
+            "condition": "$(refresh_report.settaggio_parametri.has_errors) == True",
+            "value": 0
+        }
+    ],
+    "description": "Lo Sky Hub non comunica correttamente e potrebbe impedire l'esecuzione corretta della Diagnostica.\nE necessario reimpostare i parametri dello Sky Hub.\n\n",
+    "hints": [],
+    "actions": [
+        {
+            "action_id": "refresh_report"
+        }
+    ],
+    "wizard_id": "KINETON_W_FIX_REPORT",
+    "title": "COSA DIRE AL CLIENTE"
+}

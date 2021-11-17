@@ -1,0 +1,74 @@
+{
+	"action_id": "hub_fw_version",
+	"action_steps": [
+		
+		{
+			"action_step_id": "hub_fw",
+			"max_retry": 1,
+			"sources": [
+				{
+					"principal": {
+						"name": "tardis",
+						"options": {
+							"action": "hub_fw",
+							"operations": [
+								{
+									"dataType": "String",
+									"parameter": "Device.DeviceInfo.X_CISCO_COM_FirmwareName",
+									"type": "GET"
+								}
+							]
+						},
+						"type": "TARDIS"
+					}
+				}
+			],
+			"variables": [
+				{
+					"method": "GET",
+					"name": "fw_name",
+					"params": {
+						"single_value": true,
+						"variable": "$(tardis.results.Device.DeviceInfo.X_CISCO_COM_FirmwareName)"
+					}
+				},
+				{
+					"method": "GET",
+					"name": "has_errors",
+					"params": {
+						"single_value": true,
+						"variable": "$(tardis.errors.has_errors)"
+					}
+				}
+			],
+			"verification_condition": "$(has_errors) == False"
+		}
+	],
+	"authorization_level": 1,
+	"available_for_operator": true,
+	"frontend_info": {
+		"action_description": "Azione Automatica",
+		"action_title": "Versione Firmware Sky Hub",
+		"frontend_modal_type": "confirm_msg_box"
+	},
+	"result": {
+		"conditions": [
+			{
+				"color": "red",
+				"condition": "$(hub_fw.has_errors) == True",
+				"description": "Errore versione firmware"
+			},
+			{
+				"color": "green",
+				"condition": "$(hub_fw.has_errors) == False",
+				"description": "Firmware aggiornato",
+				"variables": [
+					{
+						"name": "RTT",
+						"value": "$(hub_fw.fw_name)"
+					}
+				]
+			}
+		]
+	}
+}

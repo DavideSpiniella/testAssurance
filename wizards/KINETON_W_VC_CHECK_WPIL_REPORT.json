@@ -1,0 +1,25 @@
+{
+    "options": [
+        {
+            "name": "Avanti",
+            "condition": "$(kineton_check_wpil_report.check.cpe_status) == 200 AND $(kineton_check_wpil_report.check.summary_last_report_cpe) AND $(kineton_check_wpil_report.check.summary_last_report) AND $(kineton_check_wpil_report.check.interface_last_report) AND $(kineton_check_wpil_report.check.interface_last_report_cpe) AND $(kineton_check_wpil_report.check.traffic_last_report) AND $(kineton_check_wpil_report.check.traffic_last_report_cpe) AND $(kineton_check_wpil_report.check_parametri.traffic_enables) == True AND $(kineton_check_wpil_report.check_parametri.status_enables) == True AND $(kineton_check_wpil_report.check_parametri.wifi_enables) == True AND $(kineton_check_wpil_report.check_parametri.readiostat_enables) == True AND $(kineton_check_wpil_report.check_parametri.time_syncronized)",
+            "type": "button",
+            "value": 1
+        },
+        {
+            "name": "Avanti",
+            "condition": "$(kineton_check_wpil_report.check.cpe_status) != 200 OR NOT $(kineton_check_wpil_report.check.summary_last_report_cpe) OR NOT $(kineton_check_wpil_report.check.summary_last_report) OR NOT $(kineton_check_wpil_report.check.interface_last_report) OR NOT $(kineton_check_wpil_report.check.interface_last_report_cpe) OR NOT $(kineton_check_wpil_report.check.traffic_last_report) OR NOT $(kineton_check_wpil_report.check.traffic_last_report_cpe) OR $(kineton_check_wpil_report.check_parametri.traffic_enables) == False OR $(kineton_check_wpil_report.check_parametri.status_enables) == False OR $(kineton_check_wpil_report.check_parametri.wifi_enables) == False OR $(kineton_check_wpil_report.check_parametri.readiostat_enables) == False OR NOT  $(kineton_check_wpil_report.check_parametri.time_syncronized)",
+            "type": "button",
+            "value": 0
+        }
+    ],
+    "description": "Per controllare che il problema sia stato risolto utilizzare il tasto 'Verifica Connettivit\u00e0'.\n\nN.B. La verifica potrebbe dare risultato negativo, se dovesse capitare, attendere circa un minuto e riprovare.",
+    "hints": [],
+    "actions": [
+        {
+            "action_id": "kineton_check_wpil_report"
+        }
+    ],
+    "wizard_id": "KINETON_W_VC_CHECK_WPIL_REPORT",
+    "title": "AZIONI con CLIENTE"
+}

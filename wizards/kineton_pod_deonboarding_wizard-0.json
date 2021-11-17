@@ -1,0 +1,80 @@
+{
+    "category": "In-Home",
+    "description": "Clicca qui per disassociare un Pod dalla tua rete domestica.",
+    "hint": "",
+    "name": "Pod Deactivation",
+    "priority_level": 1,
+    "section": "Wi-Fi",
+    "steps": [
+      {
+        "actions": [
+          {
+            "action_id": "POD_deonboarding"
+          }
+        ],
+        "condition": "",
+        "description": "Inserire il serial number del POD",
+        "hints": [
+          {
+            "description": "Attenzione il serial number del POD va inserito o tutto in maiuscolo o tutto in minuscolo"
+          }
+        ],
+        "options": [
+          {
+            "condition": "$(POD_deonboarding.deactivate_pod.status) == 500",
+            "name": "Avanti",
+            "type": "button",
+            "value": 1
+          },
+          {
+            "condition": "$(POD_deonboarding.deactivate_pod.sourceId) == 'activation' and $(POD_deonboarding.deactivate_pod.status) is None",
+            "name": "Avanti",
+            "type": "button",
+            "value": 0
+          }
+        ],
+        "title": "AZIONI con CLIENTE",
+        "wizard_id": "WIZARD_POD_SN"
+      },
+      {
+        "actions": [
+  
+        ],
+        "condition": "WIZARD_POD_SN == 1",
+        "description": "Non è stato possibile disassociare il POD",
+        "hints": [
+  
+        ],
+        "options": [
+          {
+            "name": "FINE",
+            "type": "button",
+            "value": "WR1001"
+          }
+        ],
+        "title": "Errore nella disassociazione POD",
+        "wizard_id": "WIZARD_FINE_KO"
+      },
+      {
+        "actions": [
+  
+        ],
+        "condition": "WIZARD_POD_SN == 0",
+        "description": "Il POD è stato disassociato correttamente dalla tua linea",
+        "hints": [
+  
+        ],
+        "options": [
+          {
+            "name": "FINE",
+            "type": "button",
+            "value": "WR1001"
+          }
+        ],
+        "title": "POD Disassociato",
+        "wizard_id": "WIZARD_FINE_OK"
+      }
+    ],
+    "wizard_0": true,
+    "wizard_id": "pod_deonboarding"
+  }

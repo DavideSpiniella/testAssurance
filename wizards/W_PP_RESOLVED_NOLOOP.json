@@ -1,0 +1,14 @@
+{
+ "wizard_id": "W_PP_RESOLVED_NOLOOP",
+ "hints": [],
+ "options": [
+  {
+   "name": "Avanti",
+   "type": "button",
+   "value": "WR0012"
+  }
+ ],
+ "description": "Sky Pod riposizionati, sarà possible eventualmente verificare il corretto riposizionamento fra 48 ore.",
+ "actions": [],
+ "title": "Esito: Posizionamento Sky Pod effettuato"
+}

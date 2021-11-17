@@ -1,0 +1,293 @@
+{
+    "action_id": "kineton_pod_replacement_check_wpil",
+    "result": {
+      "conditions": [
+        {
+          "color": "green",
+          "description": "Nessun POD recuperato dalla sorgente",
+          "condition": "$(pod_data.number_of_pods) is None"
+        },
+        {
+          "color": "green",
+          "description": "Il cliente non ha nessun pod nessun POD",
+          "condition": "$(pod_data.number_of_pods) == 0"
+        },
+        {
+          "color": "red",
+          "description": "Sky Wifi Pod presenta interferenze troppo elevate",
+          "condition": "$(pod_data.number_of_pods)>0 and $(pod_data.iterator.pod_snr) >= 25 and $(pod_data.max_interference) > 40"
+        },
+        {
+          "color": "red",
+          "description": "Sky Wifi Pod troppo lontano/i dallo Sky Hub",
+          "condition": "$(pod_data.number_of_pods)>0 and $(pod_data.iterator.pod_snr) < 15"
+        },
+        {
+          "color": "red",
+          "description": "Sky Wifi Pod troppo vicino/i allo Sky Hub",
+          "condition": "$(pod_data.number_of_pods)>0 and $(pod_data.iterator.pod_rssi) >= -40"
+        },
+        {
+          "color": "amber",
+          "description": "Sky Wifi Pod troppo lontano/i dallo Sky Hub",
+          "condition": "$(pod_data.number_of_pods)>0 and $(pod_data.iterator.pod_snr) > 15 and $(pod_data.iterator.pod_snr) < 25"
+        },
+        {
+          "color": "amber",
+          "description": "Sky Wifi Pod presenta interferenze troppo elevate",
+          "condition": "$(pod_data.number_of_pods)>0 and $(pod_data.iterator.pod_snr) > 25 and $(pod_data.iterator.pod_interference) > 25 and $(pod_data.iterator.pod_interference) <= 40"
+        },
+        {
+          "color": "amber",
+          "description": "Sky Wifi Pod troppo vicino/i allo Sky Hub",
+          "condition": "$(pod_data.number_of_pods)>0 and $(pod_data.iterator.pod_rssi) < -40 and $(pod_data.iterator.pod_rssi) >= -50"
+        },
+        {
+          "color": "green",
+          "description": "Tutti gli Sky Pod risultano correttamente posizionati",
+          "condition": "($(pod_data.number_of_pods)>0 AND $(pod_data.number_of_pods) is not None) AND NOT ($(pod_data.number_of_pods)>0 and $(pod_data.iterator.pod_snr) >= 25 and $(pod_data.max_interference) > 40) AND NOT ($(pod_data.number_of_pods)>0 and $(pod_data.iterator.pod_snr) < 15) AND NOT ($(pod_data.number_of_pods)>0 and $(pod_data.iterator.pod_rssi) >= -40) AND NOT ($(pod_data.number_of_pods)>0 and $(pod_data.iterator.pod_snr) > 15 and $(pod_data.iterator.pod_snr) < 25) AND NOT ($(pod_data.number_of_pods)>0 and $(pod_data.iterator.pod_snr) > 25 and $(pod_data.iterator.pod_interference) > 25 and $(pod_data.iterator.pod_interference) <= 40) AND NOT ($(pod_data.number_of_pods)>0 and $(pod_data.iterator.pod_rssi) < -40 and $(pod_data.iterator.pod_rssi) >= -50)"
+        }
+      ],
+      "iterator": "pod_data.pod_IDs"
+    },
+    "action_steps": [
+      {
+        "variables": [
+          {
+            "method": "COUNT",
+            "name": "number_of_pods",
+            "params": {
+              "filter": "$(pod_id)"
+            }
+          },
+          {
+            "method": "MAX",
+            "name": "max_rssi",
+            "params": {
+              "variable": "$(pod_rssi)"
+            }
+          },
+          {
+            "method": "MAX",
+            "name": "max_interference",
+            "params": {
+              "variable": "$(pod_interference)"
+            }
+          },
+          {
+            "method": "MIN",
+            "name": "min_snr",
+            "params": {
+              "variable": "$(pod_snr)"
+            }
+          },
+          {
+            "method": "GET",
+            "name": "pod_id_max_rssi",
+            "params": {
+              "filter": "$(pod_rssi) == $(max_rssi)",
+              "variable": "$(pod_id)",
+              "single_value": true
+            }
+          },
+          {
+            "method": "GET",
+            "name": "pod_id_min_snr",
+            "params": {
+              "filter": "$(pod_snr) == $(min_snr)",
+              "variable": "$(pod_id)",
+              "single_value": true
+            }
+          },
+          {
+            "method": "GET",
+            "name": "pod_id_max_interference",
+            "params": {
+              "filter": "$(pod_interference) == $(max_interference)",
+              "variable": "$(pod_id)",
+              "single_value": true
+            }
+          },
+          {
+            "method": "GET",
+            "name": "pod_snr_max_interference",
+            "params": {
+              "filter": "$(pod_interference) == $(max_interference)",
+              "variable": "$(pod_snr)",
+              "single_value": true
+            }
+          },
+          {
+            "method": "GET",
+            "name": "pod_nick_too_near",
+            "params": {
+              "filter": "$(device_id) == $(pod_id_max_rssi)",
+              "variable": "$(nickname)",
+              "single_value": true
+            }
+          },
+          {
+            "method": "GET",
+            "name": "pod_nick_too_far",
+            "params": {
+              "filter": "$(device_id) == $(pod_id_min_snr)",
+              "variable": "$(nickname)",
+              "single_value": true
+            }
+          },
+          {
+            "method": "GET",
+            "name": "pod_nick_too_interference",
+            "params": {
+              "filter": "$(device_id) == $(pod_id_max_interference) and $(pod_snr_max_interference)>=25",
+              "variable": "$(nickname)",
+              "single_value": true
+            }
+          },
+          {
+            "method": "GET_DISTINCT",
+            "name": "pod_IDs",
+            "params": {
+              "variable": "$(pod_id)"
+            }
+          },
+          {
+            "name": "pod_nickname",
+            "iterator": "$(pod_IDs)",
+            "method": "GET",
+            "params": {
+              "filter": "$(device_id) == $(iterator)",
+              "variable": "$(nickname)",
+              "single_value": true
+            }
+          },
+          {
+            "name": "pod_interference",
+            "iterator": "$(pod_IDs)",
+            "method": "GET",
+            "params": {
+              "filter": "$(device_id) == $(iterator)",
+              "variable": "$(pod_interference)",
+              "single_value": true
+            }
+          },
+          {
+            "name": "pod_rssi",
+            "iterator": "$(pod_IDs)",
+            "method": "GET",
+            "params": {
+              "filter": "$(pod_id) == $(iterator)",
+              "variable": "$(pod_rssi)",
+              "single_value": true
+            }
+          },
+          {
+            "name": "pod_snr",
+            "iterator": "$(pod_IDs)",
+            "method": "GET",
+            "params": {
+              "filter": "$(pod_id) == $(iterator)",
+              "variable": "$(pod_snr)",
+              "single_value": true
+            }
+          },
+          {
+            "name": "pod_description",
+            "iterator": "$(pod_IDs)",
+            "method": "DECODE",
+            "params": {
+              "filter": "$(pod_id) == $(iterator)",
+              "variable": [
+                "$(pod_snr)",
+                "$(pod_rssi)",
+                "$(pod_interference)"
+              ],
+              "mappings": [
+                {
+                  "value": "'POD troppo lontano'",
+                  "condition": "#1 < 26"
+                },
+                {
+                  "value": "'Interferenze troppo elevate'",
+                  "condition": "#1 > 24 AND #3 > 24"
+                },
+                {
+                  "value": "'POD troppo vicino'",
+                  "condition": "#2 > -51"
+                },
+                {
+                  "value": "'OK'",
+                  "condition": "True"
+                }
+              ],
+              "single_value": true
+            }
+          }
+        ],
+        "aliases": [
+          {
+            "name": "pod_rssi",
+            "value": "wpil.qoe_pods.states.rssi"
+          },
+          {
+            "name": "pod_snr",
+            "value": "wpil.qoe_pods.states.snr"
+          },
+          {
+            "name": "pod_id",
+            "value": "wpil.qoe_pods.states.id"
+          },
+          {
+            "name": "pod_interference",
+            "value": "wpil.qoe_pods.states.interference"
+          },
+          {
+            "name": "device_id",
+            "value": "wpil.data.device_id"
+          },
+          {
+            "name": "nickname",
+            "value": "wpil.data.nickname"
+          }
+        ],
+        "sources": [
+          {
+            "principal": {
+              "name": "wpil",
+              "options": {
+                "URL": "/diagnostics/account/{BB_ID}/connected-devices/cpe"
+              },
+              "type": "WPIL"
+            }
+          }
+        ],
+        "action_step_id": "pod_data",
+        "context": {
+          "trendline": [
+            {
+              "chart_name": "Tabella PODs",
+              "use_iterator": true,
+              "chart_type": "table_chart",
+              "title": "Tabella PODs",
+              "iterator_settings": {
+                "iterator_variable": "$(pod_IDs)",
+                "columns_name": [
+                  "pod_nickname",
+                  "pod_snr",
+                  "pod_description"
+                ]
+              }
+            }
+          ]
+        },
+        "n_retry": 5,
+        "verification_condition": "True"
+      }
+    ],
+    "authorization_level": 1,
+    "frontend_info": {
+      "action_description": "Verifica Riposizionamento Sky Pod",
+      "action_title": "Esegui Azione Automatica",
+      "frontend_modal_type": "confirm_msg_box"
+    }
+  }

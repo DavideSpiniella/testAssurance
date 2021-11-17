@@ -1,0 +1,29 @@
+{
+ "wizard_id": "KINETON_W_BC_BED_CONTROL_DEACTIVATION",
+ "hints": [
+  {
+   "description": "L'azione può essere eseguita più volte fino ad ottenere la configurazione desiderata."
+  }
+ ],
+ "options": [
+  {
+   "name": "Avanti",
+   "condition": "$(kineton_verification_bed_mode.color) == 'green'",
+   "type": "button",
+   "value": 1
+  },
+  {
+   "name": "Avanti",
+   "condition": "$(kineton_verification_bed_mode.color) != 'green'",
+   "type": "button",
+   "value": 0
+  }
+ ],
+ "description": "È possibile verificare la nuova configurazione eseguendo l'azione di seguito",
+ "actions": [
+  {
+   "action_id": "kineton_verification_bed_mode"
+  }
+ ],
+ "title": "AZIONI CON CLIENTE"
+}

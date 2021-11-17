@@ -1,0 +1,270 @@
+{
+ "rule_id": "kineton_blocking_connection_control",
+ "section": "Configurazione Sky Wifi",
+ "rule_name": "KINETON Controllo Modalità Bed-time e Parental Control",
+ "category": "In-Home",
+ "priority_level": 1,
+ "rule": {
+  "context": {
+   "trendline": [
+    {
+     "chart_name": "Profili Attivi BED TIME",
+     "entries": [
+      {
+       "name": "Profili",
+       "variable": "$(device_active_bt)"
+      }
+     ],
+     "requested_list": true,
+     "chart_type": "table_chart",
+     "title": "BED_TIME"
+    }
+   ]
+  },
+  "variables": [
+   {
+    "method": "GET",
+    "name": "list_bed_time_active",
+    "params": {
+     "filter": "$(bed_time_control) is not None AND $(bed_time_control) != 'NONE' AND NOT ($(parental_control) is not None AND $(parental_control) != 'OFF')",
+     "variable": "$(device_id)"
+    }
+   },
+   {
+    "method": "GET",
+    "name": "list_parental_ctrl_active",
+    "params": {
+     "filter": "NOT ($(bed_time_control) is not None AND $(bed_time_control) != 'NONE' ) AND $(parental_control) is not None AND $(parental_control) != 'OFF'",
+     "variable": "$(device_id)"
+    }
+   },
+   {
+    "method": "GET",
+    "name": "list_bt_and_p_ctrl_active",
+    "params": {
+     "filter": "$(bed_time_control) is not None AND $(bed_time_control) != 'NONE' AND $(parental_control) is not None AND $(parental_control) != 'OFF'",
+     "variable": "$(device_id)"
+    }
+   },
+   {
+    "method": "GET",
+    "name": "profile_list_with_active_devices",
+    "params": {
+     "variable": "$(profile_device_id)"
+    }
+   },
+   {
+    "method": "GET_INTERSECTION",
+    "name": "bed_time_intersect_profile",
+    "params": {
+     "variable_1": "$(list_bed_time_active)",
+     "variable_2": "$(profile_list_with_active_devices)"
+    }
+   },
+   {
+    "method": "GET_INTERSECTION",
+    "name": "parental_ctrl_intersect_profile",
+    "params": {
+     "variable_1": "$(list_parental_ctrl_active)",
+     "variable_2": "$(profile_list_with_active_devices)"
+    }
+   },
+   {
+    "method": "GET_INTERSECTION",
+    "name": "parental_and_bed_time_intersect_profile",
+    "params": {
+     "variable_1": "$(list_bt_and_p_ctrl_active)",
+     "variable_2": "$(profile_list_with_active_devices)"
+    }
+   },
+   {
+    "method": "GET",
+    "name": "device_active_bt",
+    "params": {
+     "filter": "$(profile_profile_id) in $(bed_time_intersect_profile)",
+     "variable": "$(profile_name_path)"
+    }
+   },
+   {
+    "method": "GET",
+    "name": "device_active_parental",
+    "params": {
+     "filter": "$(profile_profile_id) in $(parental_ctrl_intersect_profile)",
+     "variable": "$(profile_name_path)"
+    }
+   },
+   {
+    "method": "GET",
+    "name": "device_active_bt_and_parental",
+    "params": {
+     "filter": "$(profile_profile_id) in $(parental_and_bed_time_intersect_profile)",
+     "variable": "$(profile_name_path)"
+    }
+   }
+  ],
+  "aliases": [
+   {
+    "name": "device_id",
+    "value": "biz.response.profileControls.profileId"
+   },
+   {
+    "name": "bed_time_control",
+    "value": "biz.response.profileControls.pauseType"
+   },
+   {
+    "name": "parental_control",
+    "value": "biz.response.profileControls.parentalControl"
+   },
+   {
+    "name": "profile_device_id",
+    "value": "biz_profile.response.devices.profileId"
+   },
+   {
+    "name": "profile_profile_id",
+    "value": "biz_profile.response.profiles.id"
+   },
+   {
+    "name": "profile_name_path",
+    "value": "biz_profile.response.profiles.displayName"
+   },
+   {
+    "name": "device_id_path",
+    "value": "biz_profile.response.devices.id"
+   }
+  ],
+  "sources": [
+   {
+    "principal": {
+     "name": "biz",
+     "options": {
+      "URL": "/aggregator-api/account/internet-controls/xboSourceId/{BB_ID}?partner=sky-italia&sourcesFilter=person&action=gateway"
+     },
+     "type": "BIZ_API"
+    }
+   },
+   {
+    "principal": {
+     "name": "biz_profile",
+     "options": {
+      "URL": "/aggregator-api/account/profiles/xboSourceId/{BB_ID}?partner=sky-italia&sourcesFilter=person&action=gateway"
+     },
+     "type": "BIZ_API"
+    }
+   }
+  ],
+  "RAGs": {
+   "red": [],
+   "amber": [
+    {
+     "description": "Bed Time attivo su uno o più devices",
+     "condition": "NOT ($(list_bed_time_active) is None)",
+     "wizards": [
+      {
+       "chart_list": [
+        {
+         "chart_name": "Profili Attivi BED TIME",
+         "chart_type": "table_chart"
+        }
+       ],
+       "condition": "",
+       "id": "KINETON_W_BC_BED_CONTROL_INTRO"
+      },
+      {
+       "condition": "KINETON_W_BC_BED_CONTROL_INTRO == 0",
+       "id": "KINETON_W_BC_CONTROL_REFUSED"
+      },
+      {
+       "chart_list": [
+        {
+         "chart_name": "Profili Attivi BED TIME ",
+         "chart_type": "table_chart"
+        }
+       ],
+       "condition": "KINETON_W_BC_BED_CONTROL_INTRO == 1",
+       "id": "KINETON_W_BC_BED_CONTROL_DEACTIVATION"
+      },
+      {
+       "condition": "KINETON_W_BC_BED_CONTROL_DEACTIVATION == 0",
+       "id": "KINETON_W_DEACTIVATION_ERR"
+      },
+      {
+       "condition": "KINETON_W_BC_BED_CONTROL_DEACTIVATION == 1",
+       "id": "KINETON_W_BC_COMPLETED"
+      }
+     ]
+    },
+    {
+     "description": "Parental Control attivo su uno o più devices",
+     "condition": "$(list_parental_ctrl_active) is not None",
+     "wizards": [
+      {
+       "condition": "",
+       "variables": {
+        "device_list": "device_active_parental"
+       },
+       "id": "KINETON_W_BC_PARENTAL_CONTROL_INTRO"
+      },
+      {
+       "condition": "KINETON_W_BC_PARENTAL_CONTROL_INTRO == 0",
+       "id": "KINETON_W_BC_CONTROL_REFUSED"
+      },
+      {
+       "condition": "KINETON_W_BC_PARENTAL_CONTROL_INTRO == 1",
+       "variables": {
+        "profile_id": "list_parental_ctrl_active"
+       },
+       "id": "KINETON_W_BC_PARENTAL_CONTROL_DEACTIVATION"
+      },
+      {
+       "condition": "KINETON_W_BC_PARENTAL_CONTROL_DEACTIVATION == 0",
+       "id": "KINETON_W_DEACTIVATION_ERR"
+      },
+      {
+       "condition": "KINETON_W_BC_PARENTAL_CONTROL_DEACTIVATION == 1",
+       "id": "KINETON_W_BC_COMPLETED"
+      }
+     ]
+    },
+    {
+     "description": "Parental Control e Bed Time attivi su uno o più devices",
+     "condition": "$(list_bt_and_p_ctrl_active) is not None",
+     "wizards": [
+      {
+       "condition": "",
+       "variables": {
+        "device_list": "device_active_bt_and_parental"
+       },
+       "id": "KINETON_W_BC_CONTROL_INTRO"
+      },
+      {
+       "condition": "KINETON_W_BC_CONTROL_INTRO == 0",
+       "id": "KINETON_W_BC_CONTROL_REFUSED"
+      },
+      {
+       "condition": "KINETON_W_BC_CONTROL_INTRO == 1",
+       "variables": {
+        "profile_id": "list_bt_and_p_ctrl_active"
+       },
+       "id": "KINETON_W_BC_PARENTAL_BED_DEACTIVATION"
+      },
+      {
+       "condition": "KINETON_W_BC_PARENTAL_BED_DEACTIVATION == 0",
+       "id": "KINETON_W_DEACTIVATION_ERR"
+      },
+      {
+       "condition": "KINETON_W_BC_PARENTAL_BED_DEACTIVATION == 1",
+       "id": "KINETON_W_BC_COMPLETED"
+      }
+     ]
+    }
+   ],
+   "green": [
+    {
+     "description": "Parental Control e/o Bed Time NON attivi sui devices",
+     "condition": "$(list_bed_time_active) is None AND $(list_parental_ctrl_active) is None AND $(list_bt_and_p_ctrl_active) is None"
+    }
+   ]
+  }
+ },
+ "authorization_level": 1
+}

@@ -1,0 +1,14 @@
+{
+ "wizard_id": "W_DEACTIVATION_ERR",
+ "hints": [],
+ "options": [
+  {
+   "name": "FINE",
+   "type": "button",
+   "value": "WR0013"
+  }
+ ],
+ "description": "C'è stato un errore durante la disattivazione del servizio.  \nE' necessario affidare la soluzione ai tecnici competenti (SMC) e sarà richiamato al più presto.",
+ "actions": [],
+ "title": "COSA DIRE AL CLIENTE"
+}

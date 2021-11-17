@@ -1,0 +1,277 @@
+{
+    "action_id": "speed_test",
+    "frontend_info": {
+     "action_description": "Speed Test",
+     "action_title": "Avvia Speed Test",
+     "frontend_modal_type": "confirm_msg_box"
+    },
+    "available_for_operator": true,
+    "result": {
+     "conditions": [
+      {
+       "color": "red",
+       "description": "Sky Wifi Hub spento o non raggiungibile",
+       "condition": "$(speedtest_download.has_errors) == True"
+      },
+      {
+       "color": "red",
+       "description": "errore di esecuzione riprovare",
+       "condition": "$(download_test.time) is None or $(download_test.time) == 0 or $(download_test.data) is None or $(download_test.data) == 0"
+      },
+      {
+       "color": "red",
+       "description": "dati troppo vecchi ripetere l'azione",
+       "condition": "$(download_test.tempo_soglia) > $(download_test.start)"
+      },
+      {
+       "color": "red",
+       "description": "Errore nell'esecuzione dello Speed Test",
+       "condition": "$(speedtest_download.has_errors) == True or $(download_test.has_errors) == True"
+      },
+      {
+       "description": "La velocità rilevata non è accettabile",
+       "condition": "$(download_test.speed_down) < 39 and $(download_test.tempo_soglia) < $(download_test.start) and $(parametri.wholesaler) == 'open_fiber'",
+       "color": "red"
+      },
+      {
+       "description": "La velocità risulta accettabile",
+       "condition": "$(speedtest_download.has_errors) == False and $(download_test.has_errors) == False and ($(download_test.speed_down) > 39 or $(download_test.speed_down) == 39) and $(download_test.tempo_soglia) < $(download_test.start) and $(parametri.wholesaler) == 'open_fiber'",
+       "color": "green"
+      },
+      {
+       "description": "Speed Test completato correttamente",
+       "condition": "$(speedtest_download.has_errors) == False and $(download_test.has_errors) == False and $(parametri.wholesaler) == 'fastweb' and $(download_test.tempo_soglia) < $(download_test.start)",
+       "variables": [
+        {
+         "name": "velocità",
+         "value": "$(download_test.formatted_speed_down)"
+        }
+       ],
+       "color": "green"
+      }
+     ]
+    },
+    "action_steps": [
+     {
+      "variables": [
+       {
+        "method": "GET",
+        "name": "wholesaler",
+        "params": {
+         "variable": "$(customer.c_access.Wholesaler)",
+         "single_value": true
+        }
+       },
+       {
+        "method": "GET",
+        "name": "getlink",
+        "params": {
+         "variable": "$(url_wholesaler)",
+         "single_value": true
+        }
+       }
+      ],
+      "aliases": [
+       {
+        "name": "url_wholesaler",
+        "value": "params.download.[# == $(wholesaler)].url"
+       }
+      ],
+      "sources": [
+       {
+        "principal": {
+         "name": "params",
+         "options": {
+          "param_id": "speedtest"
+         },
+         "type": "GLOBAL_PARAMS"
+        }
+       },
+       {
+        "principal": {
+         "name": "customer",
+         "options": {},
+         "type": "ORDER_INVENTORY"
+        }
+       }
+      ],
+      "action_step_id": "parametri"
+     },
+     {
+      "variables": [
+       {
+        "method": "GET",
+        "name": "has_errors",
+        "params": {
+         "variable": "$(tardis.errors.has_errors)",
+         "single_value": true
+        }
+       }
+      ],
+      "sources": [
+       {
+        "principal": {
+         "name": "tardis",
+         "options": {
+          "action": "tardis",
+          "operations": [
+           {
+            "type": "SET",
+            "value": "$(parametri.getlink)",
+            "dataType": "string",
+            "parameter": "Device.IP.Diagnostics.DownloadDiagnostics.DownloadURL"
+           },
+           {
+            "type": "SET",
+            "value": "4",
+            "dataType": "unsignedInteger",
+            "parameter": "Device.IP.Diagnostics.DownloadDiagnostics.NumberOfConnections"
+           },
+           {
+            "type": "SET",
+            "value": "Requested",
+            "dataType": "string",
+            "parameter": "Device.IP.Diagnostics.DownloadDiagnostics.DiagnosticsState"
+           }
+          ]
+         },
+         "type": "TARDIS"
+        }
+       }
+      ],
+      "verification_condition": "$(has_errors) == False",
+      "max_retry": 1,
+      "timeout": 90,
+      "action_step_id": "speedtest_download"
+     },
+     {
+      "variables": [
+       {
+        "method": "TIME",
+        "name": "tempo_soglia",
+        "params": {
+         "time_ago": "150 minutes"
+        }
+       },
+       {
+        "method": "GET",
+        "name": "has_errors",
+        "params": {
+         "variable": "$(tardis.errors.has_errors)",
+         "single_value": true
+        }
+       },
+       {
+        "method": "GET",
+        "name": "start",
+        "params": {
+         "variable": "$(tardis.results.Device.IP.Diagnostics.DownloadDiagnostics.BOMTime)",
+         "single_value": true
+        }
+       },
+       {
+        "method": "GET",
+        "name": "end",
+        "params": {
+         "variable": "$(tardis.results.Device.IP.Diagnostics.DownloadDiagnostics.EOMTime)",
+         "single_value": true
+        }
+       },
+       {
+        "method": "GET",
+        "name": "data",
+        "params": {
+         "variable": "$(tardis.results.Device.IP.Diagnostics.DownloadDiagnostics.TestBytesReceived)",
+         "single_value": true
+        }
+       },
+       {
+        "method": "SET",
+        "name": "time",
+        "params": {
+         "variable": "($(end) - $(start)) / 1000"
+        }
+       },
+       {
+        "method": "DECODE",
+        "name": "time_r",
+        "params": {
+         "variable": "$(time)",
+         "single_value": true,
+         "mappings": [
+          {
+           "value": "1",
+           "condition": "# == 0 or # == None"
+          },
+          {
+           "value": "$(time)",
+           "condition": "# > 0"
+          }
+         ]
+        }
+       },
+       {
+        "method": "SET",
+        "name": "speed_down",
+        "params": {
+         "variable": "$(data)*8 / $(time_r) /1000000"
+        }
+       },
+       {
+        "method": "CAST",
+        "name": "Normalize_speed",
+        "params": {
+         "variable": "$(speed_down)",
+         "single_value": true,
+         "cast_type": "int"
+        }
+       },
+       {
+        "method": "CAST",
+        "name": "speed_down_CAST_st",
+        "params": {
+         "variable": "$(Normalize_speed)",
+         "single_value": true,
+         "cast_type": "string"
+        }
+       },
+       {
+        "method": "DECODE",
+        "name": "formatted_speed_down",
+        "params": {
+         "variable": "$(speed_down_CAST_st)",
+         "single_value": true,
+         "mappings": [
+          {
+           "value": "$(speed_down_CAST_st)+' Mb/s'",
+           "condition": "1 == 1"
+          }
+         ]
+        }
+       }
+      ],
+      "sources": [
+       {
+        "principal": {
+         "name": "tardis",
+         "options": {
+          "action": "tardis_start",
+          "operations": [
+           {
+            "type": "GET",
+            "parameter": "Device.IP.Diagnostics.DownloadDiagnostics."
+           }
+          ]
+         },
+         "type": "TARDIS"
+        }
+       }
+      ],
+      "verification_condition": "$(has_errors) == False",
+      "max_retry": 1,
+      "timeout": 90,
+      "action_step_id": "download_test"
+     }
+    ],
+    "authorization_level": 1
+   }

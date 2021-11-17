@@ -1,0 +1,186 @@
+{
+ "action_id": "ping",
+ "frontend_info": {
+  "action_description": "test del Ping",
+  "action_title": "Avvia il test del ping",
+  "frontend_modal_type": "confirm_msg_box"
+ },
+ "available_for_operator": true,
+ "result": {
+  "conditions": [
+   {
+    "color": "red",
+    "description": "Lo Sky WiFi Hub risulta spento",
+    "condition": "$(ping_request.has_errors) == True"
+   },
+   {
+    "color": "red",
+    "description": "Errore nell' esecuzione del PING",
+    "condition": "$(ping_request.has_errors) == False and $(ping_result.has_errors) == True"
+   },
+   {
+    "description": "Valore del PING eccessivo (valore accettabile entro i 100 ms)",
+    "condition": "$(ping_request.has_errors) == False and $(ping_result.has_errors) == False and $(ping_result.average_ping)>50",
+    "variables": [
+     {
+      "name": "RTT",
+      "value": "$(ping_result.average_ping)"
+     }
+    ],
+    "color": "red"
+   },
+   {
+    "description": "Valore del PING ottimale (risultato in ms)",
+    "condition": "$(ping_request.has_errors) == False and $(ping_result.has_errors) == False and $(ping_result.average_ping)<=50 ",
+    "variables": [
+     {
+      "name": "RTT",
+      "value": "$(ping_result.average_ping)"
+     }
+    ],
+    "color": "green"
+   }
+  ]
+ },
+ "action_steps": [
+  {
+   "variables": [
+    {
+     "method": "GET",
+     "name": "linea",
+     "params": {
+      "variable": "$(mapt_status)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "GET",
+     "name": "IP_ping",
+     "params": {
+      "variable": "$(param_ping)",
+      "single_value": true
+     }
+    }
+   ],
+   "aliases": [
+    {
+     "name": "mapt_status",
+     "value": "maptinv.status.mapt_status"
+    },
+    {
+     "name": "param_ping",
+     "value": "params.[# == $(linea)]"
+    }
+   ],
+   "sources": [
+    {
+     "principal": {
+      "name": "params",
+      "options": {
+       "param_id": "ping"
+      },
+      "type": "GLOBAL_PARAMS"
+     }
+    },
+    {
+     "principal": {
+      "name": "maptinv",
+      "options": {},
+      "type": "MAPT_INVENTORY"
+     }
+    }
+   ],
+   "max_retry": 0,
+   "timeout": 90,
+   "action_step_id": "ping_sethost"
+  },
+  {
+   "variables": [
+    {
+     "method": "GET",
+     "name": "has_errors",
+     "params": {
+      "variable": "$(tardis.errors.has_errors)",
+      "single_value": true
+     }
+    }
+   ],
+   "sources": [
+    {
+     "principal": {
+      "name": "tardis",
+      "options": {
+       "action": "tardis",
+       "operations": [
+        {
+         "type": "SET",
+         "value": "$(ping_sethost.IP_ping)",
+         "dataType": "string",
+         "parameter": "Device.IP.Diagnostics.IPPing.Host"
+        },
+        {
+         "type": "SET",
+         "value": "4",
+         "dataType": "unsignedInteger",
+         "parameter": "Device.IP.Diagnostics.IPPing.NumberOfRepetitions"
+        },
+        {
+         "type": "SET",
+         "value": "Requested",
+         "dataType": "string",
+         "parameter": "Device.IP.Diagnostics.IPPing.DiagnosticsState"
+        }
+       ]
+      },
+      "type": "TARDIS"
+     }
+    }
+   ],
+   "max_retry": 0,
+   "timeout": 90,
+   "action_step_id": "ping_request"
+  },
+  {
+   "variables": [
+    {
+     "method": "GET",
+     "name": "has_errors",
+     "params": {
+      "variable": "$(tardis.errors.has_errors)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "GET",
+     "name": "average_ping",
+     "params": {
+      "variable": "$(tardis.results.Device.IP.Diagnostics.IPPing.AverageResponseTime)",
+      "single_value": true
+     }
+    }
+   ],
+   "sources": [
+    {
+     "principal": {
+      "name": "tardis",
+      "options": {
+       "action": "tardis",
+       "operations": [
+        {
+         "type": "GET",
+         "parameter": "Device.IP.Diagnostics.IPPing.AverageResponseTime"
+        }
+       ]
+      },
+      "type": "TARDIS"
+     }
+    }
+   ],
+   "verification_condition": "$(has_errors) == False",
+   "max_retry": 1,
+   "timeout": 90,
+   "action_step_id": "ping_result"
+  }
+ ],
+ "authorization_level": 1
+}

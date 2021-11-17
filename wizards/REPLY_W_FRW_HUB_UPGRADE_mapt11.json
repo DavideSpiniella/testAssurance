@@ -1,0 +1,42 @@
+{
+ "wizard_id": "KINETON_W_FRW_HUB_UPGRADE",
+ "hints": [
+  {
+   "icon": "warning",
+   "description": "La versione del firmware dello Sky Hub \u00e8 obsoleta deve **necessariamente** essere aggiornata"
+  }
+ ],
+ "options": [
+  {
+   "name": "Avanti",
+   "condition": "$(hub_fw_upgrade.hub_fw_result.fw_name) == 'SR203_4.13p1s1_DEV_sey'",
+   "type": "button",
+   "value": 1
+  },
+  {
+   "name": "Avanti",
+   "condition": "$(hub_fw_upgrade.hub_fw_result.fw_name) != 'SR203_4.13p1s1_DEV_sey'",
+   "type": "button",
+   "value": 0
+  },
+  {
+   "name": "Avanti",
+   "condition": "$(hub_fw_upgrade.hub_fw_exec.has_errors) is True or ($(hub_fw_upgrade.hub_fw_exec.has_errors) is None and $(hub_fw_upgrade.color) == 'grey')",
+   "type": "button",
+   "value": 2
+  },
+  {
+   "name": "Avanti",
+   "condition": "$(hub_fw_upgrade.hub_fw_exec.has_errors) is False and $(hub_fw_upgrade.color) == 'grey'",
+   "type": "button",
+   "value": 3
+  }
+ ],
+ "description": "Per effettuare l'upgrade del firmware dello Sky Hub in automatico direttamente da remoto utilizzare il tasto 'Aggiorna Firmware'.",
+ "actions": [
+  {
+   "action_id": "hub_fw_upgrade"
+  }
+ ],
+ "title": "AZIONI con CLIENTE"
+}

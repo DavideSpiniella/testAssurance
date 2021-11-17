@@ -1,0 +1,47 @@
+{
+    "wizard_id": "kineton_grafici_analisi_avanzate",
+    "section": "Wi-Fi",
+    "hint": "",
+    "wizard_0": true,
+    "category": "In-Home",
+    "steps": [
+     {
+      "wizard_id": "W_PROVA_GRAFICI",
+      "condition": "",
+      "hints": [],
+      "options": [
+       {
+        "name": "Avanti",
+        "condition": "$(kineton_analisi_avanzate.color) == 'green'",
+        "type": "button",
+        "value": 1
+       }
+      ],
+      "description": "Per visualizzare i grafici delle Azioni Avanzate cliccare sul tasto Avvia Azione",
+      "title": "AZIONE con CLIENTE",
+      "actions": [
+       {
+        "action_id": "kineton_analisi_avanzate"
+       }
+      ]
+     },
+     {
+      "wizard_id": "W_PROVA_GRAFICI_2",
+      "condition": "W_PROVA_GRAFICI == 1",
+      "hints": [],
+      "options": [
+        {
+            "name": "FINE",
+            "type": "button",
+            "value": "WR0012"
+        }
+      ],
+      "description": "I grafici saranno visibili a sinistra, nella sezione: ANALISI AVANZATA ",
+      "title": "ESITO",
+      "actions": []
+     }
+    ],
+    "priority_level": 1,
+    "description": "Clicca qui per generare i grafici relativi all'analisi avanzata: CPU, memoria RAM, dispositivi connessi, reboot reason",
+    "name": "Kineton prova grafici"
+   }

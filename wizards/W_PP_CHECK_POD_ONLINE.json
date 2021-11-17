@@ -1,0 +1,26 @@
+{
+    "options": [
+        {
+            "name": "AVANTI",
+            "type": "button",
+            "condition":"$(kineton_number_of_pods.pod_data.number_of_pods) == $(number_of_pods)",
+            "value": 1
+        },
+        {
+            "name": "AVANTI",
+            "type": "button",
+            "condition":"$(kineton_number_of_pods.pod_data.number_of_pods) != $(number_of_pods)",
+            "value": 0
+        }
+
+    ],
+    "description": "Attendere che la luce del POD si spenga e premere sul pulsante di verifica stato online del POD",
+    "hints": [],
+    "actions": [
+        {
+            "action_id": "kineton_number_of_pods"
+        }
+    ],
+    "wizard_id": "KINETON_W_PP_CHECK_POD_ONLINE",
+    "title": "AZIONI con CLIENTE"
+}

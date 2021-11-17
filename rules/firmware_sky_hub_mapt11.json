@@ -1,0 +1,438 @@
+{
+    "rule_id": "firmware_sky_hub",
+    "section": "TEST KINETON",
+    "rule_name": "Firmware Sky Hub",
+    "category": "In-Home",
+    "priority_level": 75,
+    "rule": {
+        "variables": [
+            {
+                "method": "GET",
+                "name": "linea",
+                "params": {
+                 "variable": "$(mapt_status)",
+                 "single_value": true
+                }
+            },
+            {
+                "method": "GET",
+                "name": "wholesaler",
+                "params": {
+                    "variable": "$(customer.c_access.Wholesaler)",
+                    "single_value": true
+                }
+            },
+            {
+                "method": "GET",
+                "name": "cpe_firmware_name",
+                "params": {
+                    "variable": "$(wpil.data.firmware_name)",
+                    "single_value": true
+                }
+            },
+            {
+                "method": "GET",
+                "name": "cpe_firmware_name_failover",
+                "params": {
+                    "variable": "$(telemetry.message.device.firmwareVersion)",
+                    "single_value": true
+                }
+            },
+            {
+                "method": "EVAL_REGEX",
+                "name": "device_model",
+                "params": {
+                    "variable": "$(cpe_firmware_name)",
+                    "single_value": true,
+                    "regex": "(?<=^)(\\w+\\d+)(?=\\_\\d+)"
+                }
+            },
+            {
+                "method": "EVAL_REGEX",
+                "name": "device_model_failover",
+                "params": {
+                    "variable": "$(cpe_firmware_name_failover)",
+                    "single_value": true,
+                    "regex": "(?<=^)(\\w+\\d+)(?=\\_\\d+)"
+                }
+            },
+            {
+                "method": "EVAL_REGEX",
+                "name": "firmware_config_first",
+                "params": {
+                    "variable": "$(cpe_firmware_name)",
+                    "single_value": true,
+                    "regex": "(?<=\\d)([a-zA-Z]+\\d+)(?=\\w\\d\\_\\w+)"
+                }
+            },
+            {
+                "method": "EVAL_REGEX",
+                "name": "firmware_config_first_failover",
+                "params": {
+                    "variable": "$(cpe_firmware_name_failover)",
+                    "single_value": true,
+                    "regex": "(?<=\\d)([a-zA-Z]+\\d+)(?=\\w\\d\\_\\w+)"
+                }
+            },
+            {
+                "method": "EVAL_REGEX",
+                "name": "firmware_config_second",
+                "params": {
+                    "variable": "$(cpe_firmware_name)",
+                    "single_value": true,
+                    "regex": "(?<=\\d\\w\\d)(\\w+\\d+)(?=\\_\\w+)"
+                }
+            },
+            {
+                "method": "EVAL_REGEX",
+                "name": "firmware_config_second_failover",
+                "params": {
+                    "variable": "$(cpe_firmware_name_failover)",
+                    "single_value": true,
+                    "regex": "(?<=\\d\\w\\d)(\\w+\\d+)(?=\\_\\w+)"
+                }
+            },
+            {
+                "method": "EVAL_REGEX",
+                "name": "firmware_ver_gtw_major",
+                "params": {
+                    "variable": "$(cpe_firmware_name)",
+                    "single_value": true,
+                    "regex": "\\d+(?=\\.\\d+)"
+                }
+            },
+            {
+                "method": "EVAL_REGEX",
+                "name": "firmware_ver_gtw_minor",
+                "params": {
+                    "variable": "$(cpe_firmware_name)",
+                    "single_value": true,
+                    "regex": "(?<=\\d\\.)\\d+"
+                }
+            },
+            {
+                "method": "EVAL_REGEX",
+                "name": "working_environment_gtw",
+                "params": {
+                    "variable": "$(cpe_firmware_name)",
+                    "single_value": true,
+                    "regex": "(?<=\\_)(\\w+)(?=\\_)"
+                }
+            },
+            {
+                "method": "EVAL_REGEX",
+                "name": "firmware_ver_gtw_major_failover",
+                "params": {
+                    "variable": "$(cpe_firmware_name_failover)",
+                    "single_value": true,
+                    "regex": "\\d+(?=\\.\\d+)"
+                }
+            },
+            {
+                "method": "EVAL_REGEX",
+                "name": "firmware_ver_gtw_minor_failover",
+                "params": {
+                    "variable": "$(cpe_firmware_name_failover)",
+                    "single_value": true,
+                    "regex": "(?<=\\d\\.)\\d+"
+                }
+            },
+            {
+                "method": "EVAL_REGEX",
+                "name": "working_environment_gtw_failover",
+                "params": {
+                    "variable": "$(cpe_firmware_name_failover)",
+                    "single_value": true,
+                    "regex": "(?<=\\_)(\\w+)(?=\\_)"
+                }
+            },
+            {
+                "method": "ANY",
+                "name": "check_GTW_version_minor_new",
+                "params": {
+                    "variable_1": "$(registered_versions_GTW_minors)",
+                    "variable_2": "$(firmware_ver_gtw_minor)",
+                    "condition": ">"
+                }
+            },
+            {
+                "method": "ANY",
+                "name": "check_GTW_version_minor_411",
+                "params": {
+                    "variable_1": "4.11",
+                    "variable_2": "$(firmware_ver_gtw_minor)",
+                    "condition": "="
+                }
+            },
+            {
+                "method": "ANY",
+                "name": "check_GTW_version_minor",
+                "params": {
+                    "variable_1": "$(registered_versions_GTW_minors)",
+                    "variable_2": "$(firmware_ver_gtw_minor)",
+                    "condition": "="
+                }
+            },
+            {
+                "method": "ANY",
+                "name": "check_GTW_version_minor_inf",
+                "params": {
+                    "variable_1": "$(registered_versions_GTW_minors)",
+                    "variable_2": "$(firmware_ver_gtw_minor)",
+                    "condition": "<"
+                }
+            },
+            {
+                "method": "ANY",
+                "name": "check_GTW_version_minor_failover",
+                "params": {
+                    "variable_1": "$(registered_versions_GTW_minors_failover)",
+                    "variable_2": "$(firmware_ver_gtw_minor_failover)",
+                    "condition": "="
+                }
+            },
+            {
+                "method": "ANY",
+                "name": "check_GTW_version_minor_failover_new",
+                "params": {
+                    "variable_1": "$(registered_versions_GTW_minors_failover)",
+                    "variable_2": "$(firmware_ver_gtw_minor_failover)",
+                    "condition": ">"
+                }
+            },
+            {
+                "method": "ANY",
+                "name": "check_GTW_version_minor_failover_inf",
+                "params": {
+                    "variable_1": "$(registered_versions_GTW_minors_failover)",
+                    "variable_2": "$(firmware_ver_gtw_minor_failover)",
+                    "condition": "<"
+                }
+            },
+            {
+                "method": "ANY",
+                "name": "check_GTW_version_majors",
+                "params": {
+                    "variable_1": "$(versions_GTW_majors)",
+                    "variable_2": "$(firmware_ver_gtw_major)",
+                    "condition": "="
+                }
+            },
+            {
+                "method": "ANY",
+                "name": "check_GTW_version_majors_new",
+                "params": {
+                    "variable_1": "$(versions_GTW_majors)",
+                    "variable_2": "$(firmware_ver_gtw_major)",
+                    "condition": ">"
+                }
+            },
+            {
+                "method": "ANY",
+                "name": "check_GTW_version_majors_inf",
+                "params": {
+                    "variable_1": "$(versions_GTW_majors)",
+                    "variable_2": "$(firmware_ver_gtw_major)",
+                    "condition": "<"
+                }
+            },
+            {
+                "method": "ANY",
+                "name": "check_GTW_version_majors_failover",
+                "params": {
+                    "variable_1": "$(versions_GTW_majors_failover)",
+                    "variable_2": "$(firmware_ver_gtw_major_failover)",
+                    "condition": "="
+                }
+            },
+            {
+                "method": "ANY",
+                "name": "check_GTW_version_majors_failover_new",
+                "params": {
+                    "variable_1": "$(versions_GTW_majors_failover)",
+                    "variable_2": "$(firmware_ver_gtw_major_failover)",
+                    "condition": ">"
+                }
+            },
+            {
+                "method": "ANY",
+                "name": "check_GTW_version_majors_failover_inf",
+                "params": {
+                    "variable_1": "$(versions_GTW_majors_failover)",
+                    "variable_2": "$(firmware_ver_gtw_major_failover)",
+                    "condition": "<"
+                }
+            }
+        ],
+        "aliases": [
+            {
+                "name": "mapt_status",
+                "value": "maptinv.status.mapt_status"
+            },
+            {
+                "name": "registered_versions_GTW_minors",
+                "value": "global_param.[ # == $(working_environment_gtw) ].minors.[# == $(firmware_ver_gtw_major)]"
+            },
+            {
+                "name": "registered_versions_GTW_minors_failover",
+                "value": "global_param.[ # == $(working_environment_gtw_failover) ].minors.[# == $(firmware_ver_gtw_major_failover)]"
+            },
+            {
+                "name": "versions_GTW_majors",
+                "value": "global_param.[ # == $(working_environment_gtw) ].majors"
+            },
+            {
+                "name": "versions_GTW_majors_failover",
+                "value": "global_param.[ # == $(working_environment_gtw_failover) ].majors"
+            }
+        ],
+        "sources": [
+            {
+                "principal": {
+                    "name": "wpil",
+                    "options": {
+                        "method": "GET",
+                        "URL": "/diagnostics/account/{BB_ID}/status"
+                    },
+                    "type": "WPIL"
+                },
+                "failover": {
+                    "name": "telemetry",
+                    "options": {
+                        "size": 1,
+                        "fields_to_retrieve": [
+                            "timestamp",
+                            "message.device.firmwareVersion"
+                        ],
+                        "sort": "timestamp"
+                    },
+                    "type": "TELEMETRY"
+                }
+            },
+            {
+                "principal": {
+                    "name": "customer",
+                    "options": {},
+                    "type": "ORDER_INVENTORY"
+                }
+            },
+            {
+                "principal": {
+                    "name": "global_param",
+                    "options": {
+                        "param_id": "firmware_version_gtw"
+                    },
+                    "type": "GLOBAL_PARAMS"
+                }
+            },
+            {
+                "principal": {
+                 "name": "maptinv",
+                 "options": {},
+                 "type": "MAPT_INVENTORY"
+                }
+            }
+        ],
+        "RAGs": {
+            "red": [
+                {
+                    "description": "La versione del firmware dello Sky Hub \u00e8 obsoleta deve **necessariamente** essere aggiornata",
+                    "condition": "($(linea) == 'OPT_IN' OR $(linea) == 'OPT_OUT') AND ($(firmware_ver_gtw_major) == 3.0 AND $(firmware_ver_gtw_minor) == 2.0)",
+                    "wizards": [
+                        {
+                            "condition": "",
+                            "id": "KINETON_W_FRW_HUB_UPGRADE"
+                        },
+                        {
+                            "condition": "KINETON_W_FRW_HUB_UPGRADE == 3",
+                            "id": "REPLY_W_FRW_MANUAL_CHECK"
+                        },
+                        {
+                            "condition": "KINETON_W_FRW_HUB_UPGRADE == 0 or KINETON_W_FRW_HUB_UPGRADE == 2 or REPLY_W_FRW_MANUAL_CHECK == 0",
+                            "id": "W_FRW_HUB_SMC"
+                        },
+                        {
+                            "condition": "KINETON_W_FRW_HUB_UPGRADE == 1 or REPLY_W_FRW_MANUAL_CHECK == 1",
+                            "id": "W_FRW_HUB_OK"
+                        }
+                    ]
+                },
+                {
+                    "description": "La versione del firmware dello Sky Hub \u00e8 obsoleta ed \u00e8 da aggiornare",
+                    "condition": "$(wholesaler) == 'open_fiber' AND (($(linea) == 'DISABLED') OR ($(firmware_ver_gtw_major) != 3.0 OR $(firmware_ver_gtw_minor) != 2.0)) AND ( NOT ( ( $(check_GTW_version_minor) is not None AND $(check_GTW_version_minor) ) OR ( $(check_GTW_version_minor_failover) is not None AND $(check_GTW_version_minor_failover) ) ) AND NOT ( ( $(check_GTW_version_minor_inf) is not None AND $(check_GTW_version_minor_inf) ) OR ( $(check_GTW_version_minor_failover_inf) is not None AND $(check_GTW_version_minor_failover_inf) ) OR ( $(check_GTW_version_majors_inf) is not None AND $(check_GTW_version_majors_inf) ) OR ( $(check_GTW_version_majors_failover_inf) is not None AND $(check_GTW_version_majors_failover_inf) ) ) ) AND (cpe_firmware_name is not None OR cpe_firmware_name_failover is not None)",
+                    "wizards": [
+                        {
+                            "condition": "",
+                            "id": "W_FRW_HUB_START"
+                        },
+                        {
+                            "condition": "W_FRW_HUB_START == 0",
+                            "id": "W_FRW_HUB_REFUSE"
+                        },
+                        {
+                            "condition": "W_FRW_HUB_START == 1",
+                            "id": "REPLY_W_FRW_HUB_UPGRADE"
+                        },
+                        {
+                            "condition": "REPLY_W_FRW_HUB_UPGRADE == 3",
+                            "id": "REPLY_W_FRW_MANUAL_CHECK"
+                        },
+                        {
+                            "condition": "REPLY_W_FRW_HUB_UPGRADE == 0 or REPLY_W_FRW_HUB_UPGRADE == 2 or REPLY_W_FRW_MANUAL_CHECK == 0",
+                            "id": "W_FRW_HUB_SMC"
+                        },
+                        {
+                            "condition": "REPLY_W_FRW_HUB_UPGRADE == 1 or REPLY_W_FRW_MANUAL_CHECK == 1",
+                            "id": "W_FRW_HUB_OK"
+                        }
+                    ]
+                },
+                {
+                    "description": "La versione del firmware dello Sky Hub \u00e8 obsoleta ed \u00e8 da aggiornare",
+                    "condition": "$(wholesaler) != 'open_fiber' AND (($(linea) =='DISABLED') OR ($(firmware_ver_gtw_major) != 3.0 OR $(firmware_ver_gtw_minor) != 2.0)) AND ( NOT ( ( $(check_GTW_version_minor) is not None AND $(check_GTW_version_minor) ) OR ( $(check_GTW_version_minor_failover) is not None AND $(check_GTW_version_minor_failover) ) ) AND NOT ( ( $(check_GTW_version_minor_inf) is not None AND $(check_GTW_version_minor_inf) ) OR ( $(check_GTW_version_minor_failover_inf) is not None AND $(check_GTW_version_minor_failover_inf) ) OR ( $(check_GTW_version_majors_inf) is not None AND $(check_GTW_version_majors_inf) ) OR ( $(check_GTW_version_majors_failover_inf) is not None AND $(check_GTW_version_majors_failover_inf) ) ) ) AND (cpe_firmware_name is not None OR cpe_firmware_name_failover is not None)",
+                    "wizards": [
+                        {
+                            "condition": "",
+                            "id": "W_FRW_HUB_START"
+                        },
+                        {
+                            "condition": "W_FRW_HUB_START == 0",
+                            "id": "W_FRW_HUB_REFUSE"
+                        },
+                        {
+                            "condition": "W_FRW_HUB_START == 1",
+                            "id": "REPLY_W_FRW_HUB_UPGRADE"
+                        },
+                        {
+                            "condition": "REPLY_W_FRW_HUB_UPGRADE == 3",
+                            "id": "REPLY_W_FRW_MANUAL_CHECK"
+                        },
+                        {
+                            "condition": "REPLY_W_FRW_HUB_UPGRADE == 0 or REPLY_W_FRW_HUB_UPGRADE == 2 or REPLY_W_FRW_MANUAL_CHECK == 0",
+                            "id": "W_FRW_HUB_SMC"
+                        },
+                        {
+                            "condition": "REPLY_W_FRW_HUB_UPGRADE == 1 or REPLY_W_FRW_MANUAL_CHECK == 1",
+                            "id": "W_FRW_HUB_OK"
+                        }
+                    ]
+                }
+            ],
+            "amber": [],
+            "green": [
+                {
+                    "description": "Sky Wifi Hub configurato correttamente",
+                    "condition": "( $(check_GTW_version_minor) is not None AND $(check_GTW_version_minor) ) OR ( $(check_GTW_version_minor_failover) is not None AND $(check_GTW_version_minor_failover) )"
+                },
+                {
+                    "description": "Sky Wifi Hub configurato correttamente",
+                    "condition": "NOT ( ( $(check_GTW_version_minor_new) is not None AND $(check_GTW_version_minor_new) ) OR ( $(check_GTW_version_minor_failover_new) is not None AND $(check_GTW_version_minor_failover_new) ) OR ( $(check_GTW_version_majors_new) is not None AND $(check_GTW_version_majors_new) ) OR ( $(check_GTW_version_majors_failover_new) is not None AND $(check_GTW_version_majors_failover_new) ) ) AND NOT (( $(check_GTW_version_minor) is not None AND $(check_GTW_version_minor) ) OR ( $(check_GTW_version_minor_failover) is not None AND $(check_GTW_version_minor_failover) ))"
+                },
+                {
+                    "description": "Sky Wifi Hub configurato correttamente",
+                    "condition": "( ( $(check_GTW_version_minor_new) is not None AND $(check_GTW_version_minor_new) ) OR ( $(check_GTW_version_minor_failover_new) is not None AND $(check_GTW_version_minor_failover_new) ) OR ( $(check_GTW_version_majors_new) is not None AND $(check_GTW_version_majors_new) ) OR ( $(check_GTW_version_majors_failover_new) is not None AND $(check_GTW_version_majors_failover_new) ) ) AND NOT (( $(check_GTW_version_minor) is not None AND $(check_GTW_version_minor) ) OR ( $(check_GTW_version_minor_failover) is not None AND $(check_GTW_version_minor_failover) )) AND ( ( $(check_GTW_version_minor_inf) is not None AND $(check_GTW_version_minor_inf) ) OR ( $(check_GTW_version_minor_failover_inf) is not None AND $(check_GTW_version_minor_failover_inf) ) OR ( $(check_GTW_version_majors_inf) is not None AND $(check_GTW_version_majors_inf) ) OR ( $(check_GTW_version_majors_failover_inf) is not None AND $(check_GTW_version_majors_failover_inf) ) )"
+                }
+            ]
+        }
+    }
+}

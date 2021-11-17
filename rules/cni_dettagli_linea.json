@@ -1,0 +1,154 @@
+{
+    "rule_id": "cni_dettagli_linea",
+    "section": "Dettaglio Linea",
+    "rule_name": "",
+    "priority_level": 30,
+    "rule": {
+     "context": {
+      "customer_info": [
+       {
+        "name": "Wholesaler",
+        "variable": "$(wholesaler)"
+       },
+       {
+        "name": "Tecnologia Accesso",
+        "variable": "$(access_technology)"
+       },
+       {
+        "name": "Profilo Linea Download",
+        "variable": "$(download_speed)"
+       },
+       {
+        "name": "Profilo Linea Upload",
+        "variable": "$(upload_speed)"
+       },
+       {
+        "name": "ID Risorsa",
+        "variable": "$(resourceId)"
+       },
+       {
+        "name": "IP Condiviso",
+        "variable": "$(mapt_status)"
+       },
+       {
+        "name": "Data Ultima Modifica IP Condiviso",
+        "variable": "$(mapt_timestamp)"
+       },
+       {
+        "name": "Port Forwarding",
+        "variable": "$(Port_Forwarding)"
+       },
+       {
+        "name": "Data Ultima Modifica Port Forwarding",
+        "variable": "$(port_forwarding_timestamp)"
+       },
+       {
+        "name": "DMZ",
+        "variable": "$(DMZ)"
+       }
+      ]
+     },
+     "variables": [
+      {
+       "method": "DECODE",
+       "name": "Port_Forwarding",
+       "params": {
+        "variable": "$(port_forwarding)",
+        "single_value": true,
+        "mappings": [
+         {
+          "value": "'Attivo'",
+          "condition": "# == True"
+         },
+         {
+          "value": "'Disattivo'",
+          "condition": "# == False"
+         }
+        ]
+       }
+      },
+      {
+       "method": "DECODE",
+       "name": "DMZ",
+       "params": {
+        "variable": "$(dmz)",
+        "single_value": true,
+        "mappings": [
+         {
+          "value": "'Attivo'",
+          "condition": "# == True"
+         },
+         {
+          "value": "'Disattivo'",
+          "condition": "# == False"
+         }
+        ]
+       }
+      }
+     ],
+     "aliases": [
+      {
+       "name": "download_speed",
+       "value": "customer.c_broadband.Download_Speed"
+      },
+      {
+       "name": "upload_speed",
+       "value": "customer.c_broadband.Upload_Speed"
+      },
+      {
+       "name": "wholesaler",
+       "value": "customer.c_access.Wholesaler"
+      },
+      {
+       "name": "access_technology",
+       "value": "customer.c_access.Access_Technology"
+      },
+      {
+       "name": "mapt_status",
+       "value": "maptinv.status.mapt_status"
+      },
+      {
+       "name": "mapt_timestamp",
+       "value": "maptinv.status.mapt_timestamp"
+      },
+      {
+       "name": "resourceId",
+       "value": "customer.c_access.resourceId"
+      },
+      {
+        "name": "port_forwarding_timestamp",
+        "value": "maptinv.status.port_forwarding.timestamp"
+      },
+      {
+       "name": "port_forwarding",
+       "value": "maptinv.status.port_forwarding.enabled"
+      },
+      {
+       "name": "dmz",
+       "value": "maptinv.status.dmz.enabled"
+      }
+     ],
+     "sources": [
+      {
+       "principal": {
+        "name": "customer",
+        "options": {},
+        "type": "ORDER_INVENTORY"
+       }
+      },
+      {
+       "principal": {
+        "name": "maptinv",
+        "options": {},
+        "type": "MAPT_INVENTORY"
+       }
+      }
+     ],
+     "RAGs": {
+      "red": [],
+      "amber": [],
+      "green": []
+     }
+    },
+    "hidden": true
+   }

@@ -1,0 +1,220 @@
+{
+ "action_id": "kineton_check_if_pods",
+ "result": {
+  "conditions": [
+   {
+    "color": "green",
+    "description": "Il cliente non ha nessun POD",
+    "condition": "$(pod_data.number_of_pods) == 0"
+   },
+   {
+    "color": "green",
+    "description": "I POD risultano posizionati correttamente",
+    "condition": "$(pod_data.number_of_pods) > 0 AND (($(pod_data.days_cloudconnfailcount_trigger) is None OR $(pod_data.days_cloudconnfailcount_trigger) == False) AND ($(pod_data.days_wifi5gpoddeauth4count_trigger) is None OR $(pod_data.days_wifi5gpoddeauth4count_trigger) == False) AND ($(pod_data.days_wifi2gpoddeauth4count_trigger) is None OR $(pod_data.days_wifi2gpoddeauth4count_trigger) == False) AND ($(pod_data.days_poddowncount_trigger) is None OR $(pod_data.days_poddowncount_trigger) == False) AND ($(pod_data.days_podlinkchangecount_trigger) is None OR $(pod_data.days_podlinkchangecount_trigger) == False))"
+   },
+   {
+    "color": "green",
+    "description": "Il cliente possiede almeno un POD",
+    "condition": "$(pod_data.number_of_pods) > 0 AND (($(pod_data.days_cloudconnfailcount_trigger) is not None AND $(pod_data.days_cloudconnfailcount_trigger)) OR ($(pod_data.days_wifi5gpoddeauth4count_trigger) is not None AND $(pod_data.days_wifi5gpoddeauth4count_trigger)) OR ($(pod_data.days_wifi2gpoddeauth4count_trigger) is not None AND $(pod_data.days_wifi2gpoddeauth4count_trigger)) OR ($(pod_data.days_poddowncount_trigger) is not None AND $(pod_data.days_poddowncount_trigger)) OR ($(pod_data.days_podlinkchangecount_trigger) is not None AND $(pod_data.days_podlinkchangecount_trigger)))"
+   }
+  ]
+ },
+ "action_steps": [
+  {
+   "n_retry": 5,
+   "groups": [
+        {
+            "name": "daily_telemetry",
+            "variable": "$(telemetry_ts)",
+            "period": "daily"
+        }
+    ],
+   "variables": [
+    {
+     "method": "COUNT",
+     "name": "number_of_pods",
+     "params": {
+      "filter": "$(pod_id)"
+     }
+    },
+    {
+        "method": "SUM",
+        "name": "cloudconnfailcount",
+        "params": {
+         "filter": "$(event_code) == 'WIFI_ERROR_CloudConnFail'",
+         "variable": "$(event_count)"
+        },
+        "global_variable": false
+       },
+       {
+        "name": "daily_cloudconnfailcount",
+        "method": "SET",
+        "params": {
+            "variable": "$(daily_telemetry.+.cloudconnfailcount) > 0"
+        },
+        "group": "daily_telemetry"
+        },
+        {
+            "name": "days_cloudconnfailcount_trigger",
+            "method": "SET",
+            "params": {
+                "variable": "$(daily_cloudconnfailcount).count(True) > 3"
+            },
+            "group": "daily_telemetry"
+        },
+       {
+        "method": "SUM",
+        "name": "wifi5gpoddeauth4count",
+        "params": {
+         "filter": "$(event_code) == 'WIFI_INFO_5GPodDEAUTH4'",
+         "variable": "$(event_count)"
+        },
+        "global_variable": false
+       },
+       {
+        "name": "daily_wifi5gpoddeauth4count",
+        "method": "SET",
+        "params": {
+            "variable": "$(daily_telemetry.+.wifi5gpoddeauth4count) > 0"
+        },
+        "group": "daily_telemetry"
+        },
+        {
+        "name": "days_wifi5gpoddeauth4count_trigger",
+        "method": "SET",
+        "params": {
+            "variable": "$(daily_wifi5gpoddeauth4count).count(True) > 3"
+        },
+        "group": "daily_telemetry"
+        },
+        {
+            "method": "SUM",
+            "name": "wifi2gpoddeauth4count",
+            "params": {
+                "filter": "$(event_code) == 'WIFI_INFO_2GPodDEAUTH4'",
+                "variable": "$(event_count)"
+            },
+            "global_variable": false
+        },
+        {
+            "name": "daily_wifi2gpoddeauth4count",
+            "method": "SET",
+            "params": {
+                "variable": "$(daily_telemetry.+.wifi2gpoddeauth4count) > 0"
+            },
+            "group": "daily_telemetry"
+        },
+        {
+            "name": "days_wifi2gpoddeauth4count_trigger",
+            "method": "SET",
+            "params": {
+                "variable": "$(daily_wifi2gpoddeauth4count).count(True) > 3"
+            },
+            "group": "daily_telemetry"
+        },
+        {
+            "method": "SUM",
+            "name": "poddowncount",
+            "params": {
+                "filter": "$(event_code) == 'WIFI_ERROR_PodDown'",
+                "variable": "$(event_count)"
+            },
+            "global_variable": false
+        },
+        {
+            "name": "daily_poddowncount",
+            "method": "SET",
+            "params": {
+                "variable": "$(daily_telemetry.+.poddowncount) > 0"
+            },
+            "group": "daily_telemetry"
+        },
+        {
+            "name": "days_poddowncount_trigger",
+            "method": "SET",
+            "params": {
+                "variable": "$(daily_poddowncount).count(True) > 3"
+            },
+            "group": "daily_telemetry"
+        },
+        {
+            "method": "SUM",
+            "name": "podlinkchangecount",
+            "params": {
+                "filter": "$(event_code) == 'WIFI_INFO_PodLinkChange'",
+                "variable": "$(event_count)"
+            },
+            "global_variable": false
+        },
+        {
+            "name": "daily_podlinkchangecount",
+            "method": "SET",
+            "params": {
+                "variable": "$(daily_telemetry.+.poddowncount) > 0"
+            },
+            "group": "daily_telemetry"
+        },
+        {
+            "name": "days_podlinkchangecount_trigger",
+            "method": "SET",
+            "params": {
+                "variable": "$(daily_podlinkchangecount).count(True) > 3"
+            },
+            "group": "daily_telemetry"
+        }
+   ],
+   "aliases": [
+    {
+     "name": "pod_id",
+     "value": "wpil.qoe_pods.states.id"
+    },
+    {
+        "name": "telemetry_ts",
+        "value": "tlm.timestamp"
+    },
+    {
+        "name": "event_code",
+        "value": "tlm.message.rdkBEvents.eventCode"
+       },
+       {
+        "name": "event_count",
+        "value": "tlm.message.rdkBEvents.eventCount"
+       }
+   ],
+   "sources": [
+    {
+     "principal": {
+      "name": "wpil",
+      "options": {
+       "URL": "/diagnostics/account/{BB_ID}/connected-devices/cpe"
+      },
+      "type": "WPIL"
+     }
+    },
+    {
+        "principal": {
+         "name": "tlm",
+         "options": {
+          "last_n_days": 7,
+          "minimum_datapoints": 10,
+          "fields_to_retrieve": [
+            "timestamp",
+           "message.rdkBEvents.eventCode",
+           "message.rdkBEvents.eventCount"
+          ]
+         },
+         "type": "TELEMETRY"
+        }
+    }
+   ],
+   "verification_condition": "$(number_of_pods) is not None",
+   "action_step_id": "pod_data"
+  }
+ ],
+ "authorization_level": 1,
+ "frontend_info": {
+  "action_description": "Verifica Riposizionamento Sky Pod",
+  "action_title": "Esegui Azione Automatica",
+  "frontend_modal_type": "confirm_msg_box"
+ }
+}

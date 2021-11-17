@@ -1,0 +1,199 @@
+{
+ "param_id": "kineton_code_error",
+ "params_value": {
+  "codes": {
+   "listener": {
+    "0": {
+     "descrizione": "nessun errore"
+    },
+    "201": {
+     "descrizione": "messaggio rimosso dalla coda"
+    },
+    "202": {
+     "descrizione": "errore nel caricamento del corpo principale"
+    },
+    "203": {
+     "descrizione": "errore nell'estrazione del corpo principale"
+    },
+    "204": {
+     "descrizione": "errore di trasmissione"
+    },
+    "205": {
+     "descrizione": "errore nel caricamento del corpo principale"
+    },
+    "206": {
+     "descrizione": "errore nel corpo principale"
+    },
+    "207": {
+     "descrizione": "operazione vuota"
+    },
+    "208": {
+     "descrizione": "errore nell'azione"
+    },
+    "209": {
+     "descrizione": "errore nel parametro"
+    },
+    "210": {
+     "descrizione": "errore di tipo"
+    },
+    "211": {
+     "descrizione": "errore nel settaggio di un valore"
+    },
+    "212": {
+     "descrizione": "errore di tipo"
+    },
+    "213": {
+     "descrizione": "errore nel valore di attesa"
+    }
+   },
+   "operation": {
+    "0": {
+     "descrizione": "nessun errore"
+    },
+    "101": {
+     "descrizione": "Tipo non valido"
+    },
+    "102": {
+     "descrizione": "errore sulla mesh"
+    },
+    "103": {
+     "descrizione": "errore sulla mesh"
+    },
+    "104": {
+     "descrizione": "errore nella struttura"
+    },
+    "105": {
+     "descrizione": "CB"
+    },
+    "106": {
+     "descrizione": "dati CB non trovati"
+    },
+    "109": {
+     "descrizione": "il comando non ha restituito dati"
+    },
+    "110": {
+     "descrizione": "dati errati"
+    },
+    "111": {
+     "descrizione": "upload di lunghezza indefinita"
+    },
+    "112": {
+     "descrizione": "errore nell'upload"
+    },
+    "113": {
+     "descrizione": "numero di colonne dell'inventario errate"
+    },
+    "114": {
+     "descrizione": "la cella in ingresso non è valida"
+    },
+    "116": {
+     "descrizione": "tipo non valido"
+    },
+    "117": {
+     "descrizione": "parametro non valido"
+    }
+   },
+   "automation": {
+    "0": {
+     "descrizione": "nessun errore"
+    },
+    "1": {
+     "descrizione": "errore sul tipo dei dati"
+    },
+    "2": {
+     "descrizione": "lunghezza dei dati errata"
+    },
+    "3": {
+     "descrizione": "tipo non presente"
+    },
+    "4": {
+     "descrizione": "settaggio non consentito"
+    },
+    "5": {
+     "descrizione": "errore di tipo"
+    },
+    "6": {
+     "descrizione": "mac non trovato"
+    },
+    "7": {
+     "descrizione": "mac non trovato"
+    },
+    "8": {
+     "descrizione": "non riesco a far partire i driver di chrome"
+    },
+    "9": {
+     "descrizione": "non riesco ad aprire il sito web"
+    },
+    "10": {
+     "descrizione": "impossibile trovare la username"
+    },
+    "11": {
+     "descrizione": "impossibile trovare la password"
+    },
+    "12": {
+     "descrizione": "impossibile trovare accedi"
+    },
+    "13": {
+     "descrizione": "impossibile settare la username"
+    },
+    "14": {
+     "descrizione": "impossibile settare la password"
+    },
+    "15": {
+     "descrizione": "impossibile effettuare la login"
+    },
+    "16": {
+     "descrizione": "impossibile trovare il parametro tr181"
+    },
+    "17": {
+     "descrizione": "impossibile trovare execute"
+    },
+    "18": {
+     "descrizione": "lista dei MAC non trovata"
+    },
+    "19": {
+     "descrizione": "MAC non trovato"
+    },
+    "20": {
+     "descrizione": "non posso chiudere il browser"
+    },
+    "21": {
+     "descrizione": "impossibile far partire la sessione browser"
+    },
+    "22": {
+     "descrizione": "messaggio di allerta mostrato"
+    },
+    "23": {
+     "descrizione": "parametro non trovato"
+    },
+    "24": {
+     "descrizione": "impossibile trovare la risposta"
+    },
+    "25": {
+     "descrizione": "nessun MAC in output"
+    },
+    "26": {
+     "descrizione": "impossibile eseguire il comando"
+    },
+    "27": {
+     "descrizione": "impossibile settare il parametro"
+    },
+    "28": {
+     "descrizione": "impossibile settare il parametro tr181"
+    },
+    "29": {
+     "descrizione": "404"
+    },
+    "30": {
+     "descrizione": "520"
+    },
+    "31": {
+     "descrizione": "errore generico"
+    },
+    "32": {
+     "descrizione": "settaggio del parametro intero errato"
+    }
+   }
+  }
+ }
+}

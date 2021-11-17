@@ -1,0 +1,73 @@
+{
+    "frontend_info": {
+        "action_description": "Azione Automatica",
+        "action_title": "Gestisci DMZ",
+        "frontend_modal_type": "confirm_msg_box"
+    },
+    "action_id": "dmz_verifier",
+    "available_for_operator": false,
+    "result": {
+        "conditions": [
+            {
+                "color": "red",
+                "description": "Errore durante l'esecuzione dell'operazione",
+                "condition": "$(tardis_dmz_enable.has_errors) == True"
+            },
+            {
+                "color": "green",
+                "description": "DMZ Abilitata",
+                "condition": "$(tardis_dmz_enable.has_errors) == False AND $(tardis_dmz_enable.is_enabled) == True"
+            },
+            {
+                "color": "green",
+                "description": "DMZ Non Abilitata",
+                "condition": "$(tardis_dmz_enable.has_errors) == False AND $(tardis_dmz_enable.is_enabled) == False"
+            }
+        ]
+    },
+    "action_steps": [
+        {
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "has_errors",
+                    "params": {
+                        "variable": "$(tardis.errors.has_errors)",
+                        "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "is_enabled",
+                    "params": {
+                        "variable": "$(tardis.results.Device.NAT.X_CISCO_COM_DMZ.Enable)",
+                        "single_value": true
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "tardis",
+                        "options": {
+                            "action": "tardis",
+                            "operations": [
+                                {
+                                    "type": "GET",
+                                    "parameter": "Device.NAT.X_CISCO_COM_DMZ.Enable"
+                                }
+                            ]
+                        },
+                        "type": "TARDIS"
+                    }
+                }
+            ],
+            "verification_condition": "$(has_errors) == False",
+            "timeout":100,
+            "max_retry": 5,
+            "retry_check_wait_time": 30,
+            "action_step_id": "tardis_dmz_enable"
+        }
+    ],
+    "authorization_level": 1
+}

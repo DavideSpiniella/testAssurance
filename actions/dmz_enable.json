@@ -1,0 +1,117 @@
+{
+    "action_id": "dmz_enable",
+    "input_variables": [
+     {
+      "name": "IP_DMZ",
+      "alias": "IP Dispositivo",
+      "required": true
+     }
+    ],
+    "frontend_info": {
+     "action_description": "Azione Automatica",
+     "action_title": "Abilita DMZ",
+     "frontend_modal_type": "confirm_msg_box"
+    },
+    "available_for_operator": true,
+    "result": {
+     "conditions": [
+      {
+       "color": "red",
+       "description": "Procedura abilitazione DMZ fallita. Verificare correttezza indirizzo IP.",
+       "condition": "$(tardis_dmz_enable.has_errors) == True OR $(get_input.has_errors) == True"
+      },
+      {
+       "color": "green",
+       "description": "Procedura abilitazione DMZ iniziata. L'operazione potrebbe richiedere qualche minuto.",
+       "condition": "$(tardis_dmz_enable.has_errors) == False"
+      }
+     ]
+    },
+    "action_steps": [
+     {
+      "retry_check_wait_time": 30,
+      "variables": [
+       {
+        "method": "CAST",
+        "name": "IP_DMZ_cast",
+        "params": {
+         "variable": "$(IP_DMZ)",
+         "single_value": true,
+         "cast_type": "string"
+        }
+       },
+       {
+        "method": "GET",
+        "name": "has_errors",
+        "params": {
+         "variable": "$(tardis.errors.has_errors)",
+         "single_value": true
+        }
+       }
+      ],
+      "sources": [
+       {
+        "principal": {
+         "name": "tardis",
+         "options": {
+          "action": "tardis",
+          "operations": [
+           {
+            "type": "GET",
+            "parameter": "Device.NAT.X_CISCO_COM_DMZ.Enable"
+           }
+          ]
+         },
+         "type": "TARDIS"
+        }
+       }
+      ],
+      "timeout": 100,
+      "max_retry": 5,
+      "action_step_id": "get_input"
+     },
+     {
+      "variables": [
+       {
+        "method": "GET",
+        "name": "has_errors",
+        "params": {
+         "variable": "$(tardis.errors.has_errors)",
+         "single_value": true
+        }
+       }
+      ],
+      "sources": [
+       {
+        "principal": {
+         "name": "tardis",
+         "options": {
+          "action": "tardis",
+          "operations": [
+           {
+            "type": "SET",
+            "value": "$(get_input.IP_DMZ_cast)",
+            "dataType": "String",
+            "parameter": "Device.NAT.X_CISCO_COM_DMZ.InternalIP"
+           },
+           {
+            "type": "SET",
+            "value": "true",
+            "dataType": "Boolean",
+            "parameter": "Device.NAT.X_CISCO_COM_DMZ.Enable"
+           }
+          ]
+         },
+         "type": "TARDIS"
+        }
+       }
+      ],
+      "action_step_id": "tardis_dmz_enable",
+      "retry_check_wait_time": 30,
+      "verification_condition": "$(has_errors) == False",
+      "timeout": 100,
+      "max_retry": 5
+     }
+    ],
+    "authorization_level": 1
+   }

@@ -1,0 +1,14 @@
+{
+    "hints": [],
+    "wizard_id": "KINETON_W_CPE_SPENTA",
+    "options": [
+        {
+            "name": "Fine",
+            "type": "button",
+            "value": "WR0012"
+        }
+    ],
+    "description": "Lo Sky Hub non risulta raggiungibile, assicurarsi che il dispositivo sia acceso",
+    "actions": [],
+    "title": "Sky Hub spento"
+}

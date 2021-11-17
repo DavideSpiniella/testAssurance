@@ -1,0 +1,18 @@
+{
+    "options": [
+        {
+            "name": "AVANTI",
+            "type": "button",
+            "value": 1
+        }
+    ],
+    "description": "Guida dettagliata disponibile su KM \r\n[Come posiziono gli Sky Wifi POD in casa](https://contact.skykm.pigro.ai/0.3/link/Nuovo-Sky-BB-1590514933-1590515253)\r\n\r\n\r\nLa procedura di riposizionamento \u00e8 stata completata?",
+    "hints": [
+        {
+            "description": "Il POD con nickname '$(sky_pod_nickname)' risulta **MALPOSIZIONATO** rispetto allo Sky Hub"
+        }
+    ],
+    "actions": [],
+    "wizard_id": "KINETON_W_PP_REPLACEMENT_DONE",
+    "title": "AZIONI con CLIENTE"
+}

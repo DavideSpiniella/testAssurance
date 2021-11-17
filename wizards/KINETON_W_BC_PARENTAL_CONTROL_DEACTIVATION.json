@@ -1,0 +1,29 @@
+{
+ "wizard_id": "KINETON_W_BC_PARENTAL_CONTROL_DEACTIVATION",
+ "hints": [
+  {
+   "description": "L'azione può essere eseguita più volte fino ad ottenere la configurazione desiderata."
+  }
+ ],
+ "options": [
+  {
+   "name": "Avanti",
+   "condition": "$(kineton_verification_parental_mode.color) == 'green'",
+   "type": "button",
+   "value": 1
+  },
+  {
+   "name": "Avanti",
+   "condition": "$(kineton_verification_parental_mode.color) != 'green'",
+   "type": "button",
+   "value": 0
+  }
+ ],
+ "description": "Per procedere con la disattivazione è necessario che il cliente segua la [procedura](https://contact.skykm.pigro.ai/0.3/link/Broadband-Gestione-App-xFi-Impossibile-impostare-la-modalita-bed-time) di disattivazione della funzionalità **Parental Control**",
+ "actions": [
+  {
+   "action_id": "kineton_verification_parental_mode"
+  }
+ ],
+ "title": "AZIONI CON CLIENTE"
+}

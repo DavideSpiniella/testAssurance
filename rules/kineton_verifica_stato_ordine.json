@@ -1,0 +1,228 @@
+{
+ "rule_id": "kineton_verifica_stato_ordine",
+ "section": "TEST KINETON",
+ "category": "In-Home",
+ "rule_name": "Kineton Verifica Stato Ordine",
+ "priority_level": 1000,
+ "rule": {
+  "variables": [
+   {
+    "method": "GET",
+    "name": "ACC_SERV_ACT",
+    "params": {
+     "variable": "$(BB_SERVICE_ACTION)",
+     "single_value": true
+    }
+   },
+   {
+    "method": "GET",
+    "name": "ACC_SERV_ORD_IT_ACT",
+    "params": {
+     "variable": "$(BB_SERVICE_ORDER_ITEM_ACTION)",
+     "single_value": true
+    }
+   },
+   {
+    "method": "GET",
+    "name": "ACC_SERV_STATUS",
+    "params": {
+     "variable": "$(BB_SERVICE_STATUS)",
+     "single_value": true
+    }
+   },
+   {
+    "method": "GET",
+    "name": "BB_SERV_ACT",
+    "params": {
+     "variable": "$(BB_SERVICE_ACTION)",
+     "single_value": true
+    }
+   },
+   {
+    "method": "GET",
+    "name": "BB_SERV_ORD_IT_ACT",
+    "params": {
+     "variable": "$(BB_SERVICE_ORDER_ITEM_ACTION)",
+     "single_value": true
+    }
+   },
+   {
+    "method": "GET",
+    "name": "BB_SERV_STATUS",
+    "params": {
+     "variable": "$(BB_SERVICE_STATUS)",
+     "single_value": true
+    }
+   }
+  ],
+  "aliases": [
+   {
+    "name": "BB_SERVICE_ACTION",
+    "value": "customer.c_broadband.service_action"
+   },
+   {
+    "name": "BB_SERVICE_ORDER_ITEM_ACTION",
+    "value": "customer.c_broadband.service_order_item_action"
+   },
+   {
+    "name": "BB_SERVICE_STATUS",
+    "value": "customer.c_broadband.service_status"
+   }
+  ],
+  "sources": [
+   {
+    "principal": {
+     "name": "customer",
+     "options": {},
+     "type": "ORDER_INVENTORY"
+    }
+   }
+  ],
+  "RAGs": {
+   "red": [],
+   "amber": [
+    {
+     "description": "Attenzione: L'attivazione della linea è ancora in corso non è possibile eseguire la diagnostica. Attendere la conclusione",
+     "condition": "$(BB_SERV_ACT) == 'PR' and ($(BB_SERV_ORD_IT_ACT) == 'CREATE' or $(BB_SERV_ORD_IT_ACT) == 'AMEND' or $(BB_SERV_ORD_IT_ACT) == 'CANCEL') and $(BB_SERV_STATUS) != 'Completed'",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_CUSTOMER_ACTIVATION"
+      }
+     ]
+    },
+    {
+     "description": "Attenzione: L'attivazione della linea è ancora in corso non è possibile eseguire la diagnostica. Attendere la conclusione",
+     "condition": "$(ACC_SERV_ACT) == 'PR' and ($(ACC_SERV_ORD_IT_ACT) == 'CREATE' or $(ACC_SERV_ORD_IT_ACT) == 'AMEND' or $(ACC_SERV_ORD_IT_ACT) == 'CANCEL') and $(ACC_SERV_STATUS) != 'Completed'",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_CUSTOMER_ACTIVATION"
+      }
+     ]
+    },
+    {
+     "description": "Attenzione: è in corso un ordine di modifica della linea.",
+     "condition": "$(BB_SERV_ACT) == 'CH' and ($(BB_SERV_ORD_IT_ACT) == 'CREATE' or $(BB_SERV_ORD_IT_ACT) == 'AMEND' or $(BB_SERV_ORD_IT_ACT) == 'CANCEL') and $(BB_SERV_STATUS) != 'Order_Rejected' and $(BB_SERV_STATUS) != 'Cancelled' and $(BB_SERV_STATUS) != 'Completed'",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_CUSTOMER_CHANGE"
+      }
+     ]
+    },
+    {
+     "description": "Attenzione: è in corso un ordine di modifica della linea.",
+     "condition": "$(ACC_SERV_ACT) == 'CH' and ($(ACC_SERV_ORD_IT_ACT) == 'CREATE' or $(ACC_SERV_ORD_IT_ACT) == 'AMEND' or $(ACC_SERV_ORD_IT_ACT) == 'CANCEL') and $(ACC_SERV_STATUS) != 'Order_Rejected' and $(ACC_SERV_STATUS) != 'Cancelled' and $(ACC_SERV_STATUS) != 'Completed'",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_CUSTOMER_CHANGE"
+      }
+     ]
+    },
+    {
+     "description": "Attenzione: La linea è in fase di sospensione/sospesa non è possibile eseguire la diagnostica",
+     "condition": "$(BB_SERV_ACT) == 'SU' and ($(BB_SERV_ORD_IT_ACT) == 'CREATE' or $(BB_SERV_ORD_IT_ACT) == 'AMEND') and $(BB_SERV_STATUS) != 'Order_Rejected' and $(BB_SERV_STATUS) != 'Cancelled'",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_CUSTOMER_SUSPENDED"
+      }
+     ]
+    },
+    {
+     "description": "Attenzione: La linea è in fase di sospensione/sospesa non è possibile eseguire la diagnostica",
+     "condition": "$(ACC_SERV_ACT) == 'SU' and ($(ACC_SERV_ORD_IT_ACT) == 'CREATE' or $(ACC_SERV_ORD_IT_ACT) == 'AMEND') and $(ACC_SERV_STATUS) != 'Order_Rejected' and $(ACC_SERV_STATUS) != 'Cancelled'",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_CUSTOMER_SUSPENDED"
+      }
+     ]
+    },
+    {
+     "description": "Attenzione: La linea è in fase di sospensione/sospesa non è possibile eseguire la diagnostica",
+     "condition": "$(BB_SERV_ACT) == 'SU' and $(BB_SERV_ORD_IT_ACT) == 'CANCEL' and $(BB_SERV_STATUS) != 'Completed'",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_CUSTOMER_SUSPENDED"
+      }
+     ]
+    },
+    {
+     "description": "Attenzione: La linea è in fase di sospensione/sospesa non è possibile eseguire la diagnostica",
+     "condition": "$(ACC_SERV_ACT) == 'SU' and $(ACC_SERV_ORD_IT_ACT) == 'CANCEL' and $(ACC_SERV_STATUS) != 'Completed'",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_CUSTOMER_SUSPENDED"
+      }
+     ]
+    },
+    {
+     "description": "Attenzione: La linea è ancora in fase di desospensione non è possibile eseguire la diagnostica. Attendere la conclusione",
+     "condition": "$(BB_SERV_ACT) == 'RE' and ($(BB_SERV_ORD_IT_ACT) == 'CREATE' or $(BB_SERV_ORD_IT_ACT) == 'AMEND') and $(BB_SERV_STATUS) != 'Completed'",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_CUSTOMER_RESUMING"
+      }
+     ]
+    },
+    {
+     "description": "Attenzione: La linea è ancora in fase di desospensione non è possibile eseguire la diagnostica. Attendere la conclusione",
+     "condition": "$(ACC_SERV_ACT) == 'RE' and ($(ACC_SERV_ORD_IT_ACT) == 'CREATE' or $(ACC_SERV_ORD_IT_ACT) == 'AMEND') and $(ACC_SERV_STATUS) != 'Completed'",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_CUSTOMER_RESUMING"
+      }
+     ]
+    },
+    {
+     "description": "Attenzione: La linea è ancora in fase di desospensione non è possibile eseguire la diagnostica. Attendere la conclusione",
+     "condition": "$(BB_SERV_ACT) == 'RE' and $(BB_SERV_ORD_IT_ACT) == 'CANCEL'",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_CUSTOMER_RESUMING"
+      }
+     ]
+    },
+    {
+     "description": "Attenzione: La linea è ancora in fase di desospensione non è possibile eseguire la diagnostica. Attendere la conclusione",
+     "condition": "$(ACC_SERV_ACT) == 'RE' and $(ACC_SERV_ORD_IT_ACT) == 'CANCEL'",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_CUSTOMER_RESUMING"
+      }
+     ]
+    },
+    {
+     "description": "Attenzione: La linea è in cessazione non è possibile eseguire la diagnostica",
+     "condition": "$(BB_SERV_ACT) == 'CE' and ($(BB_SERV_ORD_IT_ACT) == 'CREATE' or $(BB_SERV_ORD_IT_ACT) == 'AMEND' or $(BB_SERV_ORD_IT_ACT) == 'CANCEL') and $(BB_SERV_STATUS) != 'Order_Rejected' and $(BB_SERV_STATUS) != 'Cancelled' and $(BB_SERV_STATUS) != 'Completed'",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_CUSTOMER_DELETION"
+      }
+     ]
+    },
+    {
+     "description": "Attenzione: La linea è in cessazione non è possibile eseguire la diagnostica",
+     "condition": "$(ACC_SERV_ACT) == 'CE' and ($(ACC_SERV_ORD_IT_ACT) == 'CREATE' or $(ACC_SERV_ORD_IT_ACT) == 'AMEND' or $(ACC_SERV_ORD_IT_ACT) == 'CANCEL') and $(ACC_SERV_STATUS) != 'Order_Rejected' and $(ACC_SERV_STATUS) != 'Cancelled' and $(ACC_SERV_STATUS) != 'Completed'",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_CUSTOMER_DELETION"
+      }
+     ]
+    }
+   ],
+   "green": []
+  }
+ }
+}

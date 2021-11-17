@@ -1,0 +1,76 @@
+{
+ "action_id": "test_vdsl_telemetry",
+ "frontend_info": {
+  "action_description": "Azione di test per VDSL",
+  "action_title": "Controllo Telemetria VDSL",
+  "frontend_modal_type": "confirm_msg_box"
+ },
+ "available_for_operator": true,
+ "result": {
+  "conditions": [
+   {
+    "description": "VDSL ha risposto",
+    "condition": "$(step_vdsl.status) == 200",
+    "variables": [
+     {
+      "name": "Upstream",
+      "value": "$(step_vdsl.upstream)"
+     }
+    ],
+    "color": "green"
+   },
+   {
+    "color": "red",
+    "description": "VDSL non ha risposto",
+    "condition": "$(step_vdsl.status) != 200"
+   }
+  ]
+ },
+ "action_steps": [
+  {
+   "variables": [
+    {
+     "method": "GET",
+     "name": "status",
+     "params": {
+      "variable": "$(vdsl.status)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "GET",
+     "name": "upstream",
+     "params": {
+      "variable": "$(vdsl.data.daily_max_upstream_max_bit_rate)",
+      "single_value": true
+     }
+    },
+    {
+        "method": "GET",
+        "name": "downloadstream",
+        "params": {
+         "variable": "$(vdsl.data.InternetGatewayDevice.WANDevice.2.WANDSLInterfaceConfig.DownstreamCurrRate)",
+         "single_value": true
+        }
+    }
+   ],
+   "aliases": [],
+   "sources": [
+    {
+     "principal": {
+      "name": "vdsl",
+      "options": {
+       "days_ago": 20
+      },
+      "type": "VDSL_TELEMETRY"
+     }
+    }
+   ],
+   "max_retry": 0,
+   "action_step_id": "step_vdsl"
+  }
+ ],
+ "pre_check": false,
+ "pre_check_group": [],
+ "authorization_level": 1
+}

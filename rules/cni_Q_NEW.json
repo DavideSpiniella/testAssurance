@@ -1,0 +1,347 @@
+{
+  "rule_id": "cni_Q",
+  "section": "Dettaglio Prodotti Sky",
+  "category": "Customer",
+  "rule_name": "Sky TV",
+  "priority_level": 10,
+  "rule": {
+   "context": {
+    "customer_info": [
+     {
+      "name": "STB",
+      "variable": "$(Q_device_description)"
+     },
+     {
+      "name": "Marca dispositivo",
+      "variable": "$(Device_brand)"
+     },
+     {
+      "name": "Produttore",
+      "variable": "$(Device_maker)"
+     },
+     {
+      "name": "Tipologia Dispositivo",
+      "variable": "$(Device_type)"
+     },
+     {
+      "name": "Numero Sky Q Mini",
+      "variable": "$(sky_devices)"
+     }
+    ]
+   },
+   "variables": [
+    {
+     "method": "GET",
+     "name": "MAC_address",
+     "params": {
+      "filter": "($(brand) == 'Sercomm' OR $(brand) == '' OR $(brand) == 'DirecTV' OR $(brand) == 'Sky' OR $(brand) is None) AND ($(produttore) == 'HUMAX' OR $(produttore) == 'BSkyB' OR $(produttore) == '' OR $(produttore) is None) AND ($(type) == 'SET-TOP BOX' OR $(type) == 'DVR' OR $(type) is None) AND ($(active) == True) AND (($(ipv6) == '' AND $(4k) == False) OR ($(ipv6) != '' AND $(4k) == True) OR ($(ipv6) is None AND $(4k) is None) OR ($(ipv6) is None AND $(4k) == '') OR ($(ipv6) == '' AND $(4k) is None))",
+      "variable": "$(MAC)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "GET",
+     "name": "MAC_address_ridotto",
+     "params": {
+      "filter": "$(produttore) == 'BSkyB' AND $(active) == True",
+      "variable": "$(MAC)",
+      "single_value": true
+     }
+    },
+    {
+      "method": "GET",
+      "name": "Device_brand",
+      "params": {
+       "filter": "($(brand) == 'Sercomm' OR $(brand) == 'Sky') AND $(active)",
+       "variable": "$(brand)",
+       "single_value": true
+      }
+     },
+     {
+      "method": "GET",
+      "name": "Device_maker",
+      "params": {
+       "filter": "($(produttore) == 'HUMAX' OR $(produttore) == 'BSkyB') AND $(active)",
+       "variable": "$(produttore)",
+       "single_value": true
+      }
+     },
+     {
+      "method": "GET",
+      "name": "MAC_mini",
+      "params": {
+       "filter": "($(produttore) == '' OR $(produttore) == 'BSkyB' OR $(produttore) is None) AND $(active)",
+       "variable": "$(MAC)"
+      }
+     },
+     {
+      "method": "EVAL_REGEX",
+      "name": "MAC_validator",
+      "iterator":"$(MAC_mini)",
+      "params": {
+       "filter": "$(MAC) == $(iterator)",
+       "variable": "$(MAC)",
+       "single_value": true,
+       "regex": "[A-Z0-9]{6}"
+      }
+     },
+     {
+      "method": "GET",
+      "name": "MAC_value",
+      "params": {
+       "variable": "$(Q_mini)"
+      }
+     },
+    {
+     "method": "COUNT",
+     "name": "number_of_skydevices",
+     "params": {
+      "filter": "($(brand) == '' OR $(brand) == 'Sky' OR $(brand) is None) AND ($(produttore) == 'BSkyB' OR $(produttore) == '' OR $(produttore) is None) AND ($(type) == 'DVR' OR $(type) is None OR $(type) == '' OR $(type) == 'STREAMING VIDEO DEVICE') AND ($(active) == True) AND (($(ipv6) is None OR $(ipv6) == '') AND ($(4k) is None OR $(4k) == '' OR $(4k) == False)) AND ($(model) == 'Sky Q' OR $(model) == 'Sky Q Mini' OR $(model) == '' OR $(model) is None)"
+     }
+    },
+    {
+     "method": "SET",
+     "name": "number_of_mini",
+     "params": {
+      "variable": "$(number_of_skydevices) - 1"
+     }
+    },
+    {
+     "method": "DECODE",
+     "name": "MAC_Q",
+     "params": {
+      "variable": [
+       "$(MAC_address)"
+      ],
+      "single_value": true,
+      "mappings": [
+       {
+        "value": "$(MAC_address_ridotto)",
+        "condition": "#1 is None"
+       },
+       {
+        "value": "$(MAC_address)",
+        "condition": "#1 is not None"
+       }
+      ]
+     }
+    },
+    {
+     "method": "DECODE",
+     "name": "sky_devices",
+     "params": {
+      "variable": [
+       "$(number_of_skydevices)"
+      ],
+      "single_value": true,
+      "mappings": [
+       {
+        "value": "$(number_of_mini)",
+        "condition": "#1>0"
+       },
+       {
+        "value": "$(number_of_skydevices)",
+        "condition": "#1<=0"
+       }
+      ]
+     }
+    },
+    {
+     "method": "GET",
+     "name": "Device_type",
+     "params": {
+      "filter": "$(MAC) == $(MAC_Q)",
+      "variable": "$(type)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "EVAL_REGEX",
+     "name": "MAC_verdi",
+     "params": {
+      "variable": "$(MAC_Q)",
+      "single_value": true,
+      "regex": "[A-Z0-9]{8}"
+     }
+    },
+    {
+     "method": "EVAL_REGEX",
+     "name": "MAC_platinum",
+     "params": {
+      "variable": "$(MAC_Q)",
+      "single_value": true,
+      "regex": "[A-Z0-9]{6}"
+     }
+    },
+    {
+     "method": "GET",
+     "name": "VERDI",
+     "params": {
+      "variable": "$(Q_verdi)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "GET",
+     "name": "PLATINUM",
+     "params": {
+      "variable": "$(Q_platinum)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "GET",
+     "name": "ACTIVE",
+     "params": {
+      "filter": "$(produttore) == 'BSkyB'",
+      "variable": "$(active)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "GET",
+     "name": "is_4K",
+     "params": {
+      "filter": "$(produttore) == 'BSkyB'",
+      "variable": "$(4k)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "GET",
+     "name": "is_ipv6",
+     "params": {
+      "filter": "$(produttore) == 'BSkyB'",
+      "variable": "$(ipv6)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "GET",
+     "name": "device_model",
+     "params": {
+      "filter": "($(model) == 'Sky Q' OR $(model) == 'Sky Q Mini') AND $(active)",
+      "variable": "$(model)",
+      "single_value": true
+     }
+    },
+    {
+     "method": "DECODE",
+     "name": "Q_device_description",
+     "params": {
+      "variable": [
+       "$(Device_brand)",
+       "$(Device_maker)",
+       "$(Device_type)",
+       "$(VERDI)",
+       "$(PLATINUM)",
+       "$(device_model)"
+      ],
+      "single_value": true,
+      "mappings": [
+       {
+        "value": "'SkyQ Black (Verdi)'",
+        "condition": "(#1 == 'Sercomm') AND (#2 == 'BSkyB') AND (#3 == 'SET-TOP BOX')"
+       },
+       {
+        "value": "'SkyQ Black (Legacy)'",
+        "condition": "#2 == 'HUMAX'"
+       },
+       {
+        "value": "'SkyQ Titanium/Platinum'",
+        "condition": "#6 is not None"
+       },
+       {
+        "value": "'SkyQ Titanium/Platinum'",
+        "condition": "(#1 is None) AND ((#2 == 'BSkyB') OR (#2 is None) OR (#2 == '')) AND (#3 is None) AND #4 is None AND #5 is not None"
+       },
+       {
+        "value": "'SkyQ Black (Verdi)'",
+        "condition": "(#1 is None) AND ((#2 == 'BSkyB') OR (#2 is None) OR (#2 == '')) AND (#3 is None) AND #4 is not None AND #5 is not None"
+       },
+       {
+        "value": "'Other'",
+        "condition": "(#1 is None) AND (#2 == 'BSkyB') AND (#3 is None) AND #4 is None AND #5 is None"
+       },
+       {
+        "value": "'nessun STB rilevato'",
+        "condition": "(#1 is None) AND (#2 is None) AND (#3 is None) AND #4 is None AND #5 is None"
+       }
+      ]
+     }
+    }
+   ],
+   "aliases": [
+    {
+     "name": "Q_verdi",
+     "value": "Q_identification.verdi.[# == $(MAC_verdi)]"
+    },
+    {
+     "name": "Q_platinum",
+     "value": "Q_identification.platinum.[# == $(MAC_platinum)]"
+    },
+    {
+      "name": "Q_mini",
+      "value": "Q_identification.platinum.[# == $(iterator.MAC_validator)]"
+    },
+    {
+     "name": "produttore",
+     "value": "wpil_summary.data.manufacturer"
+    },
+    {
+     "name": "brand",
+     "value": "wpil_summary.data.fingerprint_data.device_brand"
+    },
+    {
+     "name": "MAC",
+     "value": "wpil_summary.data.device_mac"
+    },
+    {
+     "name": "active",
+     "value": "wpil_summary.data.is_active"
+    },
+    {
+     "name": "type",
+     "value": "wpil_summary.data.fingerprint_data.device_type"
+    },
+    {
+     "name": "ipv6",
+     "value": "wpil_summary.data.ipv6_address"
+    },
+    {
+     "name": "4k",
+     "value": "wpil_summary.data.fingerprint_data.is_4k_device"
+    },
+    {
+     "name": "model",
+     "value": "wpil_summary.data.fingerprint_data.device_model"
+    }
+   ],
+   "sources": [
+    {
+     "principal": {
+      "name": "wpil_summary",
+      "options": {
+       "URL": "/diagnostics/account/{BB_ID}/connected-devices/summary"
+      },
+      "type": "WPIL"
+     }
+    },
+    {
+     "principal": {
+      "name": "Q_identification",
+      "options": {
+       "param_id": "SkyQ"
+      },
+      "type": "GLOBAL_PARAMS"
+     }
+    }
+   ],
+   "RAGs": {
+    "red": [],
+    "amber": [],
+    "green": []
+   }
+  },
+  "hidden": true
+ }

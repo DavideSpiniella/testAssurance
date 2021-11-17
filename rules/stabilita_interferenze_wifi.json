@@ -1,0 +1,188 @@
+{
+ "rule_id": "kineton_stabilita_interferenze_wifi",
+ "section": "TEST KINETON",
+ "rule_name": "Kineton Stabilità e Interferenze Wi-Fi",
+ "category": "In-Home",
+ "rule": {
+  "variables": [
+   {
+    "method": "TIME",
+    "name": "one_day_ago",
+    "params": {
+     "time_ago": "1 days"
+    }
+   },
+   {
+    "method": "GET",
+    "name": "last_report_cpe",
+    "params": {
+     "filter": "($(last_summary_report_cpe_timestamp)*1000) > $(one_day_ago)",
+     "variable": "$(last_summary_report_cpe_timestamp)",
+     "single_value": true
+    }
+   },
+   {
+    "method": "GET",
+    "name": "last_report",
+    "params": {
+     "filter": "($(last_summary_report_timestamp)*1000) > $(one_day_ago)",
+     "variable": "$(last_summary_report_timestamp)",
+     "single_value": true
+    }
+   },
+   {
+    "method": "COUNT",
+    "name": "number_of_sky_product_platinum",
+    "params": {
+     "filter": "($(brand) == '' OR $(brand) == 'Sky' OR $(brand) is None) AND ($(manufacturer) == 'BSkyB' OR $(manufacturer) == '' OR $(manufacturer) is None) AND $(is_active) AND ($(ipv6) == '' OR $(ipv6) is None) AND ($(model) == 'Sky Q' OR $(model) == '' OR $(model) is None)"
+    }
+   },
+   {
+    "method": "COUNT",
+    "name": "number_of_sky_product_verdi",
+    "params": {
+     "filter": "$(brand) == 'Sercomm' AND $(manufacturer) == 'BSkyB' AND $(is_active) AND $(ipv6) != ''"
+    }
+   },
+   {
+    "method": "COUNT",
+    "name": "number_of_sky_product_ridotto",
+    "params": {
+     "filter": "$(manufacturer) == 'BSkyB' AND $(is_active)"
+    }
+   },
+   {
+    "method": "DECODE",
+    "name": "number_of_sky_product",
+    "params": {
+      "mappings": [
+        {
+          "condition": "#1 == 0 AND #2 == 0", 
+          "value": "$(number_of_sky_product_ridotto)"
+        },
+        {
+          "condition": "#1 > 0", 
+          "value": "$(number_of_sky_product_platinum)"
+        },
+        {
+          "condition": "#2 > 0", 
+          "value": "0"
+        }
+      ],
+      "single_value": true,
+      "variable": [
+        "$(number_of_sky_product_platinum)",
+        "$(number_of_sky_product_verdi)"
+      ]
+    }
+  }
+  ],
+  "aliases": [
+   {
+    "name": "last_summary_report_cpe_timestamp",
+    "value": "wpil.last_summary_report_cpe_timestamp"
+   },
+   {
+    "name": "last_summary_report_timestamp",
+    "value": "wpil.last_summary_report_timestamp"
+   },
+   {
+    "name": "manufacturer",
+    "value": "wpil.data.manufacturer"
+   },
+   {
+    "name": "brand",
+    "value": "wpil.data.fingerprint_data.device_brand"
+   },
+   {
+     "name": "ipv6",
+     "value": "wpil.data.ipv6_address"
+   },
+   {
+    "name": "model",
+    "value": "wpil.data.fingerprint_data.device_model"
+   },
+   {
+    "name": "connection_interface",
+    "value": "wpil.data.connection_interface"
+   },
+   {
+    "name": "is_active",
+    "value": "wpil.data.is_active"
+   }
+  ],
+  "sources": [
+   {
+    "principal": {
+     "name": "wpil",
+     "options": {
+      "URL": "/diagnostics/account/{BB_ID}/connected-devices/summary"
+     },
+     "type": "WPIL"
+    }
+   }
+  ],
+  "RAGs": {
+   "red": [],
+   "amber": [
+    {
+     "description": "Possibili interferenze su rete Mesh dovute a Sky Q",
+     "condition": "( $(last_report) AND $(last_report_cpe) AND $(number_of_sky_product)>0 )",
+     "wizards": [
+      {
+       "condition": "",
+       "id": "W_STABILITY_INTRO"
+      },
+      {
+       "condition": "W_STABILITY_INTRO == 0",
+       "id": "W_NO_PROB"
+      },
+      {
+       "condition": "W_STABILITY_INTRO == 1",
+       "id": "W_OFF_CHANNEL_SCAN_1"
+      },
+      {
+       "condition": "W_OFF_CHANNEL_SCAN_1 == 0",
+       "id": "W_SKYQ_CHANNEL_CHANGE"
+      },
+      {
+       "chart_list": [
+        {
+         "chart_name": "Grafico di Interferenza",
+         "chart_type": "interference_chart"
+        }
+       ],
+       "condition": "W_OFF_CHANNEL_SCAN_1 == 1 or W_SKYQ_CHANNEL_CHANGE == 0",
+       "id": "W_CHANNEL_CHANGE"
+      },
+      {
+       "condition": "W_CHANNEL_CHANGE == 1",
+       "id": "W_OFF_CHANNEL_SCAN_2"
+      },
+      {
+       "condition": " W_OFF_CHANNEL_SCAN_1 == 2 or W_OFF_CHANNEL_SCAN_1 == 3 or W_SKYQ_CHANNEL_CHANGE == 2 or W_SKYQ_CHANNEL_CHANGE == 3 or W_OFF_CHANNEL_SCAN_2 == 0 or W_OFF_CHANNEL_SCAN_2== 2",
+       "id": "W_SIW_SWAT"
+      },
+      {
+       "condition": "W_SKYQ_CHANNEL_CHANGE == 1 or W_OFF_CHANNEL_SCAN_2 == 1",
+       "id": "W_SIW_RESOLVED"
+      },
+      {
+       "condition": "W_CHANNEL_CHANGE == 0",
+       "id": "W_SIW_CUSTOMER_REFUSE"
+      }
+     ]
+    }
+   ],
+   "green": [
+    {
+     "description": "Nessun Problema Riscontrato",
+     "condition": "$(number_of_sky_product)==0"
+    }
+   ]
+  }
+ },
+ "pre_check_group": [
+  "In-Home"
+ ]
+}

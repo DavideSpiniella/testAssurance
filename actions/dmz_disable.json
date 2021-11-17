@@ -1,0 +1,62 @@
+{
+    "frontend_info": {
+        "action_description": "Azione Automatica",
+        "action_title": "Disabilita DMZ",
+        "frontend_modal_type": "confirm_msg_box"
+    },
+    "action_id": "dmz_disable",
+    "available_for_operator": true,
+    "result": {
+        "conditions": [
+            {
+                "color": "red",
+                "description": "Procedura disabilitazione DMZ fallita",
+                "condition": "$(tardis_dmz_disable.has_errors) == True"
+            },
+            {
+                "color": "green",
+                "description": "Procedura disabilitazione DMZ iniziata. L'operazione potrebbe richiedere qualche minuto.",
+                "condition": "$(tardis_dmz_disable.has_errors) == False"
+            }
+        ]
+    },
+    "action_steps": [
+        {
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "has_errors",
+                    "params": {
+                        "variable": "$(tardis.errors.has_errors)",
+                        "single_value": true
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "tardis",
+                        "options": {
+                            "action": "tardis",
+                            "operations": [
+                                {
+                                    "type": "SET",
+                                    "value": "false",
+                                    "dataType": "Boolean",
+                                    "parameter": "Device.NAT.X_CISCO_COM_DMZ.Enable"
+                                }
+                            ]
+                        },
+                        "type": "TARDIS"
+                    }
+                }
+            ],
+            "verification_condition": "$(has_errors) == False",
+            "timeout":100,
+            "max_retry": 5,
+            "retry_check_wait_time": 30,
+            "action_step_id": "tardis_dmz_disable"
+        }
+    ],
+    "authorization_level": 1
+}

@@ -1,0 +1,73 @@
+{
+	"action_id": "POD_deonboarding",
+    "result": {
+		"conditions": [
+			{
+				"color": "red",
+				"condition": "$(deactivate_pod.sourceId) != 'activation'",
+				"description": "Non è stato possibile disassociare il POD"
+			},
+			{
+				"color": "red",
+				"condition": "$(deactivate_pod.sourceId) == 'activation' and $(deactivate_pod.status) == 500",
+				"description": "Serial Number del POD errato o POD associato ad un altro account"
+			},
+			{
+				"color": "green",
+				"condition": "$(deactivate_pod.sourceId) == 'activation' and $(deactivate_pod.status) is None",
+				"description": "POD disassociato correttamente"
+			}
+		]
+	},
+	"action_steps": [
+		{
+			"variables": [
+				{
+					"method": "GET",
+					"name": "sourceId",
+					"params": {
+						"single_value": true,
+						"variable": "$(biz.sourceId)"
+					}
+				},
+				{
+					"method": "GET",
+					"name": "status",
+					"params": {
+						"single_value": true,
+						"variable": "$(biz.response.status)"
+					}
+				}
+			],
+			"sources": [
+				{
+					"principal": {
+						"name": "biz",
+						"options": {
+							"err_raise": false,
+							"method": "DELETE",
+							"URL": "/aggregator-api/devices/device/xboSourceId/{BB_ID}/serialNumber/{POD_SN}?sourcesFilter=activation&partner=sky-italia&action=deletePod"
+						},
+						"type": "BIZ_API"
+					}
+				}
+			],
+            "action_step_id": "deactivate_pod"
+		}
+	],
+	"input_variables": [
+		{
+			"name": "POD_SN",
+			"alias": "Seriale del pod",
+			"required": true
+			
+		}
+	],
+	"authorization_level": 1,
+	"available_for_operator": false,
+	"frontend_info": {
+		"action_description": "Azione Automatica",
+		"action_title": "Disociazione POD",
+		"frontend_modal_type": "confirm_msg_box"
+	}
+}

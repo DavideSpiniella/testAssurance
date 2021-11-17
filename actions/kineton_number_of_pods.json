@@ -1,0 +1,62 @@
+{
+    "action_id": "kineton_number_of_pods",
+    "result": {
+        "conditions": [
+            {
+                "color": "red",
+                "description": "Nessun POD rilevato",
+                "condition": "$(pod_data.number_of_pods) == 0"
+            },
+            {
+                "color": "green",
+                "description": "Sono presenti POD connessi",
+                "condition": "$(pod_data.number_of_pods) > 0",
+                "variables": [
+					{
+						"name": "Numero di PODs",
+						"value": "$(pod_data.number_of_pods)"
+					}
+				]
+            }
+        ]
+    },
+    "action_steps": [
+        {
+            "n_retry": 20,
+            "variables": [
+                {
+                    "method": "COUNT",
+                    "name": "number_of_pods",
+                    "params": {
+                        "filter": "$(pod_id)"
+                    }
+                }
+            ],
+            "aliases": [
+                {
+                    "name": "pod_id",
+                    "value": "wpil.qoe_pods.states.id"
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "wpil",
+                        "options": {
+                            "URL": "/diagnostics/account/{BB_ID}/connected-devices/cpe"
+                        },
+                        "type": "WPIL"
+                    }
+                }
+            ],
+            "verification_condition": "$(number_of_pods)>0",
+            "action_step_id": "pod_data"
+        }
+    ],
+    "authorization_level": 1,
+    "frontend_info": {
+        "action_description": "Verifica Numero di Sky Pod",
+        "action_title": "Esegui Azione Automatica",
+        "frontend_modal_type": "confirm_msg_box"
+    }
+}

@@ -1,0 +1,141 @@
+{
+  "wizard_id": "pod_onboarding",
+  "section": "Wi-Fi",
+  "hint": "",
+  "wizard_0": true,
+  "category": "In-Home",
+  "steps": [
+   {
+    "wizard_id": "WIZARD_POD_SN",
+    "condition": "",
+    "hints": [
+     {
+      "description": "Attenzione il serial number del POD va inserito con le sole lettere maiuscole"
+     }
+    ],
+    "options": [
+     {
+      "name": "Avanti",
+      "condition": "$(POD_onboarding.register_pod.sourceId) == 'activation' and $(POD_onboarding.register_pod.status) != 404 and $(POD_onboarding.register_pod.status) != 400 and $(POD_onboarding.register_pod.status) != 500 and $(POD_onboarding.register_pod.packId) is not None and $(POD_onboarding.register_pod.status) is None",
+      "type": "button",
+      "value": 1
+     },
+     {
+      "name": "Associa un altro POD",
+      "condition": "$(POD_onboarding.register_pod.sourceId) == 'activation' and $(POD_onboarding.register_pod.status) != 404 and $(POD_onboarding.register_pod.status) != 400 and $(POD_onboarding.register_pod.status) != 500 and $(POD_onboarding.register_pod.packId) is not None and $(POD_onboarding.register_pod.status) is None",
+      "type": "button",
+      "value": 3
+     },
+     {
+      "name": "Avanti",
+      "condition": "$(POD_onboarding.register_pod.sourceId) == 'activation' and $(POD_onboarding.register_pod.status) != 404 and $(POD_onboarding.register_pod.status) != 400 and $(POD_onboarding.register_pod.status) != 500 and $(POD_onboarding.register_pod.packId) is None and $(POD_onboarding.register_pod.status) is None",
+      "type": "button",
+      "value": 2
+     },
+     {
+      "name": "Avanti",
+      "condition": "$(POD_onboarding.register_pod.sourceId) != 'activation' or $(POD_onboarding.register_pod.status) == 404 or $(POD_onboarding.register_pod.status) == 400 or $(POD_onboarding.register_pod.status) == 500",
+      "type": "button",
+      "value": 0
+     }
+    ],
+    "description": "Inserire il serial number del POD",
+    "title": "AZIONI con CLIENTE",
+    "actions": [
+     {
+      "action_id": "POD_onboarding"
+     }
+    ]
+   },
+   {
+    "wizard_id": "WIZARD_POD_SN_LOOP",
+    "condition": "WIZARD_POD_SN == 3 or WIZARD_POD_SN_LOOP == 3",
+    "hints": [
+     {
+      "description": "Attenzione il serial number del POD va inserito con le sole lettere maiuscole"
+     }
+    ],
+    "options": [
+     {
+      "name": "Avanti",
+      "condition": "$(POD_onboarding.register_pod.sourceId) == 'activation' and $(POD_onboarding.register_pod.status) != 404 and $(POD_onboarding.register_pod.status) != 400 and $(POD_onboarding.register_pod.status) != 500 and $(POD_onboarding.register_pod.packId) is not None and $(POD_onboarding.register_pod.status) is None",
+      "type": "button",
+      "value": 1
+     },
+     {
+      "name": "Associa un altro POD",
+      "condition": "$(POD_onboarding.register_pod.sourceId) == 'activation' and $(POD_onboarding.register_pod.status) != 404 and $(POD_onboarding.register_pod.status) != 400 and $(POD_onboarding.register_pod.status) != 500 and $(POD_onboarding.register_pod.packId) is not None and $(POD_onboarding.register_pod.status) is None",
+      "type": "button",
+      "value": 3
+     },
+     {
+      "name": "Avanti",
+      "condition": "$(POD_onboarding.register_pod.sourceId) == 'activation' and $(POD_onboarding.register_pod.status) != 404 and $(POD_onboarding.register_pod.status) != 400 and $(POD_onboarding.register_pod.status) != 500 and $(POD_onboarding.register_pod.packId) is None and $(POD_onboarding.register_pod.status) is None ",
+      "type": "button",
+      "value": 2
+     },
+     {
+      "name": "Avanti",
+      "condition": "$(POD_onboarding.register_pod.sourceId) != 'activation' or $(POD_onboarding.register_pod.status) == 404 or $(POD_onboarding.register_pod.status) == 400 or $(POD_onboarding.register_pod.status) == 500",
+      "type": "button",
+      "value": 0
+     }
+    ],
+    "description": "Inserire il serial number del POD",
+    "title": "AZIONI con CLIENTE",
+    "actions": [
+     {
+      "action_id": "POD_onboarding"
+     }
+    ]
+   },
+   {
+    "wizard_id": "WIZARD_FINE_KO",
+    "condition": "WIZARD_POD_SN == 0 or WIZARD_POD_SN_LOOP == 0",
+    "hints": [],
+    "options": [
+     {
+      "name": "FINE",
+      "type": "button",
+      "value": "WR1001"
+     }
+    ],
+    "description": "Non è stato possibile associare il POD",
+    "title": "Errore Associazione POD",
+    "actions": []
+   },
+   {
+    "wizard_id": "WIZARD_FINE_OK_GA",
+    "condition": "WIZARD_POD_SN == 2 or WIZARD_POD_SN_LOOP == 2",
+    "hints": [],
+    "options": [
+     {
+      "name": "FINE",
+      "type": "button",
+      "value": "WR1001"
+     }
+    ],
+    "description": "Il POD risultava già associato a questa linea",
+    "title": "POD già associato",
+    "actions": []
+   },
+   {
+    "wizard_id": "WIZARD_FINE_OK",
+    "condition": "WIZARD_POD_SN == 1 or WIZARD_POD_SN_LOOP == 1",
+    "hints": [],
+    "options": [
+     {
+      "name": "FINE",
+      "type": "button",
+      "value": "WR1001"
+     }
+    ],
+    "description": "Il POD è stato associato correttamente alla tua linea",
+    "title": "POD Associato",
+    "actions": []
+   }
+  ],
+  "priority_level": 1,
+  "description": "Clicca qui per aggiungere il Pod alla tua rete domestica.",
+  "name": "Pod Onboarding"
+ }

@@ -1,0 +1,166 @@
+{
+ "rule_id": "cni_cpe_pod",
+ "section": "Dettaglio Prodotti Sky",
+ "category": "Customer",
+ "rule_name": "Sky WIFI",
+ "priority_level": 10,
+ "rule": {
+  "context": {
+   "customer_info": [
+    {
+     "name": "Data Ultimo Riavvio",
+     "variable": "$(date_last_reboot_end)"
+    },
+    {
+     "name": "Firmware",
+     "variable": "$(firmware_name)"
+    },
+    {
+     "name": "Data Aggiornamento Firmware",
+     "variable": "$(firmware_upgrade_date)"
+    },
+    {
+     "name": "Indirizzo MAC",
+     "variable": "$(gatewayMacAddress)"
+    },
+    {
+     "name": "Numero Sky Pod Collegati",
+     "variable": "$(number_of_pods)"
+    },
+    {
+     "name": "Port Forwarding",
+     "variable": "$(Port_Forwarding)"
+    },
+    {
+     "name": "Data Ultima Modifica Port Forwarding",
+     "variable": "$(port_forwarding_timestamp)"
+    },
+    {
+     "name": "DMZ",
+     "variable": "$(DMZ)"
+    }
+   ]
+  },
+  "variables": [
+   {
+    "method": "COUNT",
+    "name": "number_of_pods",
+    "params": {
+     "filter": "$(wpil_cpe.qoe_pods.states.id)"
+    }
+   },
+   {
+    "method": "DECODE",
+    "name": "Port_Forwarding",
+    "params": {
+     "variable": "$(port_forwarding)",
+     "single_value": true,
+     "mappings": [
+      {
+       "value": "'Attivo'",
+       "condition": "# == True"
+      },
+      {
+       "value": "'Disattivo'",
+       "condition": "# == False"
+      }
+     ]
+    }
+   },
+   {
+    "method": "DECODE",
+    "name": "DMZ",
+    "params": {
+     "variable": "$(dmz)",
+     "single_value": true,
+     "mappings": [
+      {
+       "value": "'Attivo'",
+       "condition": "# == True"
+      },
+      {
+       "value": "'Disattivo'",
+       "condition": "# == False"
+      }
+     ]
+    }
+   }
+  ],
+  "aliases": [
+   {
+    "name": "firmware_name",
+    "value": "wpil_status.data.firmware_name"
+   },
+   {
+    "name": "date_last_reboot_end",
+    "value": "wpil_status.data.last_reboot_end"
+   },
+   {
+    "name": "gatewayMacAddress",
+    "value": "wpil_devices.gateway.gatewayMacAddress"
+   },
+   {
+    "name": "pod_id",
+    "value": "wpil_cpe.qoe_pods.states.id"
+   },
+   {
+    "name": "firmware_upgrade_date",
+    "value": "wpil_status.data.firmware_download_completed_time"
+   },
+   {
+    "name": "port_forwarding_timestamp",
+    "value": "maptinv.status.port_forwarding.timestamp"
+   },
+   {
+    "name": "port_forwarding",
+    "value": "maptinv.status.port_forwarding.enabled"
+   },
+   {
+    "name": "dmz",
+    "value": "maptinv.status.dmz.enabled"
+   }
+  ],
+  "sources": [
+   {
+    "principal": {
+     "name": "wpil_status",
+     "options": {
+      "URL": "/diagnostics/account/{BB_ID}/status"
+     },
+     "type": "WPIL"
+    }
+   },
+   {
+    "principal": {
+     "name": "wpil_cpe",
+     "options": {
+      "URL": "/diagnostics/account/{BB_ID}/connected-devices/cpe"
+     },
+     "type": "WPIL"
+    }
+   },
+   {
+    "principal": {
+     "name": "wpil_devices",
+     "options": {
+      "URL": "/provision/account/{BB_ID}/devices"
+     },
+     "type": "WPIL"
+    }
+   },
+   {
+    "principal": {
+     "name": "maptinv",
+     "options": {},
+     "type": "MAPT_INVENTORY"
+    }
+   }
+  ],
+  "RAGs": {
+   "red": [],
+   "amber": [],
+   "green": []
+  }
+ },
+ "hidden": true
+}

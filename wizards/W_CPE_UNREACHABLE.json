@@ -1,0 +1,19 @@
+{
+    "hints": [],
+    "wizard_id": "W_CPE_UNREACHABLE",
+    "options": [
+        {
+            "name": "SI",
+            "type": "button",
+            "value": 1
+        },
+        {
+            "name": "NO",
+            "type": "button",
+            "value": 0
+        }
+    ],
+    "description": "Lo Sky Hub non comunica correttamente e potrebbe impedire l'esecuzione corretta della Diagnostica.\nE necessario settare dei parametri dello Sky Hub.\n\nIl cliente vuole procedere?",
+    "actions": [],
+    "title": "COSA DIRE AL CLIENTE"
+}

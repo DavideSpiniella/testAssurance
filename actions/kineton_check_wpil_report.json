@@ -1,0 +1,314 @@
+{
+"action_id": "kineton_check_wpil_report",
+  "result": {
+    "conditions": [
+      {
+        "color": "red",
+        "condition": "$(check.cpe_status) != 200 OR NOT $(check.summary_last_report_cpe) OR NOT $(check.summary_last_report) OR NOT $(check.interface_last_report) OR NOT $(check.interface_last_report_cpe) OR NOT $(check.traffic_last_report) OR NOT $(check.traffic_last_report_cpe) OR $(check_parametri.traffic_enables) == False OR $(check_parametri.status_enables) == False OR $(check_parametri.wifi_enables) == False OR $(check_parametri.readiostat_enables) == False OR NOT  $(check_parametri.time_syncronized)",
+        "description": "Il problema NON si è risolto"
+      },
+      {
+        "color": "green",
+        "condition": "$(check.cpe_status) == 200 AND $(check.summary_last_report_cpe) AND $(check.summary_last_report) AND $(check.interface_last_report) AND $(check.interface_last_report_cpe) AND $(check.traffic_last_report) AND $(check.traffic_last_report_cpe) AND $(check_parametri.traffic_enables) == True AND $(check_parametri.status_enables) == True AND $(check_parametri.wifi_enables) == True AND $(check_parametri.readiostat_enables) == True AND $(check_parametri.time_syncronized)",
+        "description": "Il problema si è risolto"
+      }
+    ]
+  },
+  "action_steps": [
+    {
+      "variables": [
+        {
+          "method": "GET",
+          "name": "cpe_status",
+          "params": {
+            "single_value": true,
+            "variable": "$(wpil_status.status)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "traffic_status",
+          "params": {
+            "single_value": true,
+            "variable": "$(wpil_traffic.status)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "interfaces_status",
+          "params": {
+            "single_value": true,
+            "variable": "$(wpil_interfaces.status)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "summary_status",
+          "params": {
+            "single_value": true,
+            "variable": "$(wpil_summary.status)"
+          }
+        },
+        {
+          "method": "TIME",
+          "name": "three_hours_ago",
+          "params": {
+            "time_ago": "3 hours"
+          }
+        },
+        {
+          "method": "TIME",
+          "name": "half_hour_ago",
+          "params": {
+            "time_ago": "30 minutes"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "summary_last_report_cpe",
+          "params": {
+            "filter": "($(last_summary_report_cpe_timestamp)) > $(three_hours_ago)",
+            "single_value": true,
+            "variable": "$(last_summary_report_cpe_timestamp)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "summary_last_report",
+          "params": {
+            "filter": "($(last_summary_report_timestamp)) > $(three_hours_ago)",
+            "single_value": true,
+            "variable": "$(last_summary_report_timestamp)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "interface_last_report",
+          "params": {
+            "filter": "($(last_interface_report_timestamp)) > $(three_hours_ago)",
+            "single_value": true,
+            "variable": "$(last_interface_report_timestamp)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "interface_last_report_cpe",
+          "params": {
+            "filter": "($(last_interface_report_cpe_timestamp)) > $(three_hours_ago)",
+            "single_value": true,
+            "variable": "$(last_interface_report_cpe_timestamp)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "traffic_last_report_cpe",
+          "params": {
+            "filter": "($(last_traffic_report_cpe_timestamp)) > $(three_hours_ago)",
+            "single_value": true,
+            "variable": "$(last_traffic_report_cpe_timestamp)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "traffic_last_report",
+          "params": {
+            "filter": "($(last_traffic_report_timestamp)) > $(three_hours_ago)",
+            "single_value": true,
+            "variable": "$(last_traffic_report_timestamp)"
+          }
+        }
+      ],
+      "aliases": [
+        {
+          "name": "last_summary_report_cpe_timestamp",
+          "value": "wpil_summary.last_summary_report_cpe_timestamp"
+        },
+        {
+          "name": "last_summary_report_timestamp",
+          "value": "wpil_summary.last_summary_report_timestamp"
+        },
+        {
+          "name": "last_interface_report_cpe_timestamp",
+          "value": "wpil_interfaces.last_interface_report_cpe_timestamp"
+        },
+        {
+          "name": "last_interface_report_timestamp",
+          "value": "wpil_interfaces.last_interface_report_timestamp"
+        },
+        {
+          "name": "last_traffic_report_cpe_timestamp",
+          "value": "wpil_traffic.last_traffic_report_cpe_timestamp"
+        },
+        {
+          "name": "last_traffic_report_timestamp",
+          "value": "wpil_traffic.last_traffic_report_timestamp"
+        }
+      ],
+      "sources": [
+        {
+          "principal": {
+            "name": "wpil_status",
+            "options": {
+              "err_raise": false,
+              "URL": "/diagnostics/account/{BB_ID}/status"
+            },
+            "type": "MOCK"
+          }
+        },
+        {
+          "principal": {
+            "name": "wpil_summary",
+            "options": {
+              "err_raise": false,
+              "URL": "/diagnostics/account/{BB_ID}/connected-devices/summary"
+            },
+            "type": "MOCK"
+          }
+        },
+        {
+          "principal": {
+            "name": "wpil_interfaces",
+            "options": {
+              "err_raise": false,
+              "URL": "/diagnostics/account/{BB_ID}/connected-devices/interfaces"
+            },
+            "type": "MOCK"
+          }
+        },
+        {
+          "principal": {
+            "name": "wpil_traffic",
+            "options": {
+              "err_raise": false,
+              "URL": "/diagnostics/account/{BB_ID}/connected-devices/traffic"
+            },
+            "type": "MOCK"
+          }
+        }
+      ],
+      "timeout": 200,
+      "action_step_id": "check",
+      "max_retry": 5,
+      "verification_condition": "$(cpe_status) == 200"
+    },
+    {
+      "variables": [
+        {
+          "method": "GET",
+          "name": "has_errors",
+          "params": {
+            "single_value": true,
+            "variable": "$(tardis.errors.has_errors)"
+          }
+        },
+        {
+          "method": "TIME",
+          "name": "local_time",
+          "params": {
+            "time_ago": "1 seconds"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "cpe_time",
+          "params": {
+            "single_value": true,
+            "variable": "$(tardis.results.Device.Time.CurrentLocalTime)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "traffic_enables",
+          "params": {
+            "single_value": true,
+            "variable": "$(tardis.results.Device.X_RDKCENTRAL_COM_Report.NetworkDevicesTraffic.Enabled)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "status_enables",
+          "params": {
+            "single_value": true,
+            "variable": "$(tardis.results.Device.X_RDKCENTRAL_COM_Report.NetworkDevicesStatus.Enabled)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "wifi_enables",
+          "params": {
+            "single_value": true,
+            "variable": "$(tardis.results.Device.X_RDKCENTRAL_COM_Report.InterfaceDevicesWifi.Enabled)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "readiostat_enables",
+          "params": {
+            "single_value": true,
+            "variable": "$(tardis.results.Device.X_RDKCENTRAL_COM_Report.RadioInterfaceStatistics.Enabled)"
+          }
+        },
+        {
+          "method": "SET",
+          "name": "time_offset",
+          "params": {
+            "variable": "($(cpe_time)/1000) - ($(local_time) + 14350)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "time_syncronized",
+          "params": {
+            "filter": "$(time_offset) > 100",
+            "single_value": true,
+            "variable": "$(time_offset)"
+          }
+        }
+      ],
+      "sources": [
+        {
+          "principal": {
+            "name": "tardis",
+            "options": {
+              "action": "tardis",
+              "operations": [
+                {
+                  "parameter": "Device.X_RDKCENTRAL-COM_Report.NetworkDevicesTraffic.Enabled",
+                  "type": "GET"
+                },
+                {
+                  "parameter": "Device.X_RDKCENTRAL-COM_Report.NetworkDevicesStatus.Enabled",
+                  "type": "GET"
+                },
+                {
+                  "parameter": "Device.X_RDKCENTRAL-COM_Report.InterfaceDevicesWifi.Enabled",
+                  "type": "GET"
+                },
+                {
+                  "parameter": "Device.X_RDKCENTRAL-COM_Report.RadioInterfaceStatistics.Enabled",
+                  "type": "GET"
+                },
+                {
+                  "parameter": "Device.Time.CurrentLocalTime",
+                  "type": "GET"
+                }
+              ]
+            },
+            "type": "TARDIS"
+          }
+        }
+      ],
+      "max_retry": 1,
+      "timeout": 200,
+      "verification_condition": "$(has_errors) == False",
+      "action_step_id": "check_parametri"
+    }
+  ],
+  "authorization_level": 1,
+  "available_for_operator": true,
+  "frontend_info": {
+    "action_description": "Esegui Azione Automatica",
+    "action_title": "Verifica Connettività",
+    "frontend_modal_type": "confirm_msg_box"
+  }
+}

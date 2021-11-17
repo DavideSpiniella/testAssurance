@@ -1,0 +1,212 @@
+{
+    "action_id": "hub_fw_upgrade",
+    "result": {
+        "conditions": [
+            {
+                "color": "red",
+                "description": "Firmware non aggiornato",
+                "condition": "$(hub_fw_result.fw_name) not in $(firmware_to_install.fw_name)"
+            },
+            {
+                "color": "green",
+                "description": "Firmware aggiornato",
+                "condition": "$(hub_fw_result.fw_name) in $(firmware_to_install.fw_name)",
+                "variables": [
+					{
+						"name": "Versione del firmware installata:",
+						"value": "$(hub_fw.fw_name)"
+					}
+				]
+            }
+        ]
+    },
+    "action_steps": [
+        {
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "fw_name",
+                    "params": {
+                        "variable": "$(params.fw_name)",
+                        "single_value": true
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "params",
+                        "options": {
+                            "param_id": "upgrade_firmware_name"
+                        },
+                        "type": "GLOBAL_PARAMS"
+                    }
+                }
+            ],
+            "max_retry": 0,
+            "action_step_id": "firmware_to_install"
+        },
+        {
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "has_errors",
+                    "params": {
+                        "variable": "$(tardis.errors.has_errors)",
+                        "single_value": true
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "tardis",
+                        "options": {
+                            "action": "hub_fw_exec",
+                            "operations": [
+                                {
+                                    "type": "SET",
+                                    "value": "http://dac15cdlserver.ae.ccp.xcal.tv:8080/Images",
+                                    "dataType": "String",
+                                    "parameter": "Device.DeviceInfo.X_RDKCENTRAL-COM_FirmwareDownloadURL"
+                                },
+                                {
+                                    "type": "SET",
+                                    "value": "$(firmware_to_install.fw_name)",
+                                    "dataType": "String",
+                                    "parameter": "Device.DeviceInfo.X_RDKCENTRAL-COM_FirmwareToDownload"
+                                },
+                                {
+                                    "type": "SET",
+                                    "value": "true",
+                                    "dataType": "Boolean",
+                                    "parameter": "Device.DeviceInfo.X_RDKCENTRAL-COM_FirmwareDownloadNow"
+                                }
+                            ]
+                        },
+                        "type": "TARDIS"
+                    }
+                }
+            ],
+            "verification_condition": "$(has_errors) == False",
+            "max_retry": 0,
+            "action_step_id": "hub_fw_exec"
+        },
+        {
+            "retry_check_wait_time": 30,
+            "max_retry":20,
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "status",
+                    "params": {
+                        "variable": "$(wpil.status)",
+                        "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "message",
+                    "params": {
+                        "variable": "$(wpil.message)",
+                        "single_value": true
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "wpil",
+                        "options": {
+                            "method": "GET",
+                            "err_raise": false,
+                            "URL": "/diagnostics/account/{BB_ID}/status"
+                        },
+                        "type": "WPIL"
+                    }
+                }
+            ],
+            "verification_condition": "$(status) == 521 AND $(message) == 'Device not found in webpa system.'",
+            "timeout": 180,
+            "action_step_id": "wait_for_reboot_start"
+        },
+        {
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "state",
+                    "params": {
+                        "variable": "$(wpil.data.status)",
+                        "single_value": true
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "wpil",
+                        "options": {
+                            "method": "GET",
+                            "err_raise": false,
+                            "URL": "/diagnostics/account/{BB_ID}/status"
+                        },
+                        "type": "WPIL"
+                    }
+                }
+            ],
+            "action_step_id": "wait_for_reboot_complete",
+            "retry_check_wait_time": 30,
+            "max_retry":20,
+            "verification_condition": "$(state) == 'fully-manageable'",
+            "sleep_time": 120,
+            "timeout": 300
+        },
+        {
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "fw_name",
+                    "params": {
+                        "variable": "$(tardis.results.Device.DeviceInfo.X_CISCO_COM_FirmwareName)",
+                        "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "has_errors",
+                    "params": {
+                        "variable": "$(tardis.errors.has_errors)",
+                        "single_value": true
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "tardis",
+                        "options": {
+                            "action": "hub_fw_result",
+                            "operations": [
+                                {
+                                    "type": "GET",
+                                    "dataType": "String",
+                                    "parameter": "Device.DeviceInfo.X_CISCO_COM_FirmwareName"
+                                }
+                            ]
+                        },
+                        "type": "TARDIS"
+                    }
+                }
+            ],
+            "verification_condition": "$(has_errors) == False AND $(fw_name) in $(firmware_to_install.fw_name)",
+            "max_retry": 1,
+            "action_step_id": "hub_fw_result"
+        }
+    ],
+    "authorization_level": 1,
+    "frontend_info": {
+        "action_description": "Azione Automatica",
+        "action_title": "Aggiorna Firmware",
+        "frontend_modal_type": "confirm_msg_box"
+    }
+}

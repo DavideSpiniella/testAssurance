@@ -1,0 +1,177 @@
+{
+    "category": "In-Home",
+    "authorization_level": 2,
+    "description": "Clicca qui per verificare il posizionamento dello Sky Wifi Pod.",
+    "hint": "",
+    "name": "Posizionamento Sky Wifi Pod L2",
+    "priority_level": 1,
+    "section": "Wi-Fi",
+    "steps": [
+      {
+        "actions": [
+          {
+            "action_id":"pod_replacement_check_wpil"
+          }
+        ],
+        "condition": "",
+        "description": "Eseguire l'azione per verificare se ci sono POD malposizionati",
+        "hints": [],
+        "options": [
+          {
+            "name": "Avanti",
+            "type": "button",
+            "condition":"$(pod_replacement_check_wpil.pod_data.number_of_pods)>0 and $(pod_replacement_check_wpil.pod_data.pod_snr_max_interference) >= 25 and $(pod_replacement_check_wpil.pod_data.max_interference) > 40",
+            "value": 1
+          },
+          {
+            "name": "Avanti",
+            "type": "button",
+            "condition":"$(pod_replacement_check_wpil.pod_data.number_of_pods)>0 and $(pod_replacement_check_wpil.pod_data.min_snr) <= 15",
+            "value": 1
+          },
+          {
+            "name": "Avanti",
+            "type": "button",
+            "condition":"$(pod_replacement_check_wpil.pod_data.number_of_pods)>0 and $(pod_replacement_check_wpil.pod_data.max_rssi) >= -40",
+            "value": 1
+          },
+          {
+            "name": "Avanti",
+            "type": "button",
+            "condition":"$(pod_replacement_check_wpil.pod_data.number_of_pods)>0 and 15 < $(pod_replacement_check_wpil.pod_data.min_snr) < 16",
+            "value": 1
+          },
+          {
+            "name": "Avanti",
+            "type": "button",
+            "condition":"$(pod_replacement_check_wpil.pod_data.number_of_pods)>0 and $(pod_replacement_check_wpil.pod_data.pod_snr_max_interference) >= 25 and 25 < $(pod_replacement_check_wpil.pod_data.max_interference) <= 40",
+            "value": 1
+          },
+          {
+            "name": "Avanti",
+            "type": "button",
+            "condition":"$(pod_replacement_check_wpil.pod_data.number_of_pods)>0 and -40 > $(pod_replacement_check_wpil.pod_data.max_rssi) >= -50",
+            "value": 1
+          },
+          {
+            "name": "Avanti",
+            "type": "button",
+            "condition":"$(pod_replacement_check_wpil.pod_data.number_of_pods)==0 or ($(pod_replacement_check_wpil.pod_data.number_of_pods)>0 and $(pod_replacement_check_wpil.pod_data.pod_nick_too_interference) is None and $(pod_replacement_check_wpil.pod_data.min_snr) >= 25 and $(pod_replacement_check_wpil.pod_data.max_rssi) < -50) or ($(pod_replacement_check_wpil.pod_data.number_of_pods)>0 and ($(pod_replacement_check_wpil.pod_data.pod_nick_too_interference) is not None or $(pod_replacement_check_wpil.pod_data.min_snr) < 25 or $(pod_replacement_check_wpil.pod_data.max_rssi) > -50)",
+            "value": 0
+          }
+        ],
+        "title": "COSA DIRE AL CLIENTE",
+        "wizard_id": "WIZARD_INTRO"
+      },
+      {
+        "actions": [],
+        "condition": "WIZARD_INTRO == 1",
+        "description": "Il cliente vuole procedere con il riposizionamento",
+        "hints": [],
+        "options": [
+          {
+            "name": "SI",
+            "type": "button",
+            "value": 1
+          },
+          {
+            "name": "NO",
+            "type": "button",
+            "value": 0
+          }
+        ],
+        "title": "COSA DIRE AL CLIENTE",
+        "wizard_id": "WIZARD_TAB_POD"
+      },
+      {
+        "actions": [
+  
+        ],
+        "condition": "WIZARD_TAB_POD == 0",
+        "description": "Non posizionando gli Sky Pod la rete wireless non sar\u00E0 propagata correttamente",
+        "hints": [
+  
+        ],
+        "options": [
+          {
+            "name": "FINE",
+            "type": "button",
+            "value": "WR1001"
+          }
+        ],
+        "title": "Esito: Il cliente si rifiuta",
+        "wizard_id": "WIZARD_CLIENTE_RIFIUTA"
+      },
+      {
+        "actions": [],
+        "condition": "WIZARD_TAB_POD == 1",
+        "description": "Guida dettagliata disponibile su KM \r\n[Come posiziono gli Sky Wifi POD in casa](https://contact.skykm.pigro.ai/0.3/link/Nuovo-Sky-BB-1590514933-1590515253)\r\n\r\n\r\nDopo che la procedura di riposizionamento e riavvio sono state completate utilizzare il tasto avanti per proseguire.",
+        "hints": [],
+        "options": [
+          {
+            "name": "Avanti",
+            "type": "button",
+            "value": 1
+          }
+        ],
+        "title": "AZIONI con CLIENTE",
+        "wizard_id": "WIZARD_GUIDA"
+      },
+      {
+        "actions": [],
+        "condition": "WIZARD_GUIDA == 1",
+        "description": "Il POD è stato associato correttamente alla tua linea",
+        "hints": [
+            {
+                "description": "l'azione pu\u00F2 essere ripetuta fino ad ottenere la configurazione voluta"
+            }
+        ],
+        "options": [
+          {
+            "name": "Avantiko",
+            "type": "button",
+            "value": 0
+          },
+          {
+            "name": "Avantiok",
+            "type": "button",
+            "value": 1
+          }
+        ],
+        "title": "Azione di Riverifica",
+        "wizard_id": "WIZARD_RIVERIFICA"
+      },
+      {
+        "actions": [],
+        "condition": "WIZARD_RIVERIFICA == 0",
+        "description": "Ci sono ancora problemi con il posizionamento di alcuni POD",
+        "hints": [],
+        "options": [
+            {
+                "name": "FINE",
+                "type": "button",
+                "value": "WR1001"
+            }
+        ],
+        "title": "Esito: Non risolto",
+        "wizard_id": "WIZARD_NON_RISOLTO"
+      },
+      {
+        "actions": [],
+        "condition": "WIZARD_RIVERIFICA == 1 OR WIZARD_INTRO == 0",
+        "description": "I POD risultano posizionati correttamente",
+        "hints": [],
+        "options": [
+            {
+                "name": "FINE",
+                "type": "button",
+                "value": "WR1001"
+            }
+        ],
+        "title": "Esito: Risolto",
+        "wizard_id": "WIZARD_RISOLTO"
+      }
+    ],
+    "wizard_0": true,
+    "wizard_id": "posizionamento_sky_wifi_pod_L2"
+  }

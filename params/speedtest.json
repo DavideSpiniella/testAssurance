@@ -1,0 +1,21 @@
+{
+ "param_id": "speedtest",
+ "params_value": {
+  "upload": {
+   "open_fiber": {
+    "dati": "200000000"
+   },
+   "fastweb": {
+    "dati": "20000000"
+   }
+  },
+  "download": {
+   "open_fiber": {
+    "url": "http://data-hip-bbcdn-skycdn-it.akamaized.net/speedtest/sample_200.mp4"
+   },
+   "fastweb": {
+    "url": "http://data-hip-bbcdn-skycdn-it.akamaized.net/speedtest/sample_20.mp4"
+   }
+  }
+ }
+}

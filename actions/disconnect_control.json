@@ -1,0 +1,121 @@
+{
+    "action_id": "disconnect_control",
+    "frontend_info": {
+     "action_description": "Azione Automatica",
+     "action_title": "Identificazione Micro Disconnessioni",
+     "frontend_modal_type": "confirm_msg_box"
+    },
+    "available_for_operator": false,
+    "result": {
+     "conditions": [
+      {
+       "color": "red",
+       "description": "Vi sono state delle micro disconnessioni su questa linea",
+       "condition": "($(info_disconnections.days_wifi_2g_Deauth1) is not None AND $(info_disconnections.days_wifi_2g_Deauth1)) OR ($(info_disconnections.days_wifi_5g_Deauth1) is not None AND $(info_disconnections.days_wifi_5g_Deauth1))"
+      },
+      {
+       "color": "green",
+       "description": "Non risultano micro disconnessioni su questa linea",
+       "condition": "($(info_disconnections.days_wifi_2g_Deauth1) is None OR $(info_disconnections.days_wifi_2g_Deauth1) == False) AND ($(info_disconnections.days_wifi_5g_Deauth1) is None OR $(info_disconnections.days_wifi_5g_Deauth1) == False)"
+      }
+     ]
+    },
+    "action_steps": [
+     {
+      "variables": [
+       {
+        "name": "wifi_2g_Deauth1",
+        "method": "SUM",
+        "params": {
+         "filter": "$(event_code) == 'WIFI_INFO_2GDEAUTH1'",
+         "variable": "$(event_count)"
+        },
+        "global_variable": false
+       },
+       {
+        "name": "daily_wifi_2g_Deauth1",
+        "method": "SET",
+        "params": {
+         "variable": "$(daily_telemetry.+.wifi_2g_Deauth1) > 0"
+        },
+        "group": "daily_telemetry"
+       },
+       {
+        "name": "days_wifi_2g_Deauth1",
+        "method": "SET",
+        "params": {
+         "variable": "$(daily_wifi_2g_Deauth1).count(True) > 3"
+        },
+        "group": "daily_telemetry"
+       },
+       {
+        "name": "wifi_5g_Deauth1",
+        "method": "SUM",
+        "params": {
+         "filter": "$(event_code) == 'WIFI_INFO_5GDEAUTH1'",
+         "variable": "$(event_count)"
+        },
+        "global_variable": false
+       },
+       {
+        "name": "daily_wifi_5g_Deauth1",
+        "method": "SET",
+        "params": {
+         "variable": "$(daily_telemetry.+.wifi_5g_Deauth1) > 0"
+        },
+        "group": "daily_telemetry"
+       },
+       {
+        "name": "days_wifi_5g_Deauth1",
+        "method": "SET",
+        "params": {
+         "variable": "$(daily_wifi_5g_Deauth1).count(True) > 3"
+        },
+        "group": "daily_telemetry"
+       }
+      ],
+      "aliases": [
+       {
+        "name": "telemetry_ts",
+        "value": "tlm.timestamp"
+       },
+       {
+        "name": "event_code",
+        "value": "tlm.message.rdkBEvents.eventCode"
+       },
+       {
+        "name": "event_count",
+        "value": "tlm.message.rdkBEvents.eventCount"
+       }
+      ],
+      "sources": [
+       {
+        "principal": {
+         "name": "tlm",
+         "options": {
+          "last_n_days": 7,
+          "minimum_datapoints": 10,
+          "fields_to_retrieve": [
+           "timestamp",
+           "message.rdkBEvents.eventCode",
+           "message.rdkBEvents.eventCount"
+          ]
+         },
+         "type": "TELEMETRY"
+        }
+       }
+      ],
+      "action_step_id": "info_disconnections",
+      "groups": [
+       {
+        "name": "daily_telemetry",
+        "variable": "$(telemetry_ts)",
+        "period": "daily"
+       }
+      ],
+      "verification_condition": "True",
+      "max_retry": 0
+     }
+    ],
+    "authorization_level": 1
+   }

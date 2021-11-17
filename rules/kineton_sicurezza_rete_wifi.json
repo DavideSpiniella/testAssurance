@@ -1,0 +1,271 @@
+{
+    "rule_id": "kineton_sicurezza_rete_wifi",
+    "section": "TEST KINETON",
+    "rule_name": "Kineton Sicurezza Rete Wi-Fi",
+    "category": "In-Home",
+    "priority_level": 20,
+    "rule": {
+        "variables": [
+            {
+                "method": "GET",
+                "name": "wifi_2g_security",
+                "params": {
+                    "variable": "$(wpil.data.group_private_wifi_configuration.data.wifi_security_2g)",
+                    "single_value": true
+                }
+            },
+            {
+                "method": "GET",
+                "name": "wifi_5g_security",
+                "params": {
+                    "variable": "$(wpil.data.group_private_wifi_configuration.data.wifi_security_5g)",
+                    "single_value": true
+                }
+            },
+            {
+                "method": "GET",
+                "name": "security_type_2g",
+                "params": {
+                    "variable": "$(tardis.results.Device.WiFi.AccessPoint.10001.Security.ModeEnabled)",
+                    "single_value": true
+                }
+            },
+            {
+                "method": "GET",
+                "name": "security_type_5g",
+                "params": {
+                    "variable": "$(tardis.results.Device.WiFi.AccessPoint.10101.Security.ModeEnabled)",
+                    "single_value": true
+                }
+            },
+            {
+                "method":"TIME",
+                "name":"twenty_minutes_ago",
+                "params": {
+                    "time_ago": "20 minutes"
+                }
+            },
+            {
+                "method": "GET",
+                "name":"last_active",
+                "params": {
+                    "filter":"$(telemetry.timestamp) > ($(twenty_minutes_ago) * 1000)",
+                    "variable": "$(telemetry.timestamp)",
+                    "single_value": true
+                }
+            },
+            {
+                "method": "GET",
+                "name":"is_active",
+                "params": {
+                    "variable": "$(tardis_failover.results.Device.DeviceInfo.FirstUseDate)",
+                    "single_value": true
+                }
+            }
+
+        ],
+        "aliases": [],
+        "sources": [
+            {
+                "principal": {
+                    "name": "wpil",
+                    "options": {
+                        "URL": "/diagnostics/account/{BB_ID}/configuration"
+                    },
+                    "type": "WPIL"
+                },
+                "failover": {
+                    "name": "tardis",
+                    "options": {
+                        "action": "tardis_security",
+                        "operations": [
+                            {
+                                "type": "GET",
+                                "parameter": "Device.WiFi.AccessPoint.10001.Security.ModeEnabled"
+                            },
+                            {
+                                "type": "GET",
+                                "parameter": "Device.WiFi.AccessPoint.10101.Security.ModeEnabled"
+                            }
+                        ]
+                    },
+                    "type": "TARDIS"
+                }
+            },
+            {
+            "principal":{
+                    "name":"telemetry",
+                    "options":{
+                        "err_raise": false,
+                        "fields_to_retrieve":[
+                            "timestamp"
+                        ],
+                        "last_n_days": 7,
+                        "query": {}  
+                    },
+                    "type": "TELEMETRY"
+            },
+            "failover": {
+                    "name": "tardis_failover",
+                    "options": {
+                        "action": "tardis_failover_telemetry",
+                        "operations": [
+                            {
+                                "type": "GET",
+                                "parameter": "Device.DeviceInfo.FirstUseDate"
+                            }
+                        ]
+                    },
+                    "type": "TARDIS"
+                }
+            }
+        ],
+        "RAGs": {
+            "red": [],
+            "amber": [
+                {
+                    "description": "Rete Wi-Fi 2.4 Ghz non sicura",
+                    "condition": "$(wifi_2g_security) == 1 or ($(wifi_2g_security) is None and $(security_type_2g) != 'WPA2-Personal') and $(last_active) is not None",
+                    "wizards": [
+                        {
+                            "condition": "",
+                            "id": "W_SE_INTRO"
+                        },
+                        {
+                            "condition": "W_SE_INTRO == 1",
+                            "id": "W_APP_INTRO"
+                        },
+                        {
+                            "condition": "W_APP_INTRO == 0",
+                            "id": "W_APP_INSTALLATION"
+                        },
+                        {
+                            "condition": "W_APP_INSTALLATION == 1",
+                            "id": "W_APP_INSTALLATION_GUIDE"
+                        },
+                        {
+                            "condition": "W_APP_INSTALLATION_GUIDE == 0 or W_APP_INSTALLATION == 0",
+                            "id": "W_SE_FR"
+                        },
+                        {
+                            "condition": "W_APP_INTRO == 1 or W_APP_INSTALLATION_GUIDE == 1",
+                            "id": "REPLY_W_SE_WPA2_ON_WPIL"
+                        },
+                        {
+                            "condition": "REPLY_W_SE_WPA2_ON_WPIL == 2",
+                            "id": "REPLY_W_SE_MANUAL_CHECK"
+                        },
+                        {
+                            "condition": "REPLY_W_SE_WPA2_ON_WPIL == 0 or REPLY_W_SE_MANUAL_CHECK == 0",
+                            "id": "W_SE_STILL_FR"
+                        },
+                        {
+                            "condition": " W_SE_STILL_FR == 1 or W_SE_FR == 1",
+                            "id": "REPLY_W_FR_INTRO"
+                        },
+                        {
+                            "condition": "REPLY_W_FR_INTRO == 2 or REPLY_W_FR_INTRO == 0 or REPLY_W_FR_INTRO == 3",
+                            "id": "REPLY_W_SE_MANUAL_FR"
+                        },
+                        {
+                            "condition": "REPLY_W_SE_MANUAL_CHECK_AFTER_FR == 0",
+                            "id": "W_SE_SWAT"
+                        },
+                        {
+                            "condition": "W_SE_FR == 0 or W_SE_STILL_FR == 0 or W_SE_INTRO == 0",
+                            "id": "W_SE_CUSTOMER_REFUSE"
+                        },
+                        {
+                            "condition": " REPLY_W_SE_WPA2_ON_WPIL == 1 or REPLY_W_SE_MANUAL_CHECK == 1",
+                            "id": "W_SE_RESOLVED"
+                        },
+                        {
+                            "condition": " REPLY_W_FR_INTRO == 1 or REPLY_W_SE_MANUAL_FR == 1 or REPLY_W_SE_MANUAL_CHECK_AFTER_FR == 1",
+                            "id": "W_SE_RESOLVED_INVALIDANTE"
+                        }
+                    ]
+                },
+                {
+                    "description": "Rete Wi-Fi 5 Ghz non sicura",
+                    "condition": "$(wifi_5g_security) == 1 or ($(wifi_5g_security) is None and $(security_type_5g) != 'WPA2-Personal') and $(last_active) is not None",
+                    "wizards": [
+                        {
+                            "condition": "",
+                            "id": "W_SE_INTRO"
+                        },
+                        {
+                            "condition": "W_SE_INTRO == 1",
+                            "id": "W_APP_INTRO"
+                        },
+                        {
+                            "condition": "W_APP_INTRO == 0",
+                            "id": "W_APP_INSTALLATION"
+                        },
+                        {
+                            "condition": "W_APP_INSTALLATION == 1",
+                            "id": "W_APP_INSTALLATION_GUIDE"
+                        },
+                        {
+                            "condition": "W_APP_INSTALLATION_GUIDE == 0 or W_APP_INSTALLATION == 0",
+                            "id": "W_SE_FR"
+                        },
+                        {
+                            "condition": "W_APP_INTRO == 1 or W_APP_INSTALLATION_GUIDE == 1",
+                            "id": "REPLY_W_SE_WPA2_ON_WPIL"
+                        },
+                        {
+                            "condition": "REPLY_W_SE_WPA2_ON_WPIL == 2",
+                            "id": "REPLY_W_SE_MANUAL_CHECK"
+                        },
+                        {
+                            "condition": "REPLY_W_SE_WPA2_ON_WPIL == 0 or W_SE_MANUAL_CHECK == 0",
+                            "id": "W_SE_STILL_FR"
+                        },
+                        {
+                            "condition": " W_SE_STILL_FR == 1 or W_SE_FR == 1",
+                            "id": "REPLY_W_FR_INTRO"
+                        },
+                        {
+                            "condition": "REPLY_W_FR_INTRO == 2 or REPLY_W_FR_INTRO == 0 or REPLY_W_FR_INTRO == 3",
+                            "id": "REPLY_W_SE_MANUAL_FR"
+                        },
+                        {
+                            "condition": " REPLY_W_SE_MANUAL_CHECK_AFTER_FR == 0",
+                            "id": "W_SE_SWAT"
+                        },
+                        {
+                            "condition": "W_SE_FR == 0 or W_SE_STILL_FR == 0 or W_SE_INTRO == 0",
+                            "id": "W_SE_CUSTOMER_REFUSE"
+                        },
+                        {
+                            "condition": " REPLY_W_SE_WPA2_ON_WPIL == 1 or REPLY_W_SE_MANUAL_CHECK == 1",
+                            "id": "W_SE_RESOLVED"
+                        },
+                        {
+                            "condition": " REPLY_W_FR_INTRO == 1 or REPLY_W_SE_MANUAL_FR == 1 or REPLY_W_SE_MANUAL_CHECK_AFTER_FR == 1",
+                            "id": "W_SE_RESOLVED_INVALIDANTE"
+                        }
+                    ]
+                }
+            ],
+            "green": [
+                {
+                    "description": "Rete Wi-Fi sicura",
+                    "condition": "$(wifi_2g_security) is not None AND $(wifi_2g_security) != 1 AND $(wifi_5g_security) is not None AND $(wifi_5g_security) != 1 and $(last_active) is not None"
+                },
+                {
+                    "description": "Rete Wi-Fi sicura",
+                    "condition": "$(security_type_2g) == 'WPA2-Personal' and $(security_type_5g) == 'WPA2-Personal' and $(last_active) is not None"
+                },
+                {
+                    "description": "Rete Wi-Fi ignota (probabile modem libero)",
+                    "condition": "$(last_active) is None"
+                },
+                {
+                    "description": "Rete Wi-Fi ignota (probabile modem libero)",
+                    "condition": "$(is_active) is not None"
+                }
+            ]
+        }
+    }
+}

@@ -1,0 +1,191 @@
+{
+ "wizard_id": "KINETON_W0_INTERFERENCE_SCAN",
+ "section": "Wi-Fi",
+ "hint": "",
+ "wizard_0": true,
+ "category": "In-Home",
+ "steps": [
+  {
+   "wizard_id": "W_OFF_CHANNEL_SCAN_1",
+   "condition": "",
+   "hints": [],
+   "options": [
+    {
+     "name": "Avanti",
+     "condition": "$(_reply_off_channel_scan.retrieve_off_channel.SKY_PRODUCT_INTERFERENCE) > 0",
+     "type": "button",
+     "value": 0
+    },
+    {
+     "name": "Avanti",
+     "condition": "$(_reply_off_channel_scan.retrieve_off_channel.SKY_PRODUCT_INTERFERENCE) == 0 and $(_reply_off_channel_scan.retrieve_off_channel.OTHER_INTERFERENCES) > 0",
+     "type": "button",
+     "value": 1
+    },
+    {
+     "name": "Avanti",
+     "condition": "$(_reply_off_channel_scan.color) == 'green' and False",
+     "type": "button",
+     "value": 2
+    },
+    {
+     "name": "Avanti",
+     "condition": "$(_reply_off_channel_scan.color) == 'grey' and False",
+     "type": "button",
+     "value": 3
+    }
+   ],
+   "description": "Per verificare se sono presenti reti Wi-Fi che creano interferenze con quella dello Sky Hub eseguire il controllo automatico tramite la 'Verifica Avanzata Interferenze Wi-Fi'  \n\nLa verifica potrebbe durare qualche minuto.",
+   "title": "AZIONE con CLIENTE",
+   "actions": [
+    {
+     "action_id": "_reply_off_channel_scan"
+    }
+   ]
+  },
+  {
+   "wizard_id": "W_SKYQ_CHANNEL_CHANGE",
+   "condition": "W_OFF_CHANNEL_SCAN_1 == 0",
+   "hints": [],
+   "options": [
+    {
+     "name": "Avanti",
+     "condition": "$(_reply_off_channel_scan_2.retrieve_off_channel.OTHER_INTERFERENCES) > 0",
+     "type": "button",
+     "value": 0
+    },
+    {
+     "name": "Avanti",
+     "condition": "$(_reply_off_channel_scan_2.color) == 'green'",
+     "type": "button",
+     "value": 1
+    },
+    {
+     "name": "Avanti",
+     "condition": "$(_reply_off_channel_scan_2.retrieve_off_channel.SKY_PRODUCT_INTERFERENCE) > 0",
+     "type": "button",
+     "value": 2
+    },
+    {
+     "name": "Avanti",
+     "condition": "$(_reply_off_channel_scan_2.color) == 'grey'",
+     "type": "button",
+     "value": 3
+    }
+   ],
+   "description": "È stato rilevato un conflitto del segnale Wi-Fi dello Sky Hub con quello della rete mesh dello Sky Q \n\nÈ necessario cambiare il canale della rete dello Sky Q come di seguito:  \n\t  1.Entrare nel menu di servizio dello Sky Q Platinum  \n\t  2.Selezionare il menu 'Home'  \n\t  3.Spostarsi sulla voce 'Impostazioni' fino ad evidenziarla  \n\t  4.Premere la sequenza di tasti sul telecomando '0' '0' '1' 'OK'  \n\t  5.Seleziona 'NETWORK'  \n\t  6.Spostarsi verso destra due volte fino ad evidenziare la voce 80 MHz / ch36  \n\t  7.Selezionare il ch 44 a 40 MHz  \n\t  8.Confermare la scelta con il tasto OK e ancora con il tasto 'Conferma' per confermare la scelta.  \n\n Concluse le operazioni sopra rieseguire il controllo delle interferenze tramite 'Verifica Avanzata Interferenze Wi-Fi'",
+   "title": "AZIONI con CLIENTE",
+   "actions": [
+    {
+     "action_id": "_reply_off_channel_scan_2"
+    }
+   ]
+  },
+  {
+   "wizard_id": "W_CHANNEL_CHANGE",
+   "condition": "W_OFF_CHANNEL_SCAN_1 == 1 or W_SKYQ_CHANNEL_CHANGE == 0",
+   "chart_list": [
+    {
+     "chart_name": "Grafico di Interferenza",
+     "chart_type": "interference_chart"
+    }
+   ],
+   "hints": [],
+   "options": [
+    {
+     "name": "SI",
+     "type": "button",
+     "value": 1
+    },
+    {
+     "name": "NO",
+     "type": "button",
+     "value": 0
+    }
+   ],
+   "description": "È stato individuato un dispositivo non SKY che interferisce sulla rete dello Sky Hub, chiedere al cliente se è possibile spostare la rete del dispositivo dal canale 36.  \n\n  È possibile cambiare il canale della rete Wi-Fi (36) per il dispositivo individuato?",
+   "title": "COSA DIRE AL CLIENTE",
+   "actions": []
+  },
+  {
+   "wizard_id": "W_OFF_CHANNEL_SCAN_2",
+   "condition": "W_CHANNEL_CHANGE == 1",
+   "hints": [],
+   "options": [
+    {
+     "name": "Avanti",
+     "condition": "$(_reply_off_channel_scan_3.color) == 'red",
+     "type": "button",
+     "value": 0
+    },
+    {
+     "name": "Avanti",
+     "condition": "$(_reply_off_channel_scan_3.color) == 'green'",
+     "type": "button",
+     "value": 1
+    },
+    {
+     "name": "Avanti",
+     "condition": "$(_reply_off_channel_scan_3.color) == 'grey'",
+     "type": "button",
+     "value": 2
+    }
+   ],
+   "description": "Dopo aver modificato il canale della rete del dispositivo rieseguire il controllo tramite il tasto 'Verifica Avanzata Interferenze Wi-Fi'",
+   "title": "COSA DIRE AL CLIENTE",
+   "actions": [
+    {
+     "action_id": "_reply_off_channel_scan_3"
+    }
+   ]
+  },
+  {
+   "wizard_id": "W_SIW_SWAT",
+   "condition": " W_OFF_CHANNEL_SCAN_1 == 2 or W_OFF_CHANNEL_SCAN_1 == 3 or W_SKYQ_CHANNEL_CHANGE == 2 or W_SKYQ_CHANNEL_CHANGE == 3 or W_OFF_CHANNEL_SCAN_2 == 0 or W_OFF_CHANNEL_SCAN_2== 2",
+   "hints": [],
+   "options": [
+    {
+     "name": "FINE",
+     "type": "button",
+     "value": "WR0002"
+    }
+   ],
+   "description": "Problema NON Identificato.\r\nAssegnare il Case allo Swat team per ulteriori analisi",
+   "title": "Esito: Swat Team",
+   "actions": []
+  },
+  {
+   "wizard_id": "W_SIW_RESOLVED",
+   "condition": "W_SKYQ_CHANNEL_CHANGE == 1 or W_OFF_CHANNEL_SCAN_2 == 1",
+   "hints": [],
+   "options": [
+    {
+     "name": "FINE",
+     "type": "button",
+     "value": "WR0012"
+    }
+   ],
+   "description": "Problema di interferenze sulla rete Wi-Fi Risolto",
+   "title": "Esito: Risolto",
+   "actions": []
+  },
+  {
+   "wizard_id": "W_SIW_CUSTOMER_REFUSE",
+   "condition": "W_CHANNEL_CHANGE == 0",
+   "hints": [],
+   "options": [
+    {
+     "name": "FINE",
+     "type": "button",
+     "value": "WR0001"
+    }
+   ],
+   "description": "Senza la verifica delle interferenze non è possible determinare se sono presenti reti che interferiscono con il Wi-Fi dello Sky Hub.",
+   "title": "Esito: Cliente si rifiuta",
+   "actions": []
+  }
+ ],
+ "priority_level": 1,
+ "description": "Clicca qui per vedere le reti che interferiscono con il tuo Wi-Fi.",
+ "name": "Analisi delle Interferenze Wi-Fi"
+}

@@ -1,0 +1,26 @@
+{
+ "wizard_id": "W_STABILITY_INTRO",
+ "hints": [
+    {
+     "description": "Proseguendo sarà possibile effettuare una scansione della rete Wi-Fi (off-channel scan) per individuare eventuali sovrapposizione di altri reti (SSID) sulle frequenze dello Sky Hub.",
+     "icon": "info"
+    }
+ ],
+ "options": [
+  {
+   "name": "SI",
+   "type": "button",
+   "value": 1
+  },
+  {
+   "name": "NO",
+   "type": "button",
+   "value": 0
+  }
+ ],
+ "description": "È stato rilevato uno Sky Q Platinum o SKYQ BLACK QH connesso, il cliente riscontra problemi di disconnessione dalla rete Wi-Fi?",
+ "actions": [],
+ "title": "COSA DIRE AL CLIENTE"
+}
+
+ 

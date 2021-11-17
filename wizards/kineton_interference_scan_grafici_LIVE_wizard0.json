@@ -1,0 +1,53 @@
+{
+ "wizard_id": "kineton_interference_scan_grafici",
+ "section": "Wi-Fi",
+ "hint": "",
+ "wizard_0": true,
+ "category": "In-Home",
+ "steps": [
+  {
+   "wizard_id": "W_PROVA_GRAFICI",
+   "condition": "",
+   "hints": [],
+   "options": [
+    {
+     "name": "Avanti",
+     "condition": "$(kineton_stato_cpu.color) == 'green'",
+     "type": "button",
+     "value": 1
+    }
+   ],
+   "description": "Avvia la action per far comparire i grafici",
+   "title": "AZIONE con CLIENTE",
+   "actions": [
+    {
+     "action_id": "kineton_stato_cpu"
+    }
+   ]
+  },
+  {
+   "wizard_id": "W_PROVA_GRAFICI_2",
+   "condition": "W_PROVA_GRAFICI == 1",
+   "chart_list": [
+    {
+     "chart_name": "Utilizzo CPU",
+     "chart_type": "line_chart"
+    }
+   ],
+   "hints": [],
+   "options": [
+    {
+     "name": "Avanti",
+     "type": "button",
+     "value": 1
+    }
+   ],
+   "description": "Grafici creati",
+   "title": "COSA DIRE AL CLIENTE",
+   "actions": []
+  }
+ ],
+ "priority_level": 1,
+ "description": "Clicca qui per vedere i grafici",
+ "name": "Kineton prova grafici"
+}

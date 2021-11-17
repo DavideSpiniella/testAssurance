@@ -1,0 +1,20 @@
+{
+    "options": [
+        {
+            "name": "SI",
+            "type": "button",
+            "value": 1
+        },
+        {
+            "name": "NO",
+            "type": "button",
+            "value": 0
+        }
+    ],
+    "description": "I seguenti POD risultano **MALPOSIZIONATI** \r\n $(pod_IDs) \r\n Il cliente desidera procedere al posizionamento ottimale dei POD?",
+    "hints": [
+    ],
+    "actions": [],
+    "wizard_id": "KINETON_W_PP_INTRO",
+    "title": "COSA DIRE AL CLIENTE"
+}

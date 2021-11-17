@@ -1,0 +1,47 @@
+{
+    "wizard_id": "kineton_CPE_Online_trendline",
+    "section": "Wi-Fi",
+    "hint": "",
+    "wizard_0": true,
+    "category": "In-Home",
+    "steps": [
+     {
+      "wizard_id": "W_PROVA_GRAFICI_CPE",
+      "condition": "",
+      "hints": [],
+      "options": [
+       {
+        "name": "Avanti",
+        "condition": "$(kineton_cpe_online.color) == 'green'",
+        "type": "button",
+        "value": 1
+       }
+      ],
+      "description": "Per visualizzare i grafici delle Azioni Avanzate cliccare sul tasto Avvia Azione",
+      "title": "AZIONE con CLIENTE",
+      "actions": [
+       {
+        "action_id": "kineton_cpe_online"
+       }
+      ]
+     },
+     {
+      "wizard_id": "W_PROVA_GRAFICI_2_CPE",
+      "condition": "W_PROVA_GRAFICI_CPE == 1",
+      "hints": [],
+      "options": [
+        {
+            "name": "FINE",
+            "type": "button",
+            "value": "WR0012"
+        }
+      ],
+      "description": "I grafici saranno visibili a sinistra, nella sezione: ANALISI AVANZATA",
+      "title": "ESITO",
+      "actions": []
+     }
+    ],
+    "priority_level": 1,
+    "description": "Clicca qui per generare il grafico relativo alla CPE Online",
+    "name": "Kineton prova grafici CPE"
+   }

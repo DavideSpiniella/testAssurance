@@ -1,0 +1,194 @@
+{
+    "rule_id": "check_open_helix",
+    "section": "Dati",
+    "category": "Data",
+    "rule_name": "Gestioni in Lavorazione",
+    "priority_level": 900,
+    "authorization_level": 1,
+    "rule": {
+     "variables": [
+      {
+       "method": "COUNT",
+       "name": "nr_results",
+       "params": {
+        "filter": "$(last_status_path) is not None AND $(category_path) != 'Change MAP-T'"
+       }
+      }
+     ],
+     "aliases": [
+      {
+       "name": "case_number_path",
+       "value": "tickets.netktID"
+      },
+      {
+       "name": "creation_time_path",
+       "value": "tickets.ticketCreationTime"
+      },
+      {
+       "name": "last_update_path",
+       "value": "tickets.last_update_timestamp"
+      },
+      {
+       "name": "category_path",
+       "value": "tickets.category"
+      },
+      {
+       "name": "fault_code_path",
+       "value": "tickets.faultCode"
+      },
+      {
+       "name": "owner_path",
+       "value": "tickets.owner"
+      },
+      {
+       "name": "reason_code_path",
+       "value": "tickets.lastReasonCode"
+      },
+      {
+       "name": "reason_description_path",
+       "value": "tickets.lastReasonDescription"
+      },
+      {
+       "name": "wap_tt_id_path",
+       "value": "tickets.WAPTicketID"
+      },
+      {
+       "name": "last_status_path",
+       "value": "tickets.lastStatus"
+      }
+     ],
+     "sources": [
+      {
+       "principal": {
+        "name": "tickets",
+        "options": {
+         "query": {
+          "raw_query": {
+           "bool": {
+            "must_not": [
+             {
+              "match": {
+               "lastStatus": "Closed"
+              }
+             },
+             {
+              "match": {
+               "lastStatus": "Discarded"
+              }
+             },
+             {
+              "match": {
+               "lastStatus": "ClosureRequest"
+              }
+             },
+             {
+              "match": {
+               "lastStatus": "Cancelled"
+              }
+             }
+            ],
+            "must": [
+             {
+              "match": {
+               "CUSTOMER_NAME": "{CUSTOMER_NAME}"
+              }
+             }
+            ]
+           }
+          }
+         }
+        },
+        "type": "TL_HELIX"
+       }
+      }
+     ],
+     "RAGs": {
+      "red": [],
+      "amber": [
+       {
+        "context": {
+         "trendline": [
+          {
+           "chart_name": "Gestioni in Lavorazione",
+           "entries": [
+            {
+             "name": "ID Case",
+             "variable": "$(case_number_path)"
+            },
+            {
+             "name": "Data di Creazione",
+             "variable": "$(creation_time_path)"
+            },
+            {
+             "name": "Data Ultimo Aggiornamento",
+             "variable": "$(last_update_path)"
+            },
+            {
+             "name": "Ambito",
+             "variable": "$(owner_path)"
+            },
+            {
+             "name": "WAP ID",
+             "variable": "$(wap_tt_id_path)"
+            },
+            {
+             "name": "Categoria",
+             "variable": "$(category_path)"
+            },
+            {
+             "name": "Reason Code",
+             "variable": "$(reason_code_path)"
+            },
+            {
+             "name": "Reason Description",
+             "variable": "$(reason_description_path)"
+            },
+            {
+             "name": "Ultimo Stato",
+             "variable": "$(last_status_path)"
+            }
+           ],
+           "sort": {
+            "sort_key": "Data Ultimo Aggiornamento",
+            "order": "descending"
+           },
+           "chart_type": "table_chart",
+           "title": "Gestioni in Lavorazione",
+           "authorization_level": 3
+          }
+         ]
+        },
+        "description": "Di seguito la lista di Gestioni in Lavorazione",
+        "condition": "$(nr_results) > 0",
+        "wizards": [
+         {
+          "chart_list": [
+           {
+            "chart_name": "Gestioni in Lavorazione",
+            "chart_type": "table_chart"
+           }
+          ],
+          "condition": "",
+          "id": "W_HELIX_OPEN"
+         },
+         {
+          "condition": "W_HELIX_OPEN == 1",
+          "id": "W_HELIX_DIAG_CONTINUE"
+         },
+         {
+          "condition": "W_HELIX_OPEN == 0",
+          "id": "W_HELIX_DIAG_BLOCK"
+         }
+        ]
+       }
+      ],
+      "green": [
+       {
+        "description": "Non ci sono Gestioni in Lavorazione",
+        "condition": "$(nr_results) == 0"
+       }
+      ]
+     }
+    },
+    "hidden": false
+   }

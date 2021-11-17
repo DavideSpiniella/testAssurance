@@ -1,0 +1,113 @@
+{
+	"action_id": "kineton_riavvio_skyhub",
+	"action_steps": [
+		{
+			"action_step_id": "reboot_request",
+			"sources": [
+				{
+					"principal": {
+						"name": "wpil",
+						"options": {
+							"err_raise": false,
+							"method": "POST",
+							"URL": "/operation/account/{BB_ID}/reboot"
+						},
+						"type": "WPIL"
+					}
+				}
+			],
+			"variables": [
+				{
+					"method": "GET",
+					"name": "status",
+					"params": {
+						"single_value": true,
+						"variable": "$(wpil.status)"
+					}
+				},
+				{
+					"method": "GET",
+					"name": "status_message",
+					"params": {
+						"single_value": true,
+						"variable": "$(wpil.message)"
+					}
+				}
+			],
+			"verification_condition": "($(status) == 200 and $(status_message) == 'Success') or ($(status) == 521 and $(status_message) == 'Device not found in webpa system.') or ($(status) == 500 and $(status_message) == 'Internal server error')"
+		},
+		{
+			"action_step_id": "reboot_feedback",
+			"sleep_time": 150,
+			"sources": [
+				{
+					"principal": {
+						"name": "wpil_check",
+						"options": {
+							"err_raise": false,
+							"method": "GET",
+							"URL": "/diagnostics/account/{BB_ID}/status"
+						},
+						"type": "WPIL"
+					}
+				}
+			],
+			"variables": [
+				{
+					"method": "GET",
+					"name": "state",
+					"params": {
+						"single_value": true,
+						"variable": "$(wpil_check.data.status)"
+					}
+				},
+				{
+					"method": "GET",
+					"name": "reason",
+					"params": {
+						"single_value": true,
+						"variable": "$(wpil_check.data.reboot_reason)"
+					}
+				}
+			],
+			"verification_condition": "$(state) == 'fully-manageable' and $(reason) == 'webpa-reboot'",
+			"max_retry": 4
+		}
+	],
+	"authorization_level": 1,
+	"available_for_operator": true,
+	"frontend_info": {
+		"action_description": "Azione Automatica",
+		"action_title": "Riavvio Sky Hub",
+		"frontend_modal_type": "confirm_msg_box"
+	},
+	"result": {
+		"conditions": [
+			{
+				"color": "red",
+				"condition": "$(reboot_feedback.state) is None or $(reboot_feedback.state) == 'reboot-pending'",
+				"description": "Il restart NON si è concluso correttamente"
+			},
+			{
+				"color": "amber",
+				"condition": "$(reboot_feedback.reason) == 'pin-reset'",
+				"description": "E' stato effettuato il riavvio tramite pulsante"
+			},
+			{
+				"color": "amber",
+				"condition": "$(reboot_feedback.reason) == 'HW or Power-On Reset'",
+				"description": "E' stato effettuato il riavvio tramite power ON"
+			},
+			{
+				"color": "amber",
+				"condition": "$(reboot_feedback.reason) == 'factory-reset'",
+				"description": "E' stato effettuato il factory reset"
+			},
+			{
+				"color": "green",
+				"condition": "$(reboot_request.status) == 200 and $(reboot_request.status_message) == 'Success' and $(reboot_feedback.reason) == 'webpa-reboot' and $(reboot_feedback.state) == 'fully-manageable'",
+				"description": "Il restart si è concluso correttamente"
+			}
+		]
+	}
+}

@@ -1,0 +1,207 @@
+{
+ "wizard_id": "wizard0_dmz",
+ "section": "Kineton",
+ "hint": "",
+ "wizard_0": true,
+ "category": "In-Home",
+ "steps": [
+  {
+   "wizard_id": "WIZARD_DMZ",
+   "condition": "",
+   "hints": [
+   ],
+   "options": [
+    {
+     "name": "Avanti",
+     "condition": "$(dmz_verifier.tardis_dmz_enable.has_errors) == False AND $(dmz_verifier.tardis_dmz_enable.is_enabled) == False",
+     "type": "button",
+     "value": 2
+    },
+    {
+     "name": "Avanti",
+     "condition": "$(dmz_verifier.tardis_dmz_enable.has_errors) == False AND $(dmz_verifier.tardis_dmz_enable.is_enabled) == True",
+     "type": "button",
+     "value": 1
+    },
+    {
+     "name": "Avanti",
+     "condition": "$(dmz_verifier.tardis_dmz_enable.has_errors) == True",
+     "type": "button",
+     "value": 0
+    }
+   ],
+   "description": "Verificare lo stato DMZ dell'utente",
+   "title": "AZIONI con CLIENTE",
+   "actions": [
+    {
+     "action_id": "dmz_verifier"
+    }
+   ]
+  },
+  {
+   "wizard_id": "WIZARD_FINE_KO",
+   "condition": "WIZARD_DMZ == 0",
+   "hints": [],
+   "options": [
+    {
+     "name": "FINE",
+     "type": "button",
+     "value": "WR1001"
+    }
+   ],
+   "description": "Non è stato possibile verificare la DMZ del cliente",
+   "title": "Errore Verifica DMZ",
+   "actions": [
+
+   ]
+  },
+  {
+    "wizard_id": "WIZARD_DMZ_DISABILITATA",
+    "condition": "WIZARD_DMZ == 1",
+    "hints": [],
+    "options": [
+     {
+      "name": "si",
+      "type": "button",
+      "value": 1
+     },
+     {
+        "name": "no",
+        "type": "button",
+        "value": 0
+       }
+    ],
+    "description": "La DMZ dell'utente risulta abilitata. L'utente vuole procedere alla disattivazione?",
+    "title": "COSA DIRE AL CLIENTE",
+    "actions": []
+   },
+   {
+    "wizard_id": "WIZARD_DISABILITAZIONE_DMZ",
+    "condition": "WIZARD_DMZ_DISABILITATA == 1",
+    "hints": [
+        {
+         "description": "Ci potrebbe volere qualche minuto per completare il processo",
+         "icon": "info"
+        }
+    ],
+    "options": [
+      {
+        "name": "Avanti",
+        "condition": "$(dmz_disable.tardis_dmz_disable.has_errors) == False",
+        "type": "button",
+        "value": 1
+       },
+       {
+        "name": "Avanti",
+        "condition": "$(dmz_disable.tardis_dmz_disable.has_errors) == True",
+        "type": "button",
+        "value": 0
+       }
+    ],
+    "description": "Cliccare sul pulsante per disabilitare la DMZ",
+    "title": "Disabilita DMZ",
+    "actions": [
+      {
+          "action_id": "dmz_disable"
+      }
+     ]
+   },
+  {
+   "wizard_id": "WIZARD_ABILITA_DMZ",
+   "condition": "WIZARD_DMZ == 2 OR WIZARD_DMZ_DISABILITATA == 0",
+   "hints": [
+     {
+      "description": "Ci potrebbe volere qualche minuto per completare il processo",
+      "icon": "info"
+     }
+
+   ],
+   "options": [
+       {
+        "name": "Avanti",
+        "condition": "$(dmz_enable.tardis_dmz_enable.has_errors) == False",
+        "type": "button",
+        "value": 1
+       },
+       {
+        "name": "Avanti",
+        "condition": "$(dmz_enable.tardis_dmz_enable.has_errors) == True",
+        "type": "button",
+        "value": 0
+       }
+   ],
+   "description": "Inserire l'indirizzo IP sul quale si vuole abilitare la DMZ",
+   "title": "COSA DIRE AL CLIENTE",
+   "actions": [
+    {
+        "action_id": "dmz_enable"
+    }
+   ]
+  },
+  {
+   "wizard_id": "WIZARD_ABILITA_DMZ_KO",
+   "condition": "WIZARD_ABILITA_DMZ == 0",
+   "hints": [],
+   "options": [
+    {
+     "name": "FINE",
+     "type": "button",
+     "value": "WR1001"
+    }
+   ],
+   "description": "Non è stato possibile abilitare la DMZ",
+   "title": "COSA DIRE AL CLIENTE",
+   "actions": []
+  },
+  {
+    "wizard_id": "WIZARD_ABILITA_DMZ_OK",
+    "condition": "WIZARD_ABILITA_DMZ == 1",
+    "hints": [
+      
+    ],
+    "options": [
+     {
+      "name": "FINE",
+      "type": "button",
+      "value": "WR1001"
+     }
+    ],
+    "description": "DMZ abilitata",
+    "title": "COSA DIRE AL CLIENTE",
+    "actions": []
+   },
+   {
+    "wizard_id": "WIZARD_DISABILITA_DMZ_KO",
+    "condition": "WIZARD_DISABILITAZIONE_DMZ == 0",
+    "hints": [],
+    "options": [
+     {
+      "name": "FINE",
+      "type": "button",
+      "value": "WR1001"
+     }
+    ],
+    "description": "Non è stato possibile disabilitare la DMZ",
+    "title": "COSA DIRE AL CLIENTE",
+    "actions": []
+   },
+   {
+     "wizard_id": "WIZARD_DISABILITA_DMZ_OK",
+     "condition": "WIZARD_DISABILITAZIONE_DMZ == 1",
+     "hints": [],
+     "options": [
+      {
+       "name": "FINE",
+       "type": "button",
+       "value": "WR1001"
+      }
+     ],
+     "description": "DMZ disabilitata",
+     "title": "COSA DIRE AL CLIENTE",
+     "actions": []
+    }
+ ],
+ "priority_level": 1,
+ "description": "Clicca qui per gestire la DMZ del cliente.",
+ "name": "DMZ"
+}

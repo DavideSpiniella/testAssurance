@@ -1,0 +1,25 @@
+{
+    "options": [
+        {
+            "name": "Avanti",
+            "type": "button",
+            "condition": "$(cpe_online.settaggio_parametri.has_errors) == False",
+            "value": 1
+        },
+        {
+            "name": "Avanti",
+            "type": "button",
+            "condition": "$(cpe_online.settaggio_parametri.has_errors) == True",
+            "value": 0
+        }
+    ],
+    "description": "Lo Sky Hub non comunica correttamente e potrebbe impedire l'esecuzione corretta della Diagnostica.\nE necessario reimpostare i parametri dello Sky Hub.\n\n",
+    "hints": [],
+    "actions": [
+        {
+            "action_id": "cpe_online"
+        }
+    ],
+    "wizard_id": "W_CPE_UNREACHABLE",
+    "title": "COSA DIRE AL CLIENTE"
+}

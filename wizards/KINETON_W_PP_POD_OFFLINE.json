@@ -1,0 +1,23 @@
+{
+    "options": [
+        {
+            "name": "SI",
+            "type": "button",
+            "value": 1
+        },
+        {
+            "name": "NO",
+            "type": "button",
+            "value": 0
+        }
+    ],
+    "description": "alcuni POD sembrano OFFLINE si desidera verificare nuovamente?",
+    "hints": [
+        {
+            "description": "Verificare che la luce sul POD non lampeggi"
+        }
+    ],
+    "actions": [],
+    "wizard_id": "KINETON_W_PP_POD_OFFLINE",
+    "title": "AZIONI con CLIENTE"
+}

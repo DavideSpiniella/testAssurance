@@ -1,0 +1,136 @@
+{
+    "action_id": "kineton_pod_replacement_check",
+    "result": {
+        "conditions": [
+            {
+                "color": "red",
+                "description": "Sky Wifi Pod malposizionato",
+                "condition": "$(pod_data.number_of_pods)>0 and $(pod_data.interference) > 40"
+            },
+            {
+                "color": "red",
+                "description": "Sky Wifi Pod troppo lontano dallo Sky Hub",
+                "condition": "$(pod_data.number_of_pods)>0 and $(pod_data.snr) <= 15"
+            },
+            {
+                "color": "red",
+                "description": "Sky Wifi Pod troppo vicino allo Sky Hub",
+                "condition": "$(pod_data.number_of_pods)>0 and $(pod_data.rssi) >= -40"
+            },
+            {
+                "color": "amber",
+                "description": "Sky Wifi Pod troppo lontano dallo Sky Hub",
+                "condition": "$(pod_data.number_of_pods)>0 and 15 < $(pod_data.snr) < 25"
+            },
+            {
+                "color": "amber",
+                "description": "Sky Wifi Pod malposizionato",
+                "condition": "$(pod_data.number_of_pods)>0 and 25 < $(pod_data.interference) <= 40"
+            },
+            {
+                "color": "amber",
+                "description": "Sky Wifi Pod troppo vicino allo Sky Hub",
+                "condition": "$(pod_data.number_of_pods)>0 and -50 <= $(pod_data.rssi) < -40"
+            },
+            {
+                "color": "green",
+                "description": "Lo Sky Pod risulta posizionato correttamente",
+                "condition": "$(pod_data.number_of_pods)==0 or ($(pod_data.number_of_pods)>0 and $(pod_data.snr) >= 25 and $(pod_data.rssi) < -50 and $(pod_data.interference) <= 25)"
+            }
+        ]
+    },
+    "action_steps": [
+        {
+            "n_retry": 20,
+            "variables": [
+                {
+                    "method": "COUNT",
+                    "name": "number_of_pods",
+                    "params": {
+                        "filter": "$(POD_SN)"
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "rssi",
+                    "params": {
+                        "filter": "$(pod_id) == $(POD_SN)",
+                        "variable": "$(pod_rssi)",
+                        "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "interference",
+                    "params": {
+                        "filter": "$(pod_id) == $(POD_SN)",
+                        "variable": "$(pod_interference)",
+                        "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "snr",
+                    "params": {
+                        "filter": "$(pod_id) == $(POD_SN)",
+                        "variable": "$(pod_snr)",
+                        "single_value": true
+                    }
+                }
+            ],
+            "aliases": [
+                {
+                    "name": "pod_rssi",
+                    "value": "wpil.qoe_pods.states.rssi"
+                },
+                {
+                    "name": "pod_snr",
+                    "value": "wpil.qoe_pods.states.snr"
+                },
+                {
+                    "name": "pod_id",
+                    "value": "wpil.qoe_pods.states.id"
+                },
+                {
+                    "name": "pod_interference",
+                    "value": "wpil.qoe_pods.states.interference"
+                },
+                {
+                    "name": "device_id",
+                    "value": "wpil.data.device_id"
+                },
+                {
+                    "name": "nickname",
+                    "value": "wpil.data.nickname"
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "wpil",
+                        "options": {
+                            "URL": "/diagnostics/account/{BB_ID}/connected-devices/cpe"
+                        },
+                        "type": "WPIL"
+                    }
+                }
+            ],
+            "verification_condition": "$(number_of_pods)>0",
+            "action_step_id": "pod_data"
+        }
+    ],
+    "input_variables": [
+		{
+			"name": "POD_SN",
+			"alias": "Seriale del pod",
+			"required": true
+			
+		}
+	],
+    "authorization_level": 1,
+    "frontend_info": {
+        "action_description": "Kineton Verifica Riposizionamento Sky Pod",
+        "action_title": "Esegui Azione Automatica",
+        "frontend_modal_type": "confirm_msg_box"
+    }
+}

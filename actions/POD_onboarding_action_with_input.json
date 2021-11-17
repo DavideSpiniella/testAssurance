@@ -1,0 +1,133 @@
+{
+  "action_id": "POD_onboarding",
+  "action_steps": [
+    {
+      "action_step_id": "mac",
+      "sources": [
+        {
+          "principal": {
+            "name": "CPE",
+            "options": {
+              "URL": "/provision/account/{BB_ID}/devices"
+            },
+            "type": "WPIL"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "method": "GET",
+          "name": "macAddress",
+          "params": {
+            "single_value": true,
+            "variable": "$(CPE.gateway.gatewayMacAddress)"
+          }
+        }
+      ]
+    },
+    {
+      "action_step_id": "register_pod",
+      "sources": [
+        {
+          "principal": {
+            "name": "biz",
+            "options": {
+              "body": {
+                "gateway": {
+                  "macAddress": "$(mac.macAddress)"
+                },
+                "serialNumber": "$(POD_SN)"
+              },
+              "err_raise": false,
+              "method": "POST",
+              "URL": "/aggregator-api/devices/onboarding/xboSourceId/{BB_ID}?sourcesFilter=activation&partner=sky-italia&action=pods"
+            },
+            "type": "BIZ_API"
+          }
+        }
+      ],
+      "variables": [
+        {
+          "method": "GET",
+          "name": "sourceId",
+          "params": {
+            "single_value": true,
+            "variable": "$(biz.sourceId)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "id",
+          "params": {
+            "single_value": true,
+            "variable": "$(biz.response.claimed.id)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "packId",
+          "params": {
+            "single_value": true,
+            "variable": "$(biz.response.claimed.packId)"
+          }
+        },
+        {
+          "method": "GET",
+          "name": "status",
+          "params": {
+            "single_value": true,
+            "variable": "$(biz.response.status)"
+          }
+        }
+      ]
+    }
+  ],
+  "authorization_level": 1,
+  "available_for_operator": true,
+  "frontend_info": {
+    "action_description": "Azione Automatica",
+    "action_title": "Attiva Sky Wifi Pod",
+    "frontend_modal_type": "confirm_msg_box"
+  },
+  "input_variables": [
+    {
+      "alias": "Seriale del pod",
+      "name": "POD_SN",
+      "required": true
+    }
+  ],
+  "result": {
+    "conditions": [
+      {
+        "color": "red",
+        "condition": "$(register_pod.sourceId) != 'activation'",
+        "description": "Non è stato possibile associare il POD"
+      },
+      {
+        "color": "red",
+        "condition": "$(register_pod.sourceId) == 'activation' and $(register_pod.status) == 400",
+        "description": "Errore nell'inserimento del seriale del POD"
+      },
+      {
+        "color": "red",
+        "condition": "$(register_pod.sourceId) == 'activation' and $(register_pod.status) == 500",
+        "description": "Il POD risulta già associato ad un altro account"
+      },
+      {
+        "color": "amber",
+        "condition": "$(register_pod.sourceId) == 'activation' and $(register_pod.status) == 404",
+        "description": "ATTENZIONE!! Riscrivere il seriale del POD con le lettere maiuscole"
+      },
+      {
+        "color": "amber",
+        "condition": "$(register_pod.sourceId) == 'activation' and $(register_pod.packId) is None and $(register_pod.status) is None",
+        "description": "Il POD risulta già associato"
+      },
+      {
+        "color": "green",
+        "condition": "$(register_pod.sourceId) == 'activation' and $(register_pod.packId) is not None",
+        "description": "POD associato correttamente"
+      }
+    ]
+  }
+}

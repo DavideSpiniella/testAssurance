@@ -1,0 +1,139 @@
+{
+    "action_id": "wifi_disable_5",
+    "result": {
+        "conditions": [
+            {
+                "color": "red",
+                "description": "Errore CPE spenta o non allineata",
+                "condition": "$(disable_5.has_errors) == True"
+            },
+            {
+                "color": "red",
+                "description": "Errore CPE spenta o non allineata",
+                "condition": "($(disable_5.has_errors) == True or $(check.status !=200))and $(check.SSID_2g) != $(check.SSID_5g)"
+            },
+            {
+                "color": "red",
+                "description": "Errore disabilitazione rete 5 GHz",
+                "condition": "$(check.radio_status_5g) == True and $(disable_5.has_errors) == True and $(check.SSID_2g) != $(check.SSID_5g)"
+            },
+			{
+                "color": "red",
+                "description": "Impossibile disabilitare la rete 5 GHz provare a riavviare SKY HUB",
+                "condition": "$(check.radio_status_5g) == True and $(disable_5.has_errors) == False and $(check.SSID_2g) != $(check.SSID_5g)"
+            },
+            {
+                "color": "red",
+                "description": "Le reti 2.4 GHz e 5GHz hanno lo stesso SSID. Cambiare prima SSID",
+                "condition": "$(check.SSID_2g) == $(check.SSID_5g)"
+            },
+            {
+                "color": "green",
+                "description": "Rete Wi-Fi 5 Ghz disabilitata",
+                "condition": "$(check.radio_status_5g) == False and $(disable_5.has_errors) == False and $(check.SSID_2g) != $(check.SSID_5g)"
+            }
+        ]
+    },
+    "action_steps": [
+	{
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "has_errors",
+                    "params": {
+                    "variable": "$(tardis.errors.has_errors)",
+                    "single_value": true
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+							"name": "tardis",
+							"options": {
+									"action": "wifi_disable",
+									"operations": [
+                            {
+                                "type": "SET",
+                                "value": "false",
+                                "dataType": "Boolean",
+                                "parameter": "Device.WiFi.Radio.10100.Enable"
+                            }
+                        ]
+							
+										},
+                        "type": "TARDIS"
+                    }
+                }
+            ],
+            "verification_condition": "$(has_errors) == False",
+            "max_retry": 0,
+            "timeout": 100,
+            "action_step_id": "disable_5"
+        },
+		       {
+            "variables": [
+				{
+                    "method": "GET",
+                    "name": "status",
+                    "params": {
+                        "variable": "$(wpil.status)",
+                        "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "status_message",
+                    "params": {
+                        "variable": "$(wpil.message)",
+                        "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "radio_status_5g",
+                    "params": {
+                        "variable": "$(wpil.data.group_radio_5g_configuration.data.radio_enabled)",
+                        "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "SSID_2g",
+                    "params": {
+                        "variable": "$(wpil.data.group_private_wifi_configuration.data.ssid_name_2g)",
+                        "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "SSID_5g",
+                    "params": {
+                        "variable": "$(wpil.data.group_private_wifi_configuration.data.ssid_name_5g)",
+                        "single_value": true
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "wpil",
+                        "err_raise": false,
+                        "options": {
+                            "URL": "/diagnostics/account/{BB_ID}/configuration"
+                        },
+                        "type": "WPIL"
+                    }
+                }
+            ],
+            "action_step_id": "check"
+        }
+    ],
+    "authorization_level": 1,
+	"available_for_operator": true,
+    "frontend_info": {
+        "action_description": "Disabilitazione Wi-Fi 5",
+        "action_title": "Disabilitazione Wi-Fi 5",
+        "frontend_modal_type": "confirm_msg_box"
+    }
+}

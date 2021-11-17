@@ -1,0 +1,53 @@
+{
+ "param_id": "frontend_customer_attribute_to_show",
+ "params_value": [
+  {
+   "alias": "BB_ID",
+   "attribute_name": "bb_id"
+  },
+  {
+   "alias": "Numero di Telefono",
+   "attribute_name": "c_voice.DN"
+  },
+  {
+   "alias": "Wholesaler",
+   "attribute_name": "c_access.Wholesaler"
+  },
+  {
+   "alias": "Tecnologia Accesso",
+   "attribute_name": "c_access.Access_Technology"
+  },
+  {
+   "alias": "Tipologia Accesso",
+   "attribute_name": "c_access.Access_Mode"
+  },
+  {
+   "alias": "SKY Hub MAC",
+   "attribute_name": "PROVISION_DEVICE.gateway_mac"
+  },
+  {
+   "alias": "Stato Configurazione Sky Hub",
+   "attribute_name": "PROVISION_DEVICE.status"
+  },
+  {
+   "alias": "Service Action (OSS)",
+   "attribute_name": "c_broadband.service_action"
+  },
+  {
+   "alias": "Item Action (OSS)",
+   "attribute_name": "c_broadband.service_order_item_action"
+  },
+  {
+   "alias": "Service Status (OSS)",
+   "attribute_name": "c_broadband.service_status"
+  },
+  {
+   "alias": "POP",
+   "attribute_name": "c_access.POP"
+  },
+  {
+    "alias": "Attivazione",
+    "attribute_name": "c_broadband.Committed_Date"
+   }
+ ]
+}

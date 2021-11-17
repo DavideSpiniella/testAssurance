@@ -1,0 +1,150 @@
+{
+  "category": "In-Home",
+  "description": "Clicca qui per controllare se ci sono state delle micro disconnessioni sulla tua linea",
+  "hint": "",
+  "name": "Identificazione Micro Disconnessioni",
+  "priority_level": 1,
+  "section": "Funzionalit\u00E0",
+  "steps": [
+      {
+          "actions": [
+              {
+                  "action_id":"disconnect_control"
+              }
+              
+          ],
+          "condition": "",
+          "description": "Per controllare se vi sono state delle micro disconnessioni, utilizzare il tasto 'Identificazione Micro Disconnessioni'",
+          "options": [
+              {
+                  "name": "Avanti",
+                  "condition":"(($(disconnect_control.info_disconnections.days_wifi_2g_Deauth1) is not None AND $(disconnect_control.info_disconnections.days_wifi_2g_Deauth1)) OR ($(disconnect_control.info_disconnections.days_wifi_5g_Deauth1) is not None AND $(disconnect_control.info_disconnections.days_wifi_5g_Deauth1)))",
+                  "type": "button",
+                  "value": 0
+                },
+                {
+                  "name": "Avanti",
+                  "condition":"$(disconnect_control.color) == 'grey'",
+                  "type": "button",
+                  "value": 0
+                },
+                {
+                  "name": "Avanti",
+                  "condition":"($(disconnect_control.info_disconnections.days_wifi_2g_Deauth1) is None OR $(disconnect_control.info_disconnections.days_wifi_2g_Deauth1) == False) AND ($(disconnect_control.info_disconnections.days_wifi_5g_Deauth1) is None OR $(disconnect_control.info_disconnections.days_wifi_5g_Deauth1) == False)",
+                  "type": "button",
+                  "value": 1
+                }
+          ],
+          "title": "AZIONI con CLIENTE",
+          "wizard_id": "WIZARD_MD_INTRO"
+        },
+
+        {
+          "actions": [
+    
+          ],
+          "condition": "WIZARD_MD_INTRO == 0",
+          "description": "Per risolvere il problema delle micro disconnessioni si cosiglia di aggiornare i driver sul dispositivo in uso",
+          "hints": [
+    
+          ],
+          "options": [
+            {
+              "name": "Avanti",
+              "type": "button",
+              "value": 1
+            }
+          ],
+          "title": "COSA DIRE AL CLIENTE",
+          "wizard_id": "WIZARD_AGGIORNAMENTO"
+        },
+
+        {
+          "actions": [
+    
+          ],
+          "condition": "WIZARD_MD_INTRO == 1",
+          "description": "L'analisi non ha identificato alcun problema legato alle micro disconnessioni",
+          "hints": [
+    
+          ],
+          "options": [
+            {
+              "name": "FINE",
+              "type": "button",
+              "value": "WR1001"
+            }
+          ],
+          "title": "COSA DIRE AL CLIENTE",
+          "wizard_id": "WIZARD_FINE_OK"
+        },
+
+        {
+          "actions": [
+    
+          ],
+          "condition": "WIZARD_AGGIORNAMENTO == 1",
+          "description": "Il cliente ha provveduto ad aggiornare i driver sul dispositivo in uso?",
+          "hints": [
+    
+          ],
+          "options": [
+            {
+                "name": "Si",
+                "type": "button",
+                "value": 0
+              },
+              {
+                "name": "No",
+                "type": "button",
+                "value": 1
+              }
+        ],
+          "title": "COSA DIRE AL CLIENTE",
+          "wizard_id": "WIZARD_DOMANDA"
+        },
+
+        {
+          "actions": [
+    
+          ],
+          "condition": "WIZARD_DOMANDA == 0",
+          "description": "Problema di micro disconnessioni sulla rete Wi-Fi Risolto",
+          "hints": [
+    
+          ],
+          "options": [
+            {
+              "name": "FINE",
+              "type": "button",
+              "value": "WR0012"
+            }
+          ],
+          "title": "COSA DIRE AL CLIENTE",
+          "wizard_id": "WIZARD_FINE_OK2"
+        },
+
+        {
+          "actions": [
+    
+          ],
+          "condition": "WIZARD_DOMANDA == 1",
+          "description": "Non effettuando un aggiornamento dei driver dei dispositivi connessi le perfomance della tua linea potrebbero non essere ottimali",
+          "hints": [
+    
+          ],
+          "options": [
+            {
+              "name": "FINE",
+              "type": "button",
+              "value": "WR0001"
+            }
+          ],
+          "title": "Esito: Cliente si rifiuta",
+          "wizard_id": "WIZARD_FINE_KO"
+        }
+      ],
+    
+  "wizard_0": true,
+  "wizard_id": "MD_control"
+}

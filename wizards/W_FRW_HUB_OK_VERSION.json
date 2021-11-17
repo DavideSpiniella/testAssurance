@@ -1,0 +1,22 @@
+{
+  "actions": [
+    {
+        "action_id": "hub_fw_version"
+      }
+  ],
+  "description": "La versione del firmware ora risulta aggiornata",
+  "hints": [
+  {
+		"description": "Versione del firmware installata: $(hub_fw_version.fw_name)"
+  }
+  ],
+  "options": [
+    {
+      "name": "FINE",
+      "type": "button",
+      "value": "WR1002"
+    }
+  ],
+  "title": "Esito: Risolto",
+  "wizard_id": "W_FRW_HUB_OK_VERSION"
+}

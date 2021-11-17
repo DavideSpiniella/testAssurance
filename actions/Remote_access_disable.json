@@ -1,0 +1,106 @@
+{
+    "action_id": "Rem_acc_disable",
+    "result": {
+        "conditions": [
+            {
+                "color": "red",
+                "description": "CPE spenta o non allineata",
+                "condition": "$(disable_RAC.has_errors) == True"
+            },
+			{
+                "color": "red",
+                "description": "Errore disabilitazione accesso remoto",
+                "condition": "$(disable_RAC.has_errors) == True or $(check_RAC.check) == True"
+            },
+            {
+                "color": "green",
+                "description": "Accesso remoto disabilitato",
+                "condition": "$(disable_RAC.has_errors) == False and $(check_RAC.check) == False"
+            } 
+        ]
+    },
+    "action_steps": [
+        {
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "has_errors",
+                    "params": {
+                        "variable": "$(tardis.errors.has_errors)",
+                        "single_value": true
+                    }
+                }
+            ],
+			  "sources": [
+                {
+                "principal": {    
+                    "name": "tardis",
+                    "options": {
+                        "action": "tardis",
+                        "operations": [
+                            {
+                                "type": "SET",
+                                "value": "false",
+                                "dataType": "Boolean",
+                                "parameter": "Device.UserInterface.X_CISCO_COM_RemoteAccess.HttpEnable"
+                            }
+                        ]
+                    },
+                    "type": "TARDIS"
+					}	
+				}
+                
+            ],
+            "verification_condition": "$(has_errors) == False",
+            "max_retry": 0,
+            "action_step_id": "disable_RAC"
+        },
+		{
+            "variables": [
+                {
+                    "method": "GET",
+                    "name": "check",
+                    "params": {
+                        "variable": "$(tardis.results.Device.UserInterface.X_CISCO_COM_RemoteAccess.HttpEnable)",
+                        "single_value": true 
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "has_errors",
+                    "params": {
+                        "variable": "$(tardis.errors.has_errors)",
+                        "single_value": true
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "tardis",
+                        "options": {
+                            "action": "tardis_rac",
+                            "operations": [
+                                {
+                                    "type": "GET",
+                                    "parameter": "Device.UserInterface.X_CISCO_COM_RemoteAccess.HttpEnable"
+                                }
+                            ]
+                        },
+                        "type": "TARDIS"
+                    }
+                }
+            ],
+            "verification_condition": "$(has_errors) == False",
+            "max_retry": 1,
+            "action_step_id": "check_RAC"
+        }
+    ],
+    "authorization_level": 1,
+	"available_for_operator": true,
+    "frontend_info": {
+        "action_description": "Azione Automatica",
+        "action_title": "Disabilita Accesso Remoto",
+        "frontend_modal_type": "confirm_msg_box"
+    }
+}

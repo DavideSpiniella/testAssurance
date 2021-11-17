@@ -1,0 +1,146 @@
+{
+    "category": "In-Home",
+    "description": "Clicca qui per aggiungere il Pod alla tua rete domestica.",
+    "hint": "",
+    "name": "Pod Onboarding",
+    "priority_level": 1,
+    "section": "Wi-Fi",
+    "steps": [
+      {
+        "actions": [
+  
+        ],
+        "condition": "",
+        "description": "L'utente desidera associare un POD?",
+        "options": [
+          {
+            "name": "SI",
+            "type": "button",
+            "value": 1
+          },
+          {
+            "name": "NO",
+            "type": "button",
+            "value": 0
+          }
+        ],
+        "title": "POD",
+        "wizard_id": "WIZARD_POD_INTRO"
+      },
+      {
+        "actions": [
+  
+        ],
+        "condition": "WIZARD_POD_INTRO == 0",
+        "description": "Il cliente ha scelto di non associare il POD",
+        "hints": [
+  
+        ],
+        "options": [
+          {
+            "name": "FINE",
+            "type": "button",
+            "value": "WR1001"
+          }
+        ],
+        "title": "Rifiuto di associazione",
+        "wizard_id": "WIZARD_FINE_1"
+      },
+      {
+        "actions": [
+            {
+                "action_id":"POD_onboarding"
+            }
+            
+        ],
+        "condition": "WIZARD_POD_INTRO == 1",
+        "description": "Inserire il serial number del POD",
+        "hints": [
+          {
+            "description": "Attenzione il serial number del POD va inserito con le sole lettere maiuscole"
+          }
+        ],
+        "options": [
+          {
+            "name": "Avanti",
+            "condition":"$(POD_onboarding.register_pod.sourceId) == 'activation' and $(POD_onboarding.register_pod.status) != 404 and $(POD_onboarding.register_pod.status) != 400 and $(POD_onboarding.register_pod.status) != 500",
+            "type": "button",
+            "value": 1
+          },
+          {
+            "name": "Avanti",
+            "condition":"$(POD_onboarding.register_pod.sourceId) == 'activation' and $(POD_onboarding.register_pod.status) != 404 and $(POD_onboarding.register_pod.status) != 400 and $(POD_onboarding.register_pod.status) != 500 and $(POD_onboarding.register_pod.packId) is None and $(POD_onboarding.register_pod.status) is None ",
+            "type": "button",
+            "value": 2
+          },
+          {
+            "name": "Avanti",
+            "condition":"$(POD_onboarding.register_pod.sourceId) != 'activation' or $(POD_onboarding.register_pod.status) == 404 or $(POD_onboarding.register_pod.status) == 400 or $(POD_onboarding.register_pod.status) == 500",
+            "type": "button",
+            "value": 0
+          }
+        ],
+        "title": "Serial Number del POD",
+        "wizard_id": "WIZARD_POD_SN"
+      },
+      {
+        "actions": [
+  
+        ],
+        "condition": "WIZARD_POD_SN == 0",
+        "description": "Non \u00E8 stato possibile associare il POD",
+        "hints": [
+  
+        ],
+        "options": [
+          {
+            "name": "FINE",
+            "type": "button",
+            "value": "WR1001"
+          }
+        ],
+        "title": "Errore Associazione POD",
+        "wizard_id": "WIZARD_FINE_KO"
+      },
+      {
+        "actions": [
+  
+        ],
+        "condition": "WIZARD_POD_SN == 2",
+        "description": "Il POD risultava gi\u00E0 associato a questa linea",
+        "hints": [
+  
+        ],
+        "options": [
+          {
+            "name": "FINE",
+            "type": "button",
+            "value": "WR1001"
+          }
+        ],
+        "title": "POD gi\u00E0 associato",
+        "wizard_id": "WIZARD_FINE_OK_GA"
+      },
+      {
+        "actions": [
+  
+        ],
+        "condition": "WIZARD_POD_SN == 1",
+        "description": "Il POD \u00E8 stato associato correttamente alla tua linea",
+        "hints": [
+  
+        ],
+        "options": [
+          {
+            "name": "FINE",
+            "type": "button",
+            "value": "WR1001"
+          }
+        ],
+        "title": "POD Associato",
+        "wizard_id": "WIZARD_FINE_OK"
+      }
+    ],
+    "wizard_0": true,
+    "wizard_id": "pod_onboarding"
+  }

@@ -1,0 +1,87 @@
+{
+    "action_id": "POD_onboarding",
+    "result": {
+        "conditions": [
+            {
+                "color": "green",
+                "description": "POD",
+                "condition": "1==1",
+                "variables": [
+                    {
+                        "name": "ID",
+                        "value": "$(get_pod.id)"
+                    },
+                    {
+                        "name": "model",
+                        "value": "$(get_pod.model)"
+                    },
+                    {
+                        "name": "connectionState",
+                        "value": "$(get_pod.connectionState)"
+                    },
+                    {
+                        "name": "ipAddress",
+                        "value": "$(get_pod.ipAddress)"
+                    }
+                ]
+            }
+        ]
+    },
+    "action_steps": [
+        {
+            "variables": [
+				{
+                    "method": "GET",
+                    "name": "id",
+                    "params": {
+                        "variable": "$(biz.pods.id)",
+                        "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "model",
+                    "params": {
+                        "variable": "$(biz.pods.model)",
+                        "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "connectionState",
+                    "params": {
+                        "variable": "$(biz.pods.connectionState)",
+                        "single_value": true
+                    }
+                },
+                {
+                    "method": "GET",
+                    "name": "ipAddress",
+                    "params": {
+                        "variable": "$(biz.pods.ipAddress)",
+                        "single_value": true
+                    }
+                }
+            ],
+            "sources": [
+                {
+                    "principal": {
+                        "name": "biz",
+                        "options": {
+                            "URL": "/devices-api/account/{BB_ID}/pods"
+                        },
+                        "type": "MOCK"
+                    }
+                }
+            ],
+            "action_step_id": "get_pod"
+        }	
+    ],
+    "authorization_level": 1,
+	"available_for_operator": true,
+    "frontend_info": {
+        "action_description": "Azione Automatica",
+        "action_title": "POD onboarding",
+        "frontend_modal_type": "confirm_msg_box"
+    }
+}

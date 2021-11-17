@@ -1,0 +1,335 @@
+{
+	"action_id": "wifi_control",
+	"input_variables": [
+		{
+			"name": "endis",
+			"alias": "enable / disable",
+			"required": true
+		},
+		{
+			"name": "band",
+			"alias": "2 o 5",
+			"required": true
+		}
+	],
+	"frontend_info": {
+		"standalone": true,
+		"frontend_modal_type": "confirm_msg_box",
+		"action_description": "Abilitazione o disabilitazione bande 2 e 5",
+		"action_title": "Azioni su Wi-Fi"
+	},
+	"available_for_operator": true,
+	"result": {
+		"conditions": [
+			{
+				"color": "red",
+				"description": "L'input inserito non è corretto",
+				"condition": "({endis} != 'enable' or {endis} != 'disable') and ({band} != '2' or {band} != '5') and $(endisduecinque.has_errors) == True"
+			},
+			{
+				"color": "red",
+				"description": "CPE non raggiungibile",
+				"condition": "$(endisduecinque.has_errors) == True"
+			},
+			{
+				"color": "red",
+				"description": "CPE non raggiungibile",
+				"condition": "($(endisduecinque.has_errors) == True and $(check.status !=200))"
+			},
+			{
+				"color": "red",
+				"description": "Errore durante l'operazione di controllo, verificare manualmente l'esito dell' operazione",
+				"condition": "($(endisduecinque.has_errors) == False and $(check.status !=200))"
+			},
+			{
+				"color": "red",
+				"description": "Errore abilitazione/disabilitazione rete 2.4 GHz",
+				"condition": "($(check.radio_status_2g) != $(check.expected_result_2) or $(endisduecinque.has_errors) == True) and $(check.SSID_2g) != $(check.SSID_5g)"
+			},
+			{
+				"color": "red",
+				"description": "Errore abilitazione/disabilitazione rete 5 GHz",
+				"condition": "($(check.radio_status_5g) != $(check.expected_result_5) or $(endisduecinque.has_errors) == True) and $(check.SSID_2g) != $(check.SSID_5g)"
+			},
+			{
+				"color": "red",
+				"description": "Errore abilitazione/disabilitazione rete 2.4 GHz che ha lo stesso SSID della rete 5 GHz",
+				"condition": "($(check.radio_status_2g) != $(check.expected_result_2) or $(endisduecinque.has_errors) == True) and $(check.SSID_2g) == $(check.SSID_5g)"
+			},
+			{
+				"color": "red",
+				"description": "Errore abilitazione/disabilitazione rete 5 GHz che ha lo stesso SSID della rete 2.4 GHz",
+				"condition": "($(check.radio_status_5g) != $(check.expected_result_5) or $(endisduecinque.has_errors) == True) and $(check.SSID_2g) == $(check.SSID_5g)"
+			},
+			{
+				"color": "red",
+				"description": "Azione eseguita correttamente ma le reti 2.4 GHz e 5 GHz hanno lo stesso SSID. Cambiare SSID di una delle due",
+				"condition": "$(check.SSID_2g) == $(check.SSID_5g) and $(endisduecinque.has_errors) == False and $(check.radio_status_2g) == $(check.expected_result_2) and $(check.radio_status_5g) == $(check.expected_result_5)"
+			},
+			{
+				"color": "green",
+				"description": "Operazione completata con successo",
+				"condition": "$(endisduecinque.has_errors) == False and $(check.radio_status_2g) == $(check.expected_result_2) and $(check.radio_status_5g) == $(check.expected_result_5) and $(check.SSID_2g) != $(check.SSID_5g)"
+			}
+		]
+	},
+	"action_steps": [
+		{
+			"variables": [
+				{
+					"method": "DECODE",
+					"name": "scelta",
+					"params": {
+						"variable": [
+							"$(endis)",
+							"$(band)"
+						],
+						"single_value": true,
+						"mappings": [
+							{
+								"value": "'2en'",
+								"condition": "#1 =='enable' and #2 == 2"
+							},
+							{
+								"value": "'2dis'",
+								"condition": "#1 =='disable' and #2 == 2"
+							},
+							{
+								"value": "'5en'",
+								"condition": "#1 =='enable' and #2 == 5"
+							},
+							{
+								"value": "'5dis'",
+								"condition": "#1 =='disable' and #2 == 5"
+							}
+						]
+					}
+				},
+				{
+					"method": "GET",
+					"name": "wcommand",
+					"params": {
+						"variable": "$(command)",
+						"single_value": true
+					}
+				},
+				{
+					"method": "GET",
+					"name": "wvalue_raw",
+					"params": {
+						"variable": "$(value)",
+						"single_value": true
+					}
+				},
+				{
+					"method": "GET",
+					"name": "wifi2expected",
+					"params": {
+						"variable": "$(expected2)",
+						"single_value": true
+					}
+				},
+				{
+					"method": "GET",
+					"name": "wifi5expected",
+					"params": {
+						"variable": "$(expected5)",
+						"single_value": true
+					}
+				},
+				{
+					"method": "DECODE",
+					"name": "wvalue",
+					"params": {
+						"variable": [
+							"$(wvalue_raw)"
+						],
+						"single_value": true,
+						"mappings": [
+							{
+								"value": "'false'",
+								"condition": "#1 == 0"
+							},
+							{
+								"value": "'true'",
+								"condition": "#1 == 1"
+							}
+						]
+					}
+				}
+			],
+			"aliases": [
+				{
+					"name": "command",
+					"value": "params.[# == $(scelta)].command"
+				},
+				{
+					"name": "value",
+					"value": "params.[# == $(scelta)].value"
+				},
+				{
+					"name": "expected2",
+					"value": "params.[# == $(scelta)].expected2"
+				},
+				{
+					"name": "expected5",
+					"value": "params.[# == $(scelta)].expected5"
+				}
+			],
+			"sources": [
+				{
+					"principal": {
+						"name": "params",
+						"options": {
+							"param_id": "wifi_command"
+						},
+						"type": "GLOBAL_PARAMS"
+					}
+				}
+			],
+			"action_step_id": "retrive_parameters"
+		},
+		{
+			"variables": [
+				{
+					"method": "GET",
+					"name": "has_errors",
+					"params": {
+						"variable": "$(tardis.errors.has_errors)",
+						"single_value": true
+					}
+				}
+			],
+			"sources": [
+				{
+					"principal": {
+						"name": "tardis",
+						"options": {
+							"action": "wifi_action",
+							"operations": [
+								{
+									"type": "SET",
+									"value": "$(retrive_parameters.wvalue)",
+									"dataType": "Boolean",
+									"parameter": "$(retrive_parameters.wcommand)"
+								}
+							]
+						},
+						"type": "TARDIS"
+					}
+				}
+			],
+			"verification_condition": "$(has_errors) == False",
+			"max_retry": 2,
+			"timeout": 100,
+			"action_step_id": "endisduecinque"
+		},
+		{
+			"variables": [
+				{
+					"method": "GET",
+					"name": "status",
+					"params": {
+						"variable": "$(wpil.status)",
+						"single_value": true
+					}
+				},
+				{
+					"method": "GET",
+					"name": "status_message",
+					"params": {
+						"variable": "$(wpil.message)",
+						"single_value": true
+					}
+				},
+				{
+					"method": "GET",
+					"name": "radio_status_2g",
+					"params": {
+						"variable": "$(wpil.data.group_radio_2g_configuration.data.radio_enabled)",
+						"single_value": true
+					}
+				},
+				{
+					"method": "GET",
+					"name": "radio_status_5g",
+					"params": {
+						"variable": "$(wpil.data.group_radio_5g_configuration.data.radio_enabled)",
+						"single_value": true
+					}
+				},
+				{
+					"method": "GET",
+					"name": "SSID_2g",
+					"params": {
+						"variable": "$(wpil.data.group_private_wifi_configuration.data.ssid_name_2g)",
+						"single_value": true
+					}
+				},
+				{
+					"method": "GET",
+					"name": "SSID_5g",
+					"params": {
+						"variable": "$(wpil.data.group_private_wifi_configuration.data.ssid_name_5g)",
+						"single_value": true
+					}
+				},
+				{
+					"method": "DECODE",
+					"name": "expected_result_2",
+					"params": {
+						"variable": [
+							"$(retrive_parameters.wifi2expected)"
+						],
+						"single_value": true,
+						"mappings": [
+							{
+								"value": "$(retrive_parameters.wifi2expected)",
+								"condition": "#1 != 2"
+							},
+							{
+								"value": "$(radio_status_2g)",
+								"condition": "#1 == 2"
+							}
+						]
+					}
+				},
+				{
+					"method": "DECODE",
+					"name": "expected_result_5",
+					"params": {
+						"variable": [
+							"$(retrive_parameters.wifi5expected)"
+						],
+						"single_value": true,
+						"mappings": [
+							{
+								"value": "$(retrive_parameters.wifi5expected)",
+								"condition": "#1 != 2"
+							},
+							{
+								"value": "$(radio_status_5g)",
+								"condition": "#1 == 2"
+							}
+						]
+					}
+				}
+			],
+			"sources": [
+				{
+					"principal": {
+						"name": "wpil",
+						"options": {
+							"URL": "/diagnostics/account/{BB_ID}/configuration"
+						},
+						"type": "WPIL",
+						"err_raise": false
+					}
+				}
+			],
+			"sleep_time": 50,
+			"action_step_id": "check"
+		}
+	],
+	"authorization_level": 1
+}

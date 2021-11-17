@@ -1,0 +1,60 @@
+{
+    "options": [
+        {
+            "name": "AVANTI",
+            "type": "button",
+            "condition":"$(kineton_pod_replacement_check.pod_data.number_of_pods)==0 or ($(kineton_pod_replacement_check.pod_data.number_of_pods)>0 and $(kineton_pod_replacement_check.pod_data.snr) >= 25 and $(kineton_pod_replacement_check.pod_data.rssi) < -50 and $(kineton_pod_replacement_check.pod_data.interference) <= 25)",
+            "value": 1
+        },
+        {
+            "name": "AVANTI",
+            "type": "button",
+            "condition":"$(kineton_pod_replacement_check.pod_data.number_of_pods)>0 and $(kineton_pod_replacement_check.pod_data.interference) > 40",
+            "value": 0
+        },
+        {
+            "name": "AVANTI",
+            "type": "button",
+            "condition":"$(kineton_pod_replacement_check.pod_data.number_of_pods)>0 and $(kineton_pod_replacement_check.pod_data.snr) <= 15",
+            "value": 0
+        },
+        {
+            "name": "AVANTI",
+            "type": "button",
+            "condition":"$(kineton_pod_replacement_check.pod_data.number_of_pods)>0 and $(kineton_pod_replacement_check.pod_data.rssi) >= -40",
+            "value": 0
+        },
+        {
+            "name": "AVANTI",
+            "type": "button",
+            "condition":"$(kineton_pod_replacement_check.pod_data.number_of_pods)>0 and 15 < $(kineton_pod_replacement_check.pod_data.snr) < 25",
+            "value": 0
+        },
+        {
+            "name": "AVANTI",
+            "type": "button",
+            "condition":"$(kineton_pod_replacement_check.pod_data.number_of_pods)>0 and 25 < $(kineton_pod_replacement_check.pod_data.interference) <= 40",
+            "value": 0
+        },
+        {
+            "name": "AVANTI",
+            "type": "button",
+            "condition":"$(kineton_pod_replacement_check.pod_data.number_of_pods)>0 and -50 <= $(kineton_pod_replacement_check.pod_data.rssi) < -40",
+            "value": 0
+        }
+
+    ],
+    "description": "Esegure questa azione per verificare il corretto posizionamento del POD",
+    "hints": [
+        {
+            "description": "Attenzione il serial number del POD va inserito con le sole lettere maiuscole"
+        }
+    ],
+    "actions": [
+        {
+            "action_id": "kineton_pod_replacement_check"
+        }
+    ],
+    "wizard_id": "KINETON_W_PP_CHECK_POD_PLACEMENT",
+    "title": "AZIONI con CLIENTE"
+}
