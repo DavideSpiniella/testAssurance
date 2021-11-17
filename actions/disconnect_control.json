@@ -15,7 +15,7 @@
       },
       {
        "color": "green",
-       "description": "Non risultano micro disconnessioni su questa linea",
+       "description": "Non wweerdcgyugyugyu micro disconnessioni su questa linea",
        "condition": "($(info_disconnections.days_wifi_2g_Deauth1) is None OR $(info_disconnections.days_wifi_2g_Deauth1) == False) AND ($(info_disconnections.days_wifi_5g_Deauth1) is None OR $(info_disconnections.days_wifi_5g_Deauth1) == False)"
       }
      ]
